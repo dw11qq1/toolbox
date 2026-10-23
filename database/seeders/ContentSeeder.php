@@ -7,7 +7,7 @@ use App\Models\Tool;
 use Illuminate\Database\Seeder;
 
 /**
- * ToolBox 内容 Seeder：工具（含音乐创作）与趣味测试。
+ * ToolBox 内容 Seeder：工具（含计算器与音乐创作）与趣味测试。
  * 使用 updateOrCreate，可重复执行，不会产生重复数据。
  */
 class ContentSeeder extends Seeder
@@ -35,6 +35,34 @@ class ContentSeeder extends Seeder
             [
                 'name' => '夏普率计算器', 'slug' => 'sharpe-calculator', 'category' => '计算', 'sort_order' => 5,
                 'description' => '粘贴每月收益率序列，自动算年化收益、年化波动率与夏普比率，评估策略风险调整后收益。',
+            ],
+            [
+                'name' => '索提诺比率计算器', 'slug' => 'sortino-calculator', 'category' => '计算', 'sort_order' => 6,
+                'description' => '夏普的改良版：分母换成下行标准差，只惩罚下跌波动，更贴近真实的风险感受。',
+            ],
+            [
+                'name' => '卡玛比率计算器', 'slug' => 'calmar-calculator', 'category' => '计算', 'sort_order' => 7,
+                'description' => '年化收益 ÷ 最大回撤，衡量「为了赚钱要忍受多深的浮亏」，检验曲线拿不拿得住。',
+            ],
+            [
+                'name' => '盈亏比计算器', 'slug' => 'profit-loss-ratio', 'category' => '计算', 'sort_order' => 8,
+                'description' => '粘贴每笔交易盈亏，算出平均盈利与平均亏损之比，看你是赚大亏小还是赚小亏大。',
+            ],
+            [
+                'name' => '胜率计算器', 'slug' => 'win-rate-calculator', 'category' => '计算', 'sort_order' => 9,
+                'description' => '输入总笔数与盈利笔数，附带连错概率参考，看清高胜率背后的真实风险。',
+            ],
+            [
+                'name' => '期望值计算器', 'slug' => 'expected-value-calculator', 'category' => '计算', 'sort_order' => 10,
+                'description' => '胜率 × 平均盈利 − 败率 × 平均亏损，每笔交易的数学期望，正负决定系统能不能活。',
+            ],
+            [
+                'name' => '仓位大小计算器', 'slug' => 'position-size-calculator', 'category' => '计算', 'sort_order' => 11,
+                'description' => '账户资金、风险比例、入场价、止损价，反推应买数量，把每笔亏损锁死在预算内。',
+            ],
+            [
+                'name' => '风险回报比计算器', 'slug' => 'risk-reward-calculator', 'category' => '计算', 'sort_order' => 12,
+                'description' => '入场、止损、止盈三个价格算出 R:R 与打平胜率，下单前最后一道性价比闸门。',
             ],
             // 开发
             [
