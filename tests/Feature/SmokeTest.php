@@ -31,7 +31,7 @@ class SmokeTest extends TestCase
         }
     }
 
-    /* ---------- 工具（17 个） ---------- */
+    /* ---------- 工具（18 个） ---------- */
 
     public function test_全部工具页正常(): void
     {
@@ -43,7 +43,7 @@ class SmokeTest extends TestCase
             'sortino-calculator', 'calmar-calculator', 'profit-loss-ratio',
             'win-rate-calculator', 'expected-value-calculator',
             'position-size-calculator', 'risk-reward-calculator',
-            'music-box', 'beat-studio',
+            'music-box', 'beat-studio', 'perler-patterns',
         ] as $slug) {
             $this->get("/tools/{$slug}")->assertStatus(200);
         }

@@ -87,6 +87,11 @@ class ContentSeeder extends Seeder
                 'name' => '节奏工坊', 'slug' => 'beat-studio', 'category' => '音乐', 'sort_order' => 2,
                 'description' => '四组打击乐 + 四件旋律乐器的多轨音序器，叠出有层次感的节奏，内置电子和嘻哈预置。',
             ],
+            // 创作
+            [
+                'name' => '拼豆图纸工作室', 'slug' => 'perler-patterns', 'category' => '创作', 'sort_order' => 1,
+                'description' => '在网格上逐格点出像素图案，真实拼豆色号配色，自动统计每种颜色用量，一键导出图纸 PNG。',
+            ],
         ];
 
         foreach ($tools as $tool) {

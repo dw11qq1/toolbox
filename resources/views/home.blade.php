@@ -12,7 +12,7 @@
 
   @php
     $grouped = $tools->groupBy('category');
-    $order = ['计算', '开发', '转换', '音乐'];
+    $order = ['计算', '开发', '转换', '音乐', '创作'];
   @endphp
 
   @foreach($order as $cat)
