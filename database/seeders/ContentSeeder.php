@@ -69,6 +69,13 @@ class ContentSeeder extends Seeder
                 'description' => '四组打击乐 + 四件旋律乐器的多轨音序器，叠出有层次感的节奏，内置电子和嘻哈预置。',
                 'how_to_play' => '每行一件乐器，点亮格子排节奏；先放「电子 / 嘻哈」预置听效果，再改动格子做成自己的 beat。',
             ],
+            [
+                'name' => '末日生存抉择',
+                'slug' => 'survival-tales',
+                'sort_order' => 5,
+                'description' => '文字肉鸽：每天一个废土事件三选一，权衡生命、食物、理智与运气，看你能活过多少天。',
+                'how_to_play' => '读事件、做选择。四项属性任意一项归零即死亡，天数越深坏事件越频繁。',
+            ],
         ];
 
         $quizzes = [
