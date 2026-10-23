@@ -14,11 +14,22 @@
 </div>
 
 <div class="field">
-  <span class="fl">照片转图纸（自动匹配 MARD 221 色卡）</span>
+  <span class="fl">色卡型号</span>
+  <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
+    <select id="pbCard" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
+      <option value="mard" selected>MARD 221 色</option>
+      <option value="perler">Perler 48 色（美国）</option>
+      <option value="artkal">Artkal S 系 159 色</option>
+    </select>
+    <button class="btn" id="pbConvert" style="padding:0.35rem 0.9rem">图纸色号转换到当前色卡</button>
+  </div>
+  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">换色卡后点「转换」，图纸上每个豆会自动映射到当前色卡里最接近的色号（买不同牌子的豆时用）。</p>
+</div>
+
+<div class="field">
+  <span class="fl">照片转图纸（自动匹配当前色卡）</span>
   <div class="btn-row" style="gap:0.8rem;flex-wrap:wrap;align-items:center">
-    <label style="font-size:0.85rem;cursor:pointer">
-      <input type="file" id="pbFile" accept="image/*" style="font-size:0.8rem">
-    </label>
+    <input type="file" id="pbFile" accept="image/*" style="font-size:0.8rem">
     <label style="font-size:0.8rem;color:var(--ink-2);display:flex;align-items:center;gap:0.3rem">
       <input type="checkbox" id="pbDither"> 抖动算法（照片更细腻）
     </label>
@@ -26,7 +37,7 @@
       <input type="checkbox" id="pbWhiteOut"> 接近白色不加豆（做镂空）
     </label>
   </div>
-  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">照片会缩到当前底板尺寸并逐格匹配最接近的 MARD 色号，结果写入<b>当前图层</b>。像素画/Logo 建议关抖动，照片开抖动更自然。</p>
+  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">照片会缩到当前底板尺寸并逐格匹配最接近的色号，结果写入<b>当前图层</b>。像素画/Logo 建议关抖动，照片开抖动更自然。</p>
 </div>
 
 <div class="field">
@@ -35,13 +46,20 @@
 </div>
 
 <div class="field">
-  <span class="fl">MARD 色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
+  <span class="fl">色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
   <div id="pbPalette"></div>
 </div>
 
 <div class="field">
-  <span class="fl">图纸（按住拖动点豆 · 右键擦除）</span>
+  <span class="fl">图纸（按住拖动点豆 · 右键擦除）
+    <span style="float:right;display:inline-flex;gap:0.3rem;align-items:center">
+      <button class="btn" id="pbZoomOut" style="padding:0.1rem 0.6rem;font-size:0.85rem">−</button>
+      <span id="pbZoomLabel" style="font-size:0.75rem;color:var(--ink-3);font-family:var(--font-mono)">18px</span>
+      <button class="btn" id="pbZoomIn" style="padding:0.1rem 0.6rem;font-size:0.85rem">＋</button>
+    </span>
+  </span>
   <canvas id="pbCanvas" style="border:1px solid var(--line);border-radius:8px;touch-action:none;cursor:crosshair;max-width:100%"></canvas>
+  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">放大到 26px 以上会显示豆子中心的<b>小孔</b>，模拟真实拼豆——默认视图保持干净。</p>
 </div>
 
 <div class="field" id="pbCountWrap" style="display:none">
@@ -61,8 +79,8 @@
 <style>
 #pbPalette{max-width:560px}
 .pb-group{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;flex-wrap:wrap}
-.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.7rem;color:var(--ink-3);width:26px;padding-top:5px;flex-shrink:0}
-.pb-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:1px solid rgba(0,0,0,0.15);box-sizing:border-box;transition:transform .1s}
+.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.7rem;color:var(--ink-3);width:52px;padding-top:4px;flex-shrink:0}
+.pb-swatch{width:22px;height:22px;border-radius:22%;cursor:pointer;border:1px solid rgba(0,0,0,0.15);box-sizing:border-box;transition:transform .1s}
 .pb-swatch:hover{transform:scale(1.2)}
 .pb-swatch.on{border:2px solid var(--ink);transform:scale(1.2);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
 .pb-layer{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;padding:0.3rem 0.7rem;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);color:var(--ink-2)}
@@ -70,8 +88,8 @@
 .pb-layer i{font-style:normal;cursor:pointer;opacity:0.7}
 .pb-layer i:hover{opacity:1}
 #pbCountsActive,#pbCountsTotal{display:flex;flex-wrap:wrap;gap:0.4rem}
-.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:0.2rem 0.65rem 0.2rem 0.3rem}
-.pb-count i{width:16px;height:16px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,0.15)}
+.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--ink-2);border:1px solid var(--line);border-radius:6px;padding:0.2rem 0.65rem 0.2rem 0.3rem}
+.pb-count i{width:16px;height:16px;border-radius:4px;display:inline-block;border:1px solid rgba(0,0,0,0.15)}
 .pb-count b{font-family:var(--font-mono)}
 </style>
 
@@ -79,35 +97,58 @@
 (function(){
   var $ = function(id){ return document.getElementById(id); };
 
-  /* ---------- MARD 221 色卡 ---------- */
-  var MARD = (function(){
-    var raw =
-      'A1 F9F0CD|A2 FBFBD4|A3 FAFC9F|A4 FFE953|A5 F4D738|A6 FDAD49|A7 FF7C2F|A8 EACA49|A9 FF995A|A10 FF9D55|A11 FFDD99|A12 FCB58F|A13 FFBB59|A14 FF6D40|A15 FDFF44|A16 FEF9AE|A17 FFE36E|A18 FECF98|A19 FD7B72|A20 EFCD67|A21 FFE395|A22 FFF3A4|A23 F3D5BF|A24 FBF8C9|A25 FFD67D|A26 FFBB27|' +
-      'B1 E6EE32|B2 5BE419|B3 7CEE9D|B4 1EF942|B5 00BD35|B6 5AE8BA|B7 03AC88|B8 029D26|B9 26523A|B10 95D3C2|B11 5D722A|B12 156F40|B13 D9F794|B14 ADE945|B15 2E5132|B16 C6ED9C|B17 9BB13A|B18 E6EE49|B19 25B88C|B20 C2F0CC|B21 146A6B|B22 0B3C43|B23 303921|B24 EEFCA5|B25 4E846D|B26 8C7A36|B27 D1DCC1|B28 9EE5B9|B29 C5E254|B30 ECFBD0|B31 C4E6B5|B32 9BAB5A|' +
-      'C1 E8FFE7|C2 BCF9F6|C3 A0E2FB|C4 42CCFF|C5 01ACEB|C6 50A9F0|C7 0188D3|C8 1054C0|C9 314BCA|C10 3EBCE2|C11 03B9B9|C12 1C334D|C13 CDE8FF|C14 D5FDFF|C15 23C4C6|C16 1757A8|C17 50D3EC|C18 1C3344|C19 1787A2|C20 0082BE|C21 BEDDFF|C22 67B4BE|C23 C2DCEB|C24 7DC4FF|C25 A9E5E5|C26 2F99B3|C27 EBF5FC|C28 BBCFED|C29 4B5BA3|' +
-      'D1 AEB4F2|D2 858EDD|D3 3054AF|D4 182A84|D5 B843C5|D6 AC7BDE|D7 6E399A|D8 E2D3FF|D9 D5B9F8|D10 361B50|D11 B9BAE1|D12 DE9AD4|D13 B90295|D14 8B279B|D15 2F1F90|D16 E2E1EE|D17 C4D4F6|D18 A45EC7|D19 D8C3D7|D20 9C32B2|D21 9A009B|D22 333995|D23 EADAFC|D24 7786E5|D25 484FC7|D26 E9C3F6|' +
-      'E1 FDD3CC|E2 FECDDF|E3 FF97C3|E4 E8649E|E5 F551A2|E6 FF346B|E7 C63578|E8 FFDBE9|E9 E970CC|E10 D33893|E11 FCDDD2|E12 FFA1C5|E13 B6006D|E14 FFD1BA|E15 F2CFD0|E16 FFECDE|E17 FFE2EA|E18 FFC9D6|E19 FFD2E7|E20 D8C7D1|E21 BD9DA1|E22 CC78A7|E23 937A8D|E24 F6E4F9|' +
-      'F1 FD957B|F2 FC3D45|F3 F74941|F4 FC283C|F5 D80127|F6 B0443D|F7 971937|F8 BC0127|F9 E2677A|F10 A74D22|F11 6F201F|F12 FD4D6A|F13 DD422F|F14 FFA9AD|F15 C80020|F16 FFD9C8|F17 F79B71|F18 D37C46|F19 C1444A|F20 CD9391|F21 F4B1B4|F22 FFD0CB|F23 F57E66|F24 FCC1C4|F25 E54B4F|' +
-      'G1 FFE2CE|G2 FFCAAA|G3 F4C3A5|G4 E1B383|G5 ED9435|G6 F59734|G7 9D5B3E|G8 592A21|G9 E6B483|G10 C88135|G11 E0C593|G12 EBBB83|G13 B7714A|G14 8D614C|G15 FCF9E0|G16 F2D9BA|G17 56403C|G18 FFE4CC|G19 E1943A|G20 A94023|G21 CB8E77|' +
-      'H1 E2E2E2|H2 FFFFFF|H3 B3B3B3|H4 868686|H5 474747|H6 2C2C2C|H7 000000|H8 E7D6DB|H9 E4E7E3|H10 EEE9EA|H11 CECDD5|H12 FFF5ED|H13 F3E1C9|H14 CFD7D3|H15 98A6A8|H16 3B2F23|H17 F1EDED|H18 FFFDF0|H19 F6EFE2|H20 949FA3|H21 F7F3E4|H22 CACAD5|H23 9A9D94|' +
-      'M1 BCC6B8|M2 8AA385|M3 697D80|M4 DACEBE|M5 D0CCAA|M6 B0A782|M7 B4A497|M8 B38281|M9 A58767|M10 C5B1BC|M11 9F7494|M12 644749|M13 D19066|M14 C77361|M15 757D7B';
-    return raw.split('|').map(function(s){
-      var p = s.split(' ');
-      return ['MARD ' + p[0], '#' + p[1]];
-    });
-  })();
-  var GROUPS = [['A','黄·橙'],['B','绿'],['C','蓝·青'],['D','紫'],['E','粉'],['F','红'],['G','肤·棕'],['H','黑·白·灰'],['M','莫兰迪']];
-  var RGB = MARD.map(function(c){
-    var h = c[1];
-    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
-  });
+  /* ================= 色卡库 ================= */
+  var CARDS = {
+    mard: { label: 'MARD 221', short: 'MARD', prefix: 'MARD', groups: [['A','黄·橙'],['B','绿'],['C','蓝·青'],['D','紫'],['E','粉'],['F','红'],['G','肤·棕'],['H','黑·白·灰'],['M','莫兰迪']],
+      data:
+        'A1 F9F0CD|A2 FBFBD4|A3 FAFC9F|A4 FFE953|A5 F4D738|A6 FDAD49|A7 FF7C2F|A8 EACA49|A9 FF995A|A10 FF9D55|A11 FFDD99|A12 FCB58F|A13 FFBB59|A14 FF6D40|A15 FDFF44|A16 FEF9AE|A17 FFE36E|A18 FECF98|A19 FD7B72|A20 EFCD67|A21 FFE395|A22 FFF3A4|A23 F3D5BF|A24 FBF8C9|A25 FFD67D|A26 FFBB27|' +
+        'B1 E6EE32|B2 5BE419|B3 7CEE9D|B4 1EF942|B5 00BD35|B6 5AE8BA|B7 03AC88|B8 029D26|B9 26523A|B10 95D3C2|B11 5D722A|B12 156F40|B13 D9F794|B14 ADE945|B15 2E5132|B16 C6ED9C|B17 9BB13A|B18 E6EE49|B19 25B88C|B20 C2F0CC|B21 146A6B|B22 0B3C43|B23 303921|B24 EEFCA5|B25 4E846D|B26 8C7A36|B27 D1DCC1|B28 9EE5B9|B29 C5E254|B30 ECFBD0|B31 C4E6B5|B32 9BAB5A|' +
+        'C1 E8FFE7|C2 BCF9F6|C3 A0E2FB|C4 42CCFF|C5 01ACEB|C6 50A9F0|C7 0188D3|C8 1054C0|C9 314BCA|C10 3EBCE2|C11 03B9B9|C12 1C334D|C13 CDE8FF|C14 D5FDFF|C15 23C4C6|C16 1757A8|C17 50D3EC|C18 1C3344|C19 1787A2|C20 0082BE|C21 BEDDFF|C22 67B4BE|C23 C2DCEB|C24 7DC4FF|C25 A9E5E5|C26 2F99B3|C27 EBF5FC|C28 BBCFED|C29 4B5BA3|' +
+        'D1 AEB4F2|D2 858EDD|D3 3054AF|D4 182A84|D5 B843C5|D6 AC7BDE|D7 6E399A|D8 E2D3FF|D9 D5B9F8|D10 361B50|D11 B9BAE1|D12 DE9AD4|D13 B90295|D14 8B279B|D15 2F1F90|D16 E2E1EE|D17 C4D4F6|D18 A45EC7|D19 D8C3D7|D20 9C32B2|D21 9A009B|D22 333995|D23 EADAFC|D24 7786E5|D25 484FC7|D26 E9C3F6|' +
+        'E1 FDD3CC|E2 FECDDF|E3 FF97C3|E4 E8649E|E5 F551A2|E6 FF346B|E7 C63578|E8 FFDBE9|E9 E970CC|E10 D33893|E11 FCDDD2|E12 FFA1C5|E13 B6006D|E14 FFD1BA|E15 F2CFD0|E16 FFECDE|E17 FFE2EA|E18 FFC9D6|E19 FFD2E7|E20 D8C7D1|E21 BD9DA1|E22 CC78A7|E23 937A8D|E24 F6E4F9|' +
+        'F1 FD957B|F2 FC3D45|F3 F74941|F4 FC283C|F5 D80127|F6 B0443D|F7 971937|F8 BC0127|F9 E2677A|F10 A74D22|F11 6F201F|F12 FD4D6A|F13 DD422F|F14 FFA9AD|F15 C80020|F16 FFD9C8|F17 F79B71|F18 D37C46|F19 C1444A|F20 CD9391|F21 F4B1B4|F22 FFD0CB|F23 F57E66|F24 FCC1C4|F25 E54B4F|' +
+        'G1 FFE2CE|G2 FFCAAA|G3 F4C3A5|G4 E1B383|G5 ED9435|G6 F59734|G7 9D5B3E|G8 592A21|G9 E6B483|G10 C88135|G11 E0C593|G12 EBBB83|G13 B7714A|G14 8D614C|G15 FCF9E0|G16 F2D9BA|G17 56403C|G18 FFE4CC|G19 E1943A|G20 A94023|G21 CB8E77|' +
+        'H1 E2E2E2|H2 FFFFFF|H3 B3B3B3|H4 868686|H5 474747|H6 2C2C2C|H7 000000|H8 E7D6DB|H9 E4E7E3|H10 EEE9EA|H11 CECDD5|H12 FFF5ED|H13 F3E1C9|H14 CFD7D3|H15 98A6A8|H16 3B2F23|H17 F1EDED|H18 FFFDF0|H19 F6EFE2|H20 949FA3|H21 F7F3E4|H22 CACAD5|H23 9A9D94|' +
+        'M1 BCC6B8|M2 8AA385|M3 697D80|M4 DACEBE|M5 D0CCAA|M6 B0A782|M7 B4A497|M8 B38281|M9 A58767|M10 C5B1BC|M11 9F7494|M12 644749|M13 D19066|M14 C77361|M15 757D7B' },
+    perler: { label: 'Perler 48', short: 'P', prefix: '', groups: [['P','经典 48 色']],
+      data:
+        'P01 白 F5F5F2|P02 黑 202124|P03 黄 F4D83D|P04 奶油 F3E7B5|P05 红 C93535|P06 橙 E97832|P07 浅蓝 75B9DE|P08 深蓝 24528A|P09 浅绿 8CCB82|P10 绿 4D9852|P11 棕 78533D|P12 灰 97999A|P13 粉 E990AA|P14 浅棕 B98C66|P15 深绿 336B4A|P16 粉蓝 B5D9E9|P17 粉绿 B9DBB0|P18 紫 73518E|P19 淡紫 C8B5D7|P20 淡黄 F2E59A|P21 芝士黄 EBAE36|P22 铁锈 A84B35|P23 浅粉 F0BBCB|P24 蜜桃 F1B08D|P25 薄荷蓝 83CFCA|P26 青蓝 34A7A5|P27 钴蓝 31569B|P28 海军蓝 253650|P29 李紫 6C3F69|P30 洋红 B23D72|P31 珊瑚 E56059|P32 鲑粉 E99282|P33 黄褐 C6A477|P34 沙色 D8C29F|P35 浅灰 C8C9C7|P36 深灰 5C6062|P37 炭黑 3D4143|P38 象牙 F2EBD9|P39 奶糖 C88B3A|P40 姜饼 9A653F|P41 森林绿 294F3A|P42 奇异果 8DBC43|P43 青柠 B6D648|P44 水蓝 62C5DB|P45 天空蓝 8ED0ED|P46 长春花 7188C7|P47 薰衣草 A78AC4|P48 腮红 E4A6A4' },
+    artkal: { label: 'Artkal S 159', short: 'S', prefix: '', groups: [['S','S 系 159 色']],
+      data:
+        'S01 FFFFFF|S02 FFA38B|S03 FF8200|S04 FA4616|S05 EE2737|S06 EF64A2|S07 97999B|S08 26D07C|S09 007371|S10 56B7E6|S11 0050B5|S12 9063CD|S13 000000|S14 FDDA24|S15 A72B2A|S16 674736|S17 7B4D35|S18 EAA794|S19 F8C1B8|S20 249E6B|S21 93C90E|S22 483698|S23 7D55C7|S24 1164C9|S25 EF60A3|S26 F04E98|S27 FFC72C|S28 EF95CF|S29 FBDB65|S30 A4E6E8|S31 B5E3D8|S32 FECB8B|S33 C5B4E3|S34 D50032|S35 F7CED7|S36 E06287|S37 8BD3E6|S38 BC204B|S39 FF7F41|S40 F99FC9|S41 9A5516|S42 A09F9D|S43 75787B|S44 9BCBEB|S45 00B2A9|S46 8EDD65|S47 A6631B|S48 FFC845|S49 973961|S50 FFB3AB|S51 FFF8DB|S52 F8E08E|S53 62A0E6|S54 0090DA|S55 ADDC91|S56 FF6A39|S57 B33D26|S58 BA0C2F|S59 5949A7|S60 9678D3|S61 E6DE77|S62 007C58|S63 4C5914|S64 2C2D65|S65 F0EC74|S66 EE5340|S67 ECC3B2|S68 E7B78A|S69 212721|S70 BABC16|S71 008522|S72 67D9DF|S73 48A9C5|S74 04A9C7|S75 0085AD|S76 00A7B5|S77 D9D9D6|S78 C8C9C7|S79 B1B3B3|S80 A2A569|S81 D5A286|S82 C58B68|S83 B15533|S84 AB5C57|S85 8A2A2B|S86 F29D04|S87 FF808B|S88 DA1884|S89 53565A|S90 FFC56E|S91 183028|S92 C69214|S93 EDC8A3|S94 EAA794|S95 E8927C|S96 FF8D6D|S97 E35205|S98 80B6E8|S99 5CA9CC|S100 5DB3CB|S101 00A3E1|S102 0077CF|S103 0067B9|S104 007DBA|S105 00859B|S106 0076A8|S107 007096|S108 E6C78A|S109 CEB888|S110 C6AA76|S111 A08629|S112 897630|S113 C3C6A8|S114 C0BB87|S115 B0AA7E|S116 A3AA83|S117 77744D|S118 5E6738|S119 98DBCE|S120 9BE3BF|S121 6BBBAE|S122 00BB7E|S123 31B700|S124 035F1D|S125 007864|S126 00685E|S127 DECDE7|S128 C98BDB|S129 DCB6C9|S130 DD74A1|S131 AD96DC|S132 EF426F|S133 C724B1|S134 8031A7|S135 9FAEE5|S136 B4B2E4|S137 5F8DDA|S138 5780D2|S139 5576D1|S140 3C62C3|S141 466CCA|S142 365ABD|S143 1E22AA|S144 002D72|S145 E9E186|S146 8C243D|S147 86C8BC|S148 724736|S149 FCD299|S150 8B84D7|S151 335525|S152 A7A4E0|S153 C6C4EA|S154 EBC29D|S155 C58B68|S156 63666A|S157 46494C|S158 191D19|S159 88888D' }
+  };
 
-  /* ---------- 状态 ---------- */
+  function parseCard(card){
+    return card.data.split('|').map(function(s){
+      var p = s.split(' ');
+      var code = p[0];
+      var hex = p[p.length - 1];
+      var rest = p.length > 2 ? p.slice(1, -1).join(' ') : '';
+      var name = (card.prefix ? card.prefix + ' ' : '') + code + (rest ? ' ' + rest : '');
+      return [name, '#' + hex.toUpperCase(), code.slice(0, 1)];
+    });
+  }
+
+  var cardKey = 'mard';
+  var PAL = parseCard(CARDS.mard);
+  var RGBX = PAL.map(function(c){ return hexRgb(c[1]); });
+  var curName = 'MARD F2';
+
+  function hexRgb(h){
+    return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  }
+  function beadName(hex){
+    for(var i = 0; i < PAL.length; i++){ if(PAL[i][1] === hex) return PAL[i][0]; }
+    return '色 ' + hex.toUpperCase();
+  }
+
+  /* ================= 状态 ================= */
   var rows = 29, cols = 29, cell = 18;
-  var layers = [];      // [{name, visible, grid}]
+  var ZOOMS = [14, 18, 22, 26, 30, 36, 44];
+  var zi = 1;
+  var layers = [];
   var active = 0;
   var current = '#FC3D45';
-  var curName = 'MARD F2';
   var canvas = $('pbCanvas'), ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 1;
   var drawing = false, eraseMode = false;
@@ -122,8 +163,10 @@
     active = layers.length - 1;
   }
 
-  /* ---------- 画布 ---------- */
+  /* ================= 画布 ================= */
   function setupCanvas(){
+    cell = ZOOMS[zi];
+    $('pbZoomLabel').textContent = cell + 'px';
     canvas.width = cols * cell * dpr;
     canvas.height = rows * cell * dpr;
     canvas.style.width = (cols * cell) + 'px';
@@ -131,21 +174,38 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
+  // 圆角矩形路径（豆子基础形态）
+  function rr(c2, x, y, w, h, r){
+    c2.beginPath();
+    c2.moveTo(x + r, y);
+    c2.arcTo(x + w, y, x + w, y + h, r);
+    c2.arcTo(x + w, y + h, x, y + h, r);
+    c2.arcTo(x, y + h, x, y, r);
+    c2.arcTo(x, y, x + w, y, r);
+    c2.closePath();
+  }
+
+  // 豆子：带圆角的正方形填充；格子足够大时中心留小孔模拟真实空心豆
   function drawBeads(c2, grid, px){
-    var r = px * 0.42;
+    var inset = px * 0.055;
+    var rad = px * 0.2;
+    var side = px - inset * 2;
     for(var y = 0; y < rows; y++){
       for(var x = 0; x < cols; x++){
         var color = grid[y][x];
         if(!color) continue;
-        var cx = x * px + px / 2, cy = y * px + px / 2;
-        c2.beginPath();
-        c2.arc(cx, cy, r, 0, Math.PI * 2);
-        c2.fillStyle = color; c2.fill();
-        c2.lineWidth = Math.max(1, px * 0.05);
-        c2.strokeStyle = 'rgba(0,0,0,0.15)'; c2.stroke();
-        c2.beginPath();
-        c2.arc(cx - r * 0.3, cy - r * 0.3, r * 0.25, 0, Math.PI * 2);
-        c2.fillStyle = 'rgba(255,255,255,0.35)'; c2.fill();
+        rr(c2, x * px + inset, y * px + inset, side, side, rad);
+        c2.fillStyle = color;
+        c2.fill();
+        c2.lineWidth = Math.max(0.8, px * 0.045);
+        c2.strokeStyle = 'rgba(0,0,0,0.18)';
+        c2.stroke();
+        if(px >= 26){
+          c2.beginPath();
+          c2.arc(x * px + px / 2, y * px + px / 2, px * 0.1, 0, Math.PI * 2);
+          c2.fillStyle = 'rgba(255,255,255,0.8)';
+          c2.fill();
+        }
       }
     }
   }
@@ -169,7 +229,7 @@
     renderCounts(); renderLayers();
   }
 
-  /* ---------- 图层栏 ---------- */
+  /* ================= 图层栏 ================= */
   function renderLayers(){
     var html = '';
     layers.forEach(function(l, i){
@@ -191,17 +251,16 @@
     if(chip && chip.hasAttribute('data-i')){ active = +chip.getAttribute('data-i'); draw(); }
   });
 
-  /* ---------- 色板 ---------- */
+  /* ================= 色板 ================= */
   function buildPalette(){
     var html = '';
-    var letter = '';
-    MARD.forEach(function(c){
-      var L = c[0].slice(5, 6);
-      if(L !== letter){
-        if(letter !== '') html += '</div>';
-        var g = GROUPS.filter(function(x){ return x[0] === L; })[0] || [L, ''];
-        html += '<div class="pb-group" data-g="' + L + '"><em>' + g[0] + ' ' + g[1] + '</em>';
-        letter = L;
+    var curGroup = '';
+    PAL.forEach(function(c){
+      if(c[2] !== curGroup){
+        if(curGroup !== '') html += '</div>';
+        var g = CARDS[cardKey].groups.filter(function(x){ return x[0] === c[2]; })[0] || [c[2], ''];
+        html += '<div class="pb-group"><em>' + g[0] + ' ' + g[1] + '</em>';
+        curGroup = c[2];
       }
       html += '<span class="pb-swatch" data-hex="' + c[1] + '" data-name="' + c[0] + '" style="background:' + c[1] + '"></span>';
     });
@@ -217,7 +276,41 @@
     document.querySelectorAll('.pb-swatch').forEach(function(el){ el.classList.toggle('on', el === s); });
   });
 
-  /* ---------- 点豆 ---------- */
+  /* 色卡切换与转换 */
+  $('pbCard').addEventListener('change', function(){
+    cardKey = this.value;
+    PAL = parseCard(CARDS[cardKey]);
+    RGBX = PAL.map(function(c){ return hexRgb(c[1]); });
+    buildPalette();
+    draw();
+  });
+
+  $('pbConvert').addEventListener('click', function(){
+    var cache = {};
+    var changed = 0;
+    layers.forEach(function(l){
+      for(var y = 0; y < rows; y++){
+        for(var x = 0; x < cols; x++){
+          var hex = l.grid[y][x];
+          if(!hex) continue;
+          if(!cache[hex]){
+            var rgb = hexRgb(hex);
+            var ni = nearestRgb(rgb[0], rgb[1], rgb[2]);
+            cache[hex] = PAL[ni][1];
+          }
+          if(cache[hex] !== hex){ l.grid[y][x] = cache[hex]; changed++; }
+        }
+      }
+    });
+    // 当前色在新卡里也同步贴过去
+    var cr = hexRgb(current);
+    current = PAL[nearestRgb(cr[0], cr[1], cr[2])][1];
+    draw();
+    $('pbCurName').textContent = changed ? ('已转换 ' + changed + ' 颗豆') : '无需转换';
+    setTimeout(function(){ $('pbCurName').textContent = curName; }, 2000);
+  });
+
+  /* ================= 点豆 ================= */
   function cellAt(e){
     var rect = canvas.getBoundingClientRect();
     var x = Math.floor((e.clientX - rect.left) / (rect.width / cols));
@@ -239,7 +332,10 @@
   canvas.addEventListener('pointermove', function(e){ if(drawing) apply(e); });
   canvas.addEventListener('pointerup', function(){ drawing = false; eraseMode = false; });
 
-  /* ---------- 用量统计 ---------- */
+  $('pbZoomIn').addEventListener('click', function(){ if(zi < ZOOMS.length - 1){ zi++; setupCanvas(); draw(); } });
+  $('pbZoomOut').addEventListener('click', function(){ if(zi > 0){ zi--; setupCanvas(); draw(); } });
+
+  /* ================= 用量统计 ================= */
   function tally(grid){
     var t = {};
     for(var y = 0; y < rows; y++){
@@ -256,9 +352,7 @@
     keys.sort(function(a, b){ return t[b] - t[a]; });
     var html = '';
     keys.forEach(function(hex){
-      var name = '色 ' + hex.toUpperCase();
-      for(var i = 0; i < MARD.length; i++){ if(MARD[i][1] === hex){ name = MARD[i][0]; break; } }
-      html += '<span class="pb-count"><i style="background:' + hex + '"></i>' + name + ' <b>× ' + t[hex] + '</b></span>';
+      html += '<span class="pb-count"><i style="background:' + hex + '"></i>' + beadName(hex) + ' <b>× ' + t[hex] + '</b></span>';
     });
     return html;
   }
@@ -277,7 +371,7 @@
     $('pbCountsTotal').innerHTML = hasMulti ? chipsHtml(total) : '';
   }
 
-  /* ---------- 尺寸 / 示例 / 清空 ---------- */
+  /* ================= 尺寸 / 示例 / 清空 ================= */
   $('pbSize').addEventListener('change', function(){
     var n = parseInt(this.value);
     var old = layers.map(function(l){ return l.grid; });
@@ -313,11 +407,11 @@
     layers[active].grid = g; draw();
   });
 
-  /* ---------- 照片转图纸 ---------- */
-  function nearest(r, g, b){
+  /* ================= 照片转图纸 ================= */
+  function nearestRgb(r, g, b){
     var best = 0, bestD = Infinity;
-    for(var i = 0; i < RGB.length; i++){
-      var dr = r - RGB[i][0], dg = g - RGB[i][1], db = b - RGB[i][2];
+    for(var i = 0; i < RGBX.length; i++){
+      var dr = r - RGBX[i][0], dg = g - RGBX[i][1], db = b - RGBX[i][2];
       var d = dr * dr * 2 + dg * dg * 4 + db * db * 3;
       if(d < bestD){ bestD = d; best = i; }
     }
@@ -341,7 +435,7 @@
     var off = document.createElement('canvas');
     off.width = cols; off.height = rows;
     var c2 = off.getContext('2d');
-    c2.drawImage(img, 0, 0, cols, rows);          // 缩小即面积平均降采样
+    c2.drawImage(img, 0, 0, cols, rows);
     var data = c2.getImageData(0, 0, cols, rows).data;
     var dither = $('pbDither').checked;
     var whiteOut = $('pbWhiteOut').checked;
@@ -361,11 +455,11 @@
         var r = buf[idx * 3], gg = buf[idx * 3 + 1], b = buf[idx * 3 + 2];
         if(a < 128 || (whiteOut && r > 245 && gg > 245 && b > 245)) continue;
 
-        var ni = nearest(Math.round(r), Math.round(gg), Math.round(b));
-        g[y][x] = MARD[ni][1];
+        var ni = nearestRgb(Math.round(r), Math.round(gg), Math.round(b));
+        g[y][x] = PAL[ni][1];
 
         if(dither){
-          var er = r - RGB[ni][0], eg = gg - RGB[ni][1], eb = b - RGB[ni][2];
+          var er = r - RGBX[ni][0], eg = gg - RGBX[ni][1], eb = b - RGBX[ni][2];
           var spread = function(nx, ny, f){
             if(nx < 0 || nx >= cols || ny < 0 || ny >= rows) return;
             var j = ny * cols + nx;
@@ -382,10 +476,10 @@
     draw();
   }
 
-  /* ---------- 保存 / 载入 ---------- */
+  /* ================= 保存 / 载入 ================= */
   $('pbSave').addEventListener('click', function(){
     try{
-      localStorage.setItem('toolbox_perler', JSON.stringify({ r: rows, c: cols, layers: layers, active: active }));
+      localStorage.setItem('toolbox_perler', JSON.stringify({ r: rows, c: cols, layers: layers, active: active, card: cardKey }));
       $('pbCurName').textContent = '已保存 ✓';
       setTimeout(function(){ $('pbCurName').textContent = curName; }, 1500);
     }catch(err){}
@@ -397,12 +491,19 @@
       rows = cols = d.r;
       layers = d.layers || [{ name: '图层 1', visible: true, grid: d.g || newGrid(d.r, d.c) }];
       active = Math.min(d.active || 0, layers.length - 1);
+      if(d.card && CARDS[d.card]){
+        cardKey = d.card;
+        PAL = parseCard(CARDS[cardKey]);
+        RGBX = PAL.map(function(c){ return hexRgb(c[1]); });
+        $('pbCard').value = cardKey;
+        buildPalette();
+      }
       $('pbSize').value = String(rows);
       setupCanvas(); draw();
     }catch(err){}
   });
 
-  /* ---------- 导出 PNG ---------- */
+  /* ================= 导出 PNG / PDF ================= */
   function patternCanvas(px){
     var out = document.createElement('canvas');
     out.width = cols * px; out.height = rows * px;
@@ -419,7 +520,6 @@
     a.click();
   });
 
-  /* ---------- 导出 PDF ---------- */
   function loadJsPdf(cb){
     if(window.jspdf && window.jspdf.jsPDF) return cb();
     var s = document.createElement('script');
@@ -430,7 +530,7 @@
   }
 
   function reportCanvas(){
-    var W = 1240, H = 1754; // A4 @150dpi
+    var W = 1240, H = 1754;
     var rep = document.createElement('canvas');
     rep.width = W; rep.height = H;
     var c2 = rep.getContext('2d');
@@ -438,7 +538,7 @@
 
     c2.fillStyle = '#1c1e22';
     c2.font = '700 40px "Noto Sans SC", sans-serif';
-    c2.fillText('拼豆图纸 · MARD 色卡', 80, 100);
+    c2.fillText('拼豆图纸 · ' + CARDS[cardKey].label, 80, 100);
     c2.font = '400 22px "Noto Sans SC", sans-serif';
     c2.fillStyle = '#6b7280';
     var totalBeads = 0;
@@ -451,7 +551,6 @@
     c2.strokeRect(78.5, 178.5, patSize + 3, patSize + 3);
     c2.drawImage(pat, 80, 180, patSize, patSize);
 
-    // 用量清单（合计口径）
     var total = {};
     layers.forEach(function(l){
       if(!l.visible) return;
@@ -467,15 +566,13 @@
       var col = i % 4, rowI = Math.floor(i / 4);
       var bx = 80 + col * colW, by = patSize + 300 + rowI * 34;
       if(by > H - 40) return;
-      var name = hex.toUpperCase();
-      for(var k = 0; k < MARD.length; k++){ if(MARD[k][1] === hex){ name = MARD[k][0]; break; } }
       c2.beginPath();
       c2.arc(bx + 10, by - 6, 9, 0, Math.PI * 2);
       c2.fillStyle = hex; c2.fill();
       c2.strokeStyle = 'rgba(0,0,0,0.2)'; c2.lineWidth = 1; c2.stroke();
       c2.fillStyle = '#374151';
       c2.font = '400 19px "Noto Sans SC", sans-serif';
-      c2.fillText(name + '  × ' + total[hex], bx + 26, by);
+      c2.fillText(beadName(hex) + '  × ' + total[hex], bx + 26, by);
     });
     return rep;
   }
@@ -488,7 +585,7 @@
     });
   });
 
-  /* ---------- 启动 ---------- */
+  /* ================= 启动 ================= */
   addLayer();
   buildPalette();
   setupCanvas();
@@ -499,5 +596,5 @@
 <div class="explain">
   <h3>玩法 & 怎么用</h3>
   <p class="ex-formula">用豆数 = 图纸上该色号占据的格子数（多图层自动合计）<br>总豆数 = 各色号用量之和，建议多备 5%~10% 损耗</p>
-  <p class="ex-text">三种用法：<b>① 手画</b>——选色逐格点，拖动连刷，右键擦除；<b>② 照片转图纸</b>——上传照片自动缩到底板尺寸并逐格匹配 MARD 色号，照片开「抖动」用颜色交错骗过人眼更细腻，像素画/Logo 关抖动保持干净，勾「接近白色不加豆」可以做镂空；<b>③ 立体拼豆</b>——用多图层拆分每一层底板，底层半透明显示方便对位，用量清单会给单层和全部合计两套数字。色卡采用 <b>MARD 221 色</b>（A~M 八大色系），导出 PDF 自带图纸和采购清单，直接打印开工。</p>
+  <p class="ex-text">豆子渲染为<b>带圆角的正方形</b>——接近真实拼豆熨烫后的轮廓，同时保持网格对齐的整洁感；放大到 26px 以上会显示中心的<b>小孔</b>（真实拼豆是空心圆柱），默认视图自动隐藏。三张色卡随时切换：<b>MARD 221</b>（国产主流）、<b>Perler 48</b>（美国经典）、<b>Artkal S 系 159</b>（色号最全），换卡后点「转换」图纸上的豆会自动映射到新卡里最接近的色号——用 MARD 画的图纸可以直接转成 Artkal 采购单。照片转图纸、多图层立体拼豆、PNG/PDF 导出用法同前：照片开抖动更细腻，像素画关抖动保持干净。</p>
 </div>
