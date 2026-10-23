@@ -13,7 +13,10 @@
       <option value="20">20 × 20</option>
       <option value="29" selected>29 × 29（标准大方板）</option>
       <option value="40">40 × 40（拼两块）</option>
+      <option value="50">50 × 50</option>
       <option value="58">58 × 58（拼四块）</option>
+      <option value="70">70 × 70（拼六块）</option>
+      <option value="87">87 × 87（拼九块 · 大型挂画）</option>
     </select>
     <button class="btn pb-pat" data-pat="love" style="padding:0.35rem 0.8rem">🩷 爱心</button>
     <button class="btn pb-pat" data-pat="star" style="padding:0.35rem 0.8rem">⭐ 星星</button>
