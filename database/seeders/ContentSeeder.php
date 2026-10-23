@@ -69,13 +69,6 @@ class ContentSeeder extends Seeder
                 'description' => '四组打击乐 + 四件旋律乐器的多轨音序器，叠出有层次感的节奏，内置电子和嘻哈预置。',
                 'how_to_play' => '每行一件乐器，点亮格子排节奏；先放「电子 / 嘻哈」预置听效果，再改动格子做成自己的 beat。',
             ],
-            [
-                'name' => '地牢肉鸽',
-                'slug' => 'dungeon-rogue',
-                'sort_order' => 5,
-                'description' => '随机生成的地牢爬行：打怪捡宝下楼，层数越深怪越强，死了就重头再来——每一局都是新的地图。',
-                'how_to_play' => '方向键 / WASD / 屏幕按钮移动。撞怪物自动战斗，药水回血，宝箱加金币和攻击，踩到楼梯进入更深一层。',
-            ],
         ];
 
         $quizzes = [
