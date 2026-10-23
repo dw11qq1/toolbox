@@ -31,13 +31,13 @@ class SmokeTest extends TestCase
         }
     }
 
-    /* ---------- 工具（18 个） ---------- */
+    /* ---------- 工具（21 个） ---------- */
 
     public function test_全部工具页正常(): void
     {
         $this->seedContent();
         foreach ([
-            'json-formatter', 'timestamp-converter', 'base64-encoder',
+            'json-formatter', 'timestamp-converter', 'regex-tester', 'cron-parser', 'natural-time', 'base64-encoder',
             'social-insurance', 'loan-calculator', 'compound-calculator',
             'rate-converter', 'sharpe-calculator',
             'sortino-calculator', 'calmar-calculator', 'profit-loss-ratio',

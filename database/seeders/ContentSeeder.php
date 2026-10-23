@@ -73,6 +73,18 @@ class ContentSeeder extends Seeder
                 'name' => '时间戳转换', 'slug' => 'timestamp-converter', 'category' => '开发', 'sort_order' => 2,
                 'description' => 'Unix 时间戳与日期互转，支持秒/毫秒，附当前时间戳实时刷新。',
             ],
+            [
+                'name' => '正则测试器', 'slug' => 'regex-tester', 'category' => '开发', 'sort_order' => 3,
+                'description' => '正则实时高亮匹配，列出位置与捕获分组，附邮箱/手机号/URL 等常用速查。',
+            ],
+            [
+                'name' => 'Cron 表达式解析', 'slug' => 'cron-parser', 'category' => '开发', 'sort_order' => 4,
+                'description' => '把 cron 表达式翻译成人话，预览最近 5 次执行时间，配宝塔定时任务不再抓瞎。',
+            ],
+            [
+                'name' => '时间戳自然语言', 'slug' => 'natural-time', 'category' => '开发', 'sort_order' => 5,
+                'description' => '贴时间戳或选日期，翻译成「3 天后」「昨天」这样的人话，附星期、年底倒计时。',
+            ],
             // 转换
             [
                 'name' => 'Base64 编解码', 'slug' => 'base64-encoder', 'category' => '转换', 'sort_order' => 1,
