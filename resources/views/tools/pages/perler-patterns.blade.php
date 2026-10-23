@@ -6,35 +6,72 @@
       <option value="20">20 × 20</option>
       <option value="29" selected>29 × 29（标准大方板）</option>
       <option value="40">40 × 40（拼两块）</option>
+      <option value="58">58 × 58（拼四块）</option>
     </select>
     <button class="btn" id="pbHeart" style="padding:0.35rem 0.9rem">示例：爱心</button>
-    <button class="btn" id="pbClear" style="padding:0.35rem 0.9rem">清空</button>
-    <button class="btn" id="pbSave" style="padding:0.35rem 0.9rem">保存到本地</button>
-    <button class="btn" id="pbLoad" style="padding:0.35rem 0.9rem">载入</button>
-    <button class="btn" id="pbExport" style="padding:0.35rem 0.9rem">导出 PNG</button>
+    <button class="btn" id="pbClear" style="padding:0.35rem 0.9rem">清空当前图层</button>
   </div>
 </div>
+
 <div class="field">
-  <span class="fl">拼豆色板（点击选色 · 当前：<b id="pbCurName">大红</b>）</span>
+  <span class="fl">照片转图纸（自动匹配 MARD 221 色卡）</span>
+  <div class="btn-row" style="gap:0.8rem;flex-wrap:wrap;align-items:center">
+    <label style="font-size:0.85rem;cursor:pointer">
+      <input type="file" id="pbFile" accept="image/*" style="font-size:0.8rem">
+    </label>
+    <label style="font-size:0.8rem;color:var(--ink-2);display:flex;align-items:center;gap:0.3rem">
+      <input type="checkbox" id="pbDither"> 抖动算法（照片更细腻）
+    </label>
+    <label style="font-size:0.8rem;color:var(--ink-2);display:flex;align-items:center;gap:0.3rem">
+      <input type="checkbox" id="pbWhiteOut"> 接近白色不加豆（做镂空）
+    </label>
+  </div>
+  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">照片会缩到当前底板尺寸并逐格匹配最接近的 MARD 色号，结果写入<b>当前图层</b>。像素画/Logo 建议关抖动，照片开抖动更自然。</p>
+</div>
+
+<div class="field">
+  <span class="fl">图层（点豆只影响选中图层；底层半透明显示方便对照）</span>
+  <div class="btn-row" id="pbLayers" style="gap:0.4rem;flex-wrap:wrap"></div>
+</div>
+
+<div class="field">
+  <span class="fl">MARD 色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
   <div id="pbPalette"></div>
 </div>
+
 <div class="field">
   <span class="fl">图纸（按住拖动点豆 · 右键擦除）</span>
   <canvas id="pbCanvas" style="border:1px solid var(--line);border-radius:8px;touch-action:none;cursor:crosshair;max-width:100%"></canvas>
 </div>
+
 <div class="field" id="pbCountWrap" style="display:none">
-  <span class="fl">用豆清单（按颜色统计，照着买豆就行）</span>
-  <div id="pbCounts"></div>
+  <span class="fl">用豆清单（照着买豆就行，建议多备 5%~10% 损耗）</span>
+  <div id="pbCountsActive" style="margin-top:0.3rem"></div>
+  <span class="fl" id="pbTotalTitle" style="margin-top:0.8rem;display:none">全部图层合计</span>
+  <div id="pbCountsTotal"></div>
+</div>
+
+<div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
+  <button class="btn" id="pbSave" style="padding:0.35rem 0.9rem">保存到本地</button>
+  <button class="btn" id="pbLoad" style="padding:0.35rem 0.9rem">载入</button>
+  <button class="btn" id="pbExport" style="padding:0.35rem 0.9rem">导出 PNG</button>
+  <button class="btn" id="pbPdf" style="padding:0.35rem 0.9rem">导出 PDF（图纸 + 用量清单）</button>
 </div>
 
 <style>
-#pbPalette{display:flex;flex-wrap:wrap;gap:6px;max-width:420px}
-.pb-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid rgba(0,0,0,0.12);box-sizing:border-box;transition:transform .12s}
-.pb-swatch:hover{transform:scale(1.15)}
-.pb-swatch.on{border:2px solid var(--ink);transform:scale(1.15);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
-#pbCounts{display:flex;flex-wrap:wrap;gap:0.5rem}
-.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:0.25rem 0.7rem 0.25rem 0.35rem}
-.pb-count i{width:16px;height:16px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,0.12)}
+#pbPalette{max-width:560px}
+.pb-group{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.7rem;color:var(--ink-3);width:26px;padding-top:5px;flex-shrink:0}
+.pb-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:1px solid rgba(0,0,0,0.15);box-sizing:border-box;transition:transform .1s}
+.pb-swatch:hover{transform:scale(1.2)}
+.pb-swatch.on{border:2px solid var(--ink);transform:scale(1.2);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
+.pb-layer{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;padding:0.3rem 0.7rem;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);color:var(--ink-2)}
+.pb-layer.on{border-color:var(--ink);color:var(--ink);font-weight:600}
+.pb-layer i{font-style:normal;cursor:pointer;opacity:0.7}
+.pb-layer i:hover{opacity:1}
+#pbCountsActive,#pbCountsTotal{display:flex;flex-wrap:wrap;gap:0.4rem}
+.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:0.2rem 0.65rem 0.2rem 0.3rem}
+.pb-count i{width:16px;height:16px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,0.15)}
 .pb-count b{font-family:var(--font-mono)}
 </style>
 
@@ -42,36 +79,50 @@
 (function(){
   var $ = function(id){ return document.getElementById(id); };
 
-  // 常见拼豆色号（近似色）
-  var COLORS = [
-    ['白色', '#ffffff'], ['奶油', '#f2ead8'], ['浅黄', '#ffe08a'], ['明黄', '#ffd21f'],
-    ['橙', '#ff9a3c'], ['橘红', '#ff6b35'], ['大红', '#e63946'], ['深红', '#b3202e'],
-    ['粉', '#ff9ecb'], ['桃粉', '#ff7fa5'], ['玫红', '#e04f8f'], ['浅紫', '#c5a3f5'],
-    ['紫', '#9b5de5'], ['深紫', '#6a2ca0'], ['浅蓝', '#9bd4ff'], ['天蓝', '#35a7ff'],
-    ['深蓝', '#1d6fd1'], ['藏青', '#274690'], ['浅绿', '#a8e6a1'], ['草绿', '#3ec46d'],
-    ['深绿', '#1f7a4d'], ['棕', '#8d5a3a'], ['深棕', '#5b3a24'], ['浅灰', '#b0b6c0'],
-    ['深灰', '#6b7280'], ['黑', '#22252a'],
-  ];
+  /* ---------- MARD 221 色卡 ---------- */
+  var MARD = (function(){
+    var raw =
+      'A1 F9F0CD|A2 FBFBD4|A3 FAFC9F|A4 FFE953|A5 F4D738|A6 FDAD49|A7 FF7C2F|A8 EACA49|A9 FF995A|A10 FF9D55|A11 FFDD99|A12 FCB58F|A13 FFBB59|A14 FF6D40|A15 FDFF44|A16 FEF9AE|A17 FFE36E|A18 FECF98|A19 FD7B72|A20 EFCD67|A21 FFE395|A22 FFF3A4|A23 F3D5BF|A24 FBF8C9|A25 FFD67D|A26 FFBB27|' +
+      'B1 E6EE32|B2 5BE419|B3 7CEE9D|B4 1EF942|B5 00BD35|B6 5AE8BA|B7 03AC88|B8 029D26|B9 26523A|B10 95D3C2|B11 5D722A|B12 156F40|B13 D9F794|B14 ADE945|B15 2E5132|B16 C6ED9C|B17 9BB13A|B18 E6EE49|B19 25B88C|B20 C2F0CC|B21 146A6B|B22 0B3C43|B23 303921|B24 EEFCA5|B25 4E846D|B26 8C7A36|B27 D1DCC1|B28 9EE5B9|B29 C5E254|B30 ECFBD0|B31 C4E6B5|B32 9BAB5A|' +
+      'C1 E8FFE7|C2 BCF9F6|C3 A0E2FB|C4 42CCFF|C5 01ACEB|C6 50A9F0|C7 0188D3|C8 1054C0|C9 314BCA|C10 3EBCE2|C11 03B9B9|C12 1C334D|C13 CDE8FF|C14 D5FDFF|C15 23C4C6|C16 1757A8|C17 50D3EC|C18 1C3344|C19 1787A2|C20 0082BE|C21 BEDDFF|C22 67B4BE|C23 C2DCEB|C24 7DC4FF|C25 A9E5E5|C26 2F99B3|C27 EBF5FC|C28 BBCFED|C29 4B5BA3|' +
+      'D1 AEB4F2|D2 858EDD|D3 3054AF|D4 182A84|D5 B843C5|D6 AC7BDE|D7 6E399A|D8 E2D3FF|D9 D5B9F8|D10 361B50|D11 B9BAE1|D12 DE9AD4|D13 B90295|D14 8B279B|D15 2F1F90|D16 E2E1EE|D17 C4D4F6|D18 A45EC7|D19 D8C3D7|D20 9C32B2|D21 9A009B|D22 333995|D23 EADAFC|D24 7786E5|D25 484FC7|D26 E9C3F6|' +
+      'E1 FDD3CC|E2 FECDDF|E3 FF97C3|E4 E8649E|E5 F551A2|E6 FF346B|E7 C63578|E8 FFDBE9|E9 E970CC|E10 D33893|E11 FCDDD2|E12 FFA1C5|E13 B6006D|E14 FFD1BA|E15 F2CFD0|E16 FFECDE|E17 FFE2EA|E18 FFC9D6|E19 FFD2E7|E20 D8C7D1|E21 BD9DA1|E22 CC78A7|E23 937A8D|E24 F6E4F9|' +
+      'F1 FD957B|F2 FC3D45|F3 F74941|F4 FC283C|F5 D80127|F6 B0443D|F7 971937|F8 BC0127|F9 E2677A|F10 A74D22|F11 6F201F|F12 FD4D6A|F13 DD422F|F14 FFA9AD|F15 C80020|F16 FFD9C8|F17 F79B71|F18 D37C46|F19 C1444A|F20 CD9391|F21 F4B1B4|F22 FFD0CB|F23 F57E66|F24 FCC1C4|F25 E54B4F|' +
+      'G1 FFE2CE|G2 FFCAAA|G3 F4C3A5|G4 E1B383|G5 ED9435|G6 F59734|G7 9D5B3E|G8 592A21|G9 E6B483|G10 C88135|G11 E0C593|G12 EBBB83|G13 B7714A|G14 8D614C|G15 FCF9E0|G16 F2D9BA|G17 56403C|G18 FFE4CC|G19 E1943A|G20 A94023|G21 CB8E77|' +
+      'H1 E2E2E2|H2 FFFFFF|H3 B3B3B3|H4 868686|H5 474747|H6 2C2C2C|H7 000000|H8 E7D6DB|H9 E4E7E3|H10 EEE9EA|H11 CECDD5|H12 FFF5ED|H13 F3E1C9|H14 CFD7D3|H15 98A6A8|H16 3B2F23|H17 F1EDED|H18 FFFDF0|H19 F6EFE2|H20 949FA3|H21 F7F3E4|H22 CACAD5|H23 9A9D94|' +
+      'M1 BCC6B8|M2 8AA385|M3 697D80|M4 DACEBE|M5 D0CCAA|M6 B0A782|M7 B4A497|M8 B38281|M9 A58767|M10 C5B1BC|M11 9F7494|M12 644749|M13 D19066|M14 C77361|M15 757D7B';
+    return raw.split('|').map(function(s){
+      var p = s.split(' ');
+      return ['MARD ' + p[0], '#' + p[1]];
+    });
+  })();
+  var GROUPS = [['A','黄·橙'],['B','绿'],['C','蓝·青'],['D','紫'],['E','粉'],['F','红'],['G','肤·棕'],['H','黑·白·灰'],['M','莫兰迪']];
+  var RGB = MARD.map(function(c){
+    var h = c[1];
+    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+  });
 
+  /* ---------- 状态 ---------- */
   var rows = 29, cols = 29, cell = 18;
-  var grid = [];
-  var current = '#e63946';
+  var layers = [];      // [{name, visible, grid}]
+  var active = 0;
+  var current = '#FC3D45';
+  var curName = 'MARD F2';
   var canvas = $('pbCanvas'), ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 1;
   var drawing = false, eraseMode = false;
 
-  function initGrid(r, c, keep){
-    var old = grid;
-    grid = [];
-    for(var y = 0; y < r; y++){
-      var rowArr = [];
-      for(var x = 0; x < c; x++){
-        rowArr.push(keep && old[y] && old[y][x] ? old[y][x] : '');
-      }
-      grid.push(rowArr);
-    }
+  function newGrid(r, c){
+    var g = [];
+    for(var y = 0; y < r; y++){ g.push(new Array(c).fill('')); }
+    return g;
+  }
+  function addLayer(name){
+    layers.push({ name: name || ('图层 ' + (layers.length + 1)), visible: true, grid: newGrid(rows, cols) });
+    active = layers.length - 1;
   }
 
+  /* ---------- 画布 ---------- */
   function setupCanvas(){
     canvas.width = cols * cell * dpr;
     canvas.height = rows * cell * dpr;
@@ -80,9 +131,33 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
+  function drawBeads(c2, grid, px){
+    var r = px * 0.42;
+    for(var y = 0; y < rows; y++){
+      for(var x = 0; x < cols; x++){
+        var color = grid[y][x];
+        if(!color) continue;
+        var cx = x * px + px / 2, cy = y * px + px / 2;
+        c2.beginPath();
+        c2.arc(cx, cy, r, 0, Math.PI * 2);
+        c2.fillStyle = color; c2.fill();
+        c2.lineWidth = Math.max(1, px * 0.05);
+        c2.strokeStyle = 'rgba(0,0,0,0.15)'; c2.stroke();
+        c2.beginPath();
+        c2.arc(cx - r * 0.3, cy - r * 0.3, r * 0.25, 0, Math.PI * 2);
+        c2.fillStyle = 'rgba(255,255,255,0.35)'; c2.fill();
+      }
+    }
+  }
+
   function draw(){
     ctx.fillStyle = '#fdfdfb';
     ctx.fillRect(0, 0, cols * cell, rows * cell);
+    layers.forEach(function(layer, i){
+      ctx.globalAlpha = (i === active || !layers[active]) ? 1 : 0.35;
+      if(layer.visible) drawBeads(ctx, layer.grid, cell);
+    });
+    ctx.globalAlpha = 1;
     ctx.strokeStyle = 'rgba(0,0,0,0.07)';
     ctx.lineWidth = 1;
     for(var x = 0; x <= cols; x++){
@@ -91,65 +166,58 @@
     for(var y = 0; y <= rows; y++){
       ctx.beginPath(); ctx.moveTo(0, y * cell + 0.5); ctx.lineTo(cols * cell, y * cell + 0.5); ctx.stroke();
     }
-    var r = cell * 0.42;
-    for(var gy = 0; gy < rows; gy++){
-      for(var gx = 0; gx < cols; gx++){
-        var color = grid[gy][gx];
-        if(!color) continue;
-        var cx = gx * cell + cell / 2, cy = gy * cell + cell / 2;
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-        ctx.stroke();
-        // 高光
-        ctx.beginPath();
-        ctx.arc(cx - r * 0.3, cy - r * 0.3, r * 0.25, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,0.35)';
-        ctx.fill();
-      }
-    }
-    countBeads();
+    renderCounts(); renderLayers();
   }
 
-  function countBeads(){
-    var tally = {};
-    var total = 0;
-    for(var y = 0; y < rows; y++){
-      for(var x = 0; x < cols; x++){
-        var c = grid[y][x];
-        if(c){ tally[c] = (tally[c] || 0) + 1; total++; }
-      }
-    }
-    var wrap = $('pbCountWrap'), box = $('pbCounts');
-    if(!total){ wrap.style.display = 'none'; return; }
+  /* ---------- 图层栏 ---------- */
+  function renderLayers(){
     var html = '';
-    Object.keys(tally).forEach(function(hex){
-      var name = '色 ' + hex.toUpperCase();
-      for(var i = 0; i < COLORS.length; i++){ if(COLORS[i][1] === hex) name = COLORS[i][0]; }
-      html += '<span class="pb-count"><i style="background:' + hex + '"></i>' + name + ' <b>× ' + tally[hex] + '</b></span>';
+    layers.forEach(function(l, i){
+      html += '<span class="pb-layer' + (i === active ? ' on' : '') + '" data-i="' + i + '">' +
+        '<i class="pb-eye" data-i="' + i + '">' + (l.visible ? '👁' : '🚫') + '</i> ' + l.name +
+        (layers.length > 1 ? '<i class="pb-del" data-i="' + i + '" title="删除该图层">✕</i>' : '') +
+        '</span>';
     });
-    box.innerHTML = html;
-    wrap.style.display = 'block';
+    html += '<span class="pb-layer" id="pbAddLayer">＋ 新建图层</span>';
+    $('pbLayers').innerHTML = html;
   }
+  $('pbLayers').addEventListener('click', function(e){
+    if(e.target.id === 'pbAddLayer'){ addLayer(); draw(); return; }
+    var eye = e.target.closest('.pb-eye');
+    if(eye){ var i = +eye.getAttribute('data-i'); layers[i].visible = !layers[i].visible; draw(); return; }
+    var del = e.target.closest('.pb-del');
+    if(del){ var j = +del.getAttribute('data-i'); layers.splice(j, 1); active = Math.max(0, Math.min(active, layers.length - 1)); draw(); return; }
+    var chip = e.target.closest('.pb-layer');
+    if(chip && chip.hasAttribute('data-i')){ active = +chip.getAttribute('data-i'); draw(); }
+  });
 
+  /* ---------- 色板 ---------- */
   function buildPalette(){
     var html = '';
-    COLORS.forEach(function(c, i){
-      html += '<span class="pb-swatch' + (c[1] === current ? ' on' : '') + '" data-hex="' + c[1] + '" data-name="' + c[0] + '" style="background:' + c[1] + '"></span>';
+    var letter = '';
+    MARD.forEach(function(c){
+      var L = c[0].slice(5, 6);
+      if(L !== letter){
+        if(letter !== '') html += '</div>';
+        var g = GROUPS.filter(function(x){ return x[0] === L; })[0] || [L, ''];
+        html += '<div class="pb-group" data-g="' + L + '"><em>' + g[0] + ' ' + g[1] + '</em>';
+        letter = L;
+      }
+      html += '<span class="pb-swatch" data-hex="' + c[1] + '" data-name="' + c[0] + '" style="background:' + c[1] + '"></span>';
     });
+    html += '</div>';
     $('pbPalette').innerHTML = html;
-    $('pbPalette').addEventListener('click', function(e){
-      var s = e.target.closest('.pb-swatch');
-      if(!s) return;
-      current = s.getAttribute('data-hex');
-      $('pbCurName').textContent = s.getAttribute('data-name');
-      document.querySelectorAll('.pb-swatch').forEach(function(el){ el.classList.toggle('on', el === s); });
-    });
   }
+  $('pbPalette').addEventListener('click', function(e){
+    var s = e.target.closest('.pb-swatch');
+    if(!s) return;
+    current = s.getAttribute('data-hex');
+    curName = s.getAttribute('data-name');
+    $('pbCurName').textContent = curName;
+    document.querySelectorAll('.pb-swatch').forEach(function(el){ el.classList.toggle('on', el === s); });
+  });
 
+  /* ---------- 点豆 ---------- */
   function cellAt(e){
     var rect = canvas.getBoundingClientRect();
     var x = Math.floor((e.clientX - rect.left) / (rect.width / cols));
@@ -157,14 +225,12 @@
     if(x < 0 || y < 0 || x >= cols || y >= rows) return null;
     return [x, y];
   }
-
   function apply(e){
     var pos = cellAt(e);
     if(!pos) return;
-    grid[pos[1]][pos[0]] = (e.buttons === 2 || eraseMode) ? '' : current;
+    layers[active].grid[pos[1]][pos[0]] = (e.buttons === 2 || eraseMode) ? '' : current;
     draw();
   }
-
   canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   canvas.addEventListener('pointerdown', function(e){
     drawing = true; eraseMode = (e.button === 2);
@@ -173,73 +239,257 @@
   canvas.addEventListener('pointermove', function(e){ if(drawing) apply(e); });
   canvas.addEventListener('pointerup', function(){ drawing = false; eraseMode = false; });
 
+  /* ---------- 用量统计 ---------- */
+  function tally(grid){
+    var t = {};
+    for(var y = 0; y < rows; y++){
+      for(var x = 0; x < cols; x++){
+        var c = grid[y][x];
+        if(c) t[c] = (t[c] || 0) + 1;
+      }
+    }
+    return t;
+  }
+  function chipsHtml(t){
+    var keys = Object.keys(t);
+    if(!keys.length) return '<span style="font-size:0.8rem;color:var(--ink-3)">（空）</span>';
+    keys.sort(function(a, b){ return t[b] - t[a]; });
+    var html = '';
+    keys.forEach(function(hex){
+      var name = '色 ' + hex.toUpperCase();
+      for(var i = 0; i < MARD.length; i++){ if(MARD[i][1] === hex){ name = MARD[i][0]; break; } }
+      html += '<span class="pb-count"><i style="background:' + hex + '"></i>' + name + ' <b>× ' + t[hex] + '</b></span>';
+    });
+    return html;
+  }
+  function renderCounts(){
+    var tActive = tally(layers[active].grid);
+    var total = {};
+    layers.forEach(function(l){
+      if(!l.visible) return;
+      var t = tally(l.grid);
+      Object.keys(t).forEach(function(k){ total[k] = (total[k] || 0) + t[k]; });
+    });
+    var hasMulti = layers.length > 1;
+    $('pbCountWrap').style.display = 'block';
+    $('pbCountsActive').innerHTML = chipsHtml(tActive);
+    $('pbTotalTitle').style.display = hasMulti ? 'block' : 'none';
+    $('pbCountsTotal').innerHTML = hasMulti ? chipsHtml(total) : '';
+  }
+
+  /* ---------- 尺寸 / 示例 / 清空 ---------- */
   $('pbSize').addEventListener('change', function(){
     var n = parseInt(this.value);
+    var old = layers.map(function(l){ return l.grid; });
+    var or = rows, oc = cols;
     rows = cols = n;
-    initGrid(rows, cols, true);
+    layers.forEach(function(l, i){
+      var g = newGrid(rows, cols);
+      for(var y = 0; y < Math.min(rows, or); y++){
+        for(var x = 0; x < Math.min(cols, oc); x++){
+          if(old[i] && old[i][y]) g[y][x] = old[i][y][x] || '';
+        }
+      }
+      l.grid = g;
+    });
     setupCanvas(); draw();
   });
 
   $('pbClear').addEventListener('click', function(){
-    initGrid(rows, cols, false); draw();
+    layers[active].grid = newGrid(rows, cols); draw();
   });
 
   $('pbHeart').addEventListener('click', function(){
-    initGrid(rows, cols, false);
+    var g = newGrid(rows, cols);
     var s = 3.1, c0 = (cols - 1) / 2, r0 = (rows - 1) / 2 + 1.2;
     for(var y = 0; y < rows; y++){
       for(var x = 0; x < cols; x++){
         var dx = (x - c0) / cols * s;
         var dy = -(y - r0) / rows * s;
         var v = Math.pow(dx * dx + dy * dy - 0.32, 3) - dx * dx * Math.pow(dy, 3);
-        if(v <= 0) grid[y][x] = '#e63946';
+        if(v <= 0) g[y][x] = '#FC3D45';
       }
     }
-    draw();
+    layers[active].grid = g; draw();
   });
 
+  /* ---------- 照片转图纸 ---------- */
+  function nearest(r, g, b){
+    var best = 0, bestD = Infinity;
+    for(var i = 0; i < RGB.length; i++){
+      var dr = r - RGB[i][0], dg = g - RGB[i][1], db = b - RGB[i][2];
+      var d = dr * dr * 2 + dg * dg * 4 + db * db * 3;
+      if(d < bestD){ bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  $('pbFile').addEventListener('change', function(){
+    var file = this.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var img = new Image();
+      img.onload = function(){ convert(img); };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+
+  function convert(img){
+    var off = document.createElement('canvas');
+    off.width = cols; off.height = rows;
+    var c2 = off.getContext('2d');
+    c2.drawImage(img, 0, 0, cols, rows);          // 缩小即面积平均降采样
+    var data = c2.getImageData(0, 0, cols, rows).data;
+    var dither = $('pbDither').checked;
+    var whiteOut = $('pbWhiteOut').checked;
+
+    var g = newGrid(rows, cols);
+    var buf = new Float32Array(cols * rows * 3);
+    for(var i = 0; i < cols * rows; i++){
+      buf[i * 3] = data[i * 4];
+      buf[i * 3 + 1] = data[i * 4 + 1];
+      buf[i * 3 + 2] = data[i * 4 + 2];
+    }
+
+    for(var y = 0; y < rows; y++){
+      for(var x = 0; x < cols; x++){
+        var idx = y * cols + x;
+        var a = data[idx * 4 + 3];
+        var r = buf[idx * 3], gg = buf[idx * 3 + 1], b = buf[idx * 3 + 2];
+        if(a < 128 || (whiteOut && r > 245 && gg > 245 && b > 245)) continue;
+
+        var ni = nearest(Math.round(r), Math.round(gg), Math.round(b));
+        g[y][x] = MARD[ni][1];
+
+        if(dither){
+          var er = r - RGB[ni][0], eg = gg - RGB[ni][1], eb = b - RGB[ni][2];
+          var spread = function(nx, ny, f){
+            if(nx < 0 || nx >= cols || ny < 0 || ny >= rows) return;
+            var j = ny * cols + nx;
+            buf[j * 3] += er * f; buf[j * 3 + 1] += eg * f; buf[j * 3 + 2] += eb * f;
+          };
+          spread(x + 1, y, 7 / 16);
+          spread(x - 1, y + 1, 3 / 16);
+          spread(x, y + 1, 5 / 16);
+          spread(x + 1, y + 1, 1 / 16);
+        }
+      }
+    }
+    layers[active].grid = g;
+    draw();
+  }
+
+  /* ---------- 保存 / 载入 ---------- */
   $('pbSave').addEventListener('click', function(){
     try{
-      localStorage.setItem('toolbox_perler', JSON.stringify({ r: rows, c: cols, g: grid }));
+      localStorage.setItem('toolbox_perler', JSON.stringify({ r: rows, c: cols, layers: layers, active: active }));
       $('pbCurName').textContent = '已保存 ✓';
-      setTimeout(function(){ $('pbCurName').textContent = '大红'; }, 1500);
+      setTimeout(function(){ $('pbCurName').textContent = curName; }, 1500);
     }catch(err){}
   });
-
   $('pbLoad').addEventListener('click', function(){
     try{
-      var data = JSON.parse(localStorage.getItem('toolbox_perler'));
-      if(!data || !data.g) return;
-      rows = data.r; cols = data.c; grid = data.g;
+      var d = JSON.parse(localStorage.getItem('toolbox_perler'));
+      if(!d) return;
+      rows = cols = d.r;
+      layers = d.layers || [{ name: '图层 1', visible: true, grid: d.g || newGrid(d.r, d.c) }];
+      active = Math.min(d.active || 0, layers.length - 1);
       $('pbSize').value = String(rows);
       setupCanvas(); draw();
     }catch(err){}
   });
 
-  $('pbExport').addEventListener('click', function(){
+  /* ---------- 导出 PNG ---------- */
+  function patternCanvas(px){
     var out = document.createElement('canvas');
-    var px = 24;
     out.width = cols * px; out.height = rows * px;
     var c2 = out.getContext('2d');
     c2.fillStyle = '#ffffff'; c2.fillRect(0, 0, out.width, out.height);
-    var r = px * 0.42;
-    for(var y = 0; y < rows; y++){
-      for(var x = 0; x < cols; x++){
-        var color = grid[y][x];
-        if(!color) continue;
-        c2.beginPath();
-        c2.arc(x * px + px / 2, y * px + px / 2, r, 0, Math.PI * 2);
-        c2.fillStyle = color; c2.fill();
-        c2.lineWidth = 1.5; c2.strokeStyle = 'rgba(0,0,0,0.15)'; c2.stroke();
-      }
-    }
+    layers.forEach(function(l){ if(l.visible) drawBeads(c2, l.grid, px); });
+    return out;
+  }
+
+  $('pbExport').addEventListener('click', function(){
     var a = document.createElement('a');
     a.download = 'perler-' + cols + 'x' + rows + '.png';
-    a.href = out.toDataURL('image/png');
+    a.href = patternCanvas(24).toDataURL('image/png');
     a.click();
   });
 
-  initGrid(rows, cols, false);
+  /* ---------- 导出 PDF ---------- */
+  function loadJsPdf(cb){
+    if(window.jspdf && window.jspdf.jsPDF) return cb();
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = cb;
+    s.onerror = function(){ alert('PDF 组件加载失败（需要联网一次），可以先导出 PNG。'); };
+    document.head.appendChild(s);
+  }
+
+  function reportCanvas(){
+    var W = 1240, H = 1754; // A4 @150dpi
+    var rep = document.createElement('canvas');
+    rep.width = W; rep.height = H;
+    var c2 = rep.getContext('2d');
+    c2.fillStyle = '#ffffff'; c2.fillRect(0, 0, W, H);
+
+    c2.fillStyle = '#1c1e22';
+    c2.font = '700 40px "Noto Sans SC", sans-serif';
+    c2.fillText('拼豆图纸 · MARD 色卡', 80, 100);
+    c2.font = '400 22px "Noto Sans SC", sans-serif';
+    c2.fillStyle = '#6b7280';
+    var totalBeads = 0;
+    layers.forEach(function(l){ if(l.visible){ var t = tally(l.grid); Object.keys(t).forEach(function(k){ totalBeads += t[k]; }); } });
+    c2.fillText('底板 ' + cols + ' × ' + rows + '　·　' + layers.length + ' 个图层　·　共 ' + totalBeads + ' 颗豆　·　' + new Date().toLocaleDateString('zh-CN'), 80, 140);
+
+    var pat = patternCanvas(24);
+    var patSize = Math.min(880, W - 160);
+    c2.strokeStyle = '#e5e7eb';
+    c2.strokeRect(78.5, 178.5, patSize + 3, patSize + 3);
+    c2.drawImage(pat, 80, 180, patSize, patSize);
+
+    // 用量清单（合计口径）
+    var total = {};
+    layers.forEach(function(l){
+      if(!l.visible) return;
+      var t = tally(l.grid);
+      Object.keys(t).forEach(function(k){ total[k] = (total[k] || 0) + t[k]; });
+    });
+    var keys = Object.keys(total).sort(function(a, b){ return total[b] - total[a]; });
+    c2.fillStyle = '#1c1e22';
+    c2.font = '700 26px "Noto Sans SC", sans-serif';
+    c2.fillText('用豆清单（全部可见图层合计，建议多备 5%~10% 损耗）', 80, patSize + 260);
+    var colW = (W - 160) / 4;
+    keys.forEach(function(hex, i){
+      var col = i % 4, rowI = Math.floor(i / 4);
+      var bx = 80 + col * colW, by = patSize + 300 + rowI * 34;
+      if(by > H - 40) return;
+      var name = hex.toUpperCase();
+      for(var k = 0; k < MARD.length; k++){ if(MARD[k][1] === hex){ name = MARD[k][0]; break; } }
+      c2.beginPath();
+      c2.arc(bx + 10, by - 6, 9, 0, Math.PI * 2);
+      c2.fillStyle = hex; c2.fill();
+      c2.strokeStyle = 'rgba(0,0,0,0.2)'; c2.lineWidth = 1; c2.stroke();
+      c2.fillStyle = '#374151';
+      c2.font = '400 19px "Noto Sans SC", sans-serif';
+      c2.fillText(name + '  × ' + total[hex], bx + 26, by);
+    });
+    return rep;
+  }
+
+  $('pbPdf').addEventListener('click', function(){
+    loadJsPdf(function(){
+      var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+      doc.addImage(reportCanvas().toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 595.28, 841.89);
+      doc.save('perler-' + cols + 'x' + rows + '.pdf');
+    });
+  });
+
+  /* ---------- 启动 ---------- */
+  addLayer();
   buildPalette();
   setupCanvas();
   draw();
@@ -248,6 +498,6 @@
 
 <div class="explain">
   <h3>玩法 & 怎么用</h3>
-  <p class="ex-formula">用豆数 = 图纸上该颜色占据的格子数<br>总豆数 = 所有颜色用量之和（建议多备 5%~10% 损耗）</p>
-  <p class="ex-text">拼豆（Perler Beads / 熨斗豆）是把彩色小豆放在带凸点的底板上、用熨斗加热熔合成型的手工。在这里<b>逐格点出图案</b>——可以直接照着喜欢的像素画临摹，也能用「示例：爱心」起手再改造。页面上用的是接近真实市售色号的调色板，画完自动统计<b>每种颜色需要多少颗</b>，照着清单买豆不浪费；「导出 PNG」得到干净的图纸，打印出来铺在底板旁边一格一格对就行。技巧：大面积背景色最后补，熨的时候垫熨斗纸，中温 30 秒左右再压平定型。</p>
+  <p class="ex-formula">用豆数 = 图纸上该色号占据的格子数（多图层自动合计）<br>总豆数 = 各色号用量之和，建议多备 5%~10% 损耗</p>
+  <p class="ex-text">三种用法：<b>① 手画</b>——选色逐格点，拖动连刷，右键擦除；<b>② 照片转图纸</b>——上传照片自动缩到底板尺寸并逐格匹配 MARD 色号，照片开「抖动」用颜色交错骗过人眼更细腻，像素画/Logo 关抖动保持干净，勾「接近白色不加豆」可以做镂空；<b>③ 立体拼豆</b>——用多图层拆分每一层底板，底层半透明显示方便对位，用量清单会给单层和全部合计两套数字。色卡采用 <b>MARD 221 色</b>（A~M 八大色系），导出 PDF 自带图纸和采购清单，直接打印开工。</p>
 </div>

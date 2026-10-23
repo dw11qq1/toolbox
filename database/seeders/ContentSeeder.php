@@ -90,7 +90,7 @@ class ContentSeeder extends Seeder
             // 创作
             [
                 'name' => '拼豆图纸工作室', 'slug' => 'perler-patterns', 'category' => '创作', 'sort_order' => 1,
-                'description' => '在网格上逐格点出像素图案，真实拼豆色号配色，自动统计每种颜色用量，一键导出图纸 PNG。',
+                'description' => '照片一键转拼豆图纸：MARD 221 色卡匹配、抖动算法、多图层编辑、自动用豆统计、导出 PNG/PDF。',
             ],
         ];
 
