@@ -56,11 +56,11 @@ class ContentSeeder extends Seeder
                 'how_to_play' => '点击卡片翻开，每次翻两张，配对成功保持翻开，全部配对即通关。',
             ],
             [
-                'name' => '节奏按键',
-                'slug' => 'rhythm-tap',
+                'name' => '网页音乐盒',
+                'slug' => 'music-box',
                 'sort_order' => 3,
-                'description' => '四轨道下落式音乐游戏，音符落线瞬间按键得分。',
-                'how_to_play' => '音符沿四条轨道下落，落到判定线时按对应键 D / F / J / K（手机点击对应区域），越准分越高。',
+                'description' => '十六步音序器，点亮格子自己作曲，五声音阶随便点都好听，还能一键随机找灵感。',
+                'how_to_play' => '点击格子点亮音符，按播放循环你的旋律；「随机灵感」一键生成一段，速度滑块可调 BPM。',
             ],
         ];
 

@@ -1,7 +1,7 @@
 <div id="reactApp">
   <div class="r-stage" id="rStage">
     <p class="r-big" id="rBig">点击开始</p>
-    <p class="r-sub" id="rSub">5 轮测试 · 红变绿的瞬间点击 · 越快越好</p>
+    <p class="r-sub" id="rSub">5 轮测试 · 橙变蓝的瞬间点击 · 越快越好</p>
   </div>
   <div class="q-result" id="rResult" style="display:none">
     <p class="fl">平均反应速度</p>
@@ -30,7 +30,7 @@
 
   function arm(){
     state = 'waiting';
-    setState('#c0492f', '等待变绿…', '第 ' + (rounds.length + 1) + ' / ' + TOTAL + ' 轮 · 提前点击本轮作废');
+    setState('#f97316', '等待变蓝…', '第 ' + (rounds.length + 1) + ' / ' + TOTAL + ' 轮 · 提前点击本轮作废');
     timer = setTimeout(function(){
       greenAt = performance.now();
       state = 'go';
@@ -51,7 +51,7 @@
       clearTimeout(timer);
       rounds = [];
       state = 'idle';
-      setState('#c0492f', '抢跑啦！重来', '点击任意处重新开始');
+      setState('#f97316', '抢跑啦！重来', '点击任意处重新开始');
       return;
     }
 
@@ -87,7 +87,7 @@
     document.getElementById('rResult').style.display = 'none';
     stage.style.display = 'flex';
     state = 'idle';
-    setState('var(--panel)', '点击开始', '5 轮测试 · 红变绿的瞬间点击 · 越快越好');
+    setState('var(--panel)', '点击开始', '5 轮测试 · 橙变蓝的瞬间点击 · 越快越好');
   });
 })();
 </script>
