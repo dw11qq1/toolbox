@@ -24,7 +24,7 @@
 
 <script>
 (function(){
-  var PUZZLES = [
+  var ALL = [
     {q:'一个男人从十几层的高楼一跃而下，却没有受伤，为什么？',
      c:['他落在了楼下另一栋楼的屋顶上。','他所在楼层比对面楼低。','注意题目没说他跳下后落地了。'],
      a:'他站的是矮楼顶，跳到了相邻更高楼的屋顶上——所以毫发无伤。经典的「跳出思维定势」汤。'},
@@ -50,6 +50,13 @@
      c:['敲门的人没有手。','敲门声其实来自她家。','楼上邻居的房子和她是上下关系。'],
      a:'楼上邻居瘫痪的室友从轮椅上摔下来，爬到门口用头撞门求救，女人住在楼下听到的是自己家天花板方向的「敲门声」，开门自然没人。报警后警察上楼发现了坠瘫的人，而邻居见死不救。'},
   ];
+
+  /* 每局随机打乱顺序 */
+  var PUZZLES = ALL.slice();
+  for(var i = PUZZLES.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = PUZZLES[i]; PUZZLES[i] = PUZZLES[j]; PUZZLES[j] = t;
+  }
 
   var idx = 0, hintUsed = 0, revealed = 0;
   var cluesBox = document.getElementById('spClues');

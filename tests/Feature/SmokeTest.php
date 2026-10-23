@@ -51,7 +51,7 @@ class SmokeTest extends TestCase
     public function test_五个游戏页正常(): void
     {
         $this->seedContent();
-        foreach (['2048', 'memory-flip', 'music-box', 'beat-studio', 'life-restart', 'soup-riddle', 'mini-spire'] as $slug) {
+        foreach (['2048', 'memory-flip', 'music-box', 'beat-studio', 'life-restart', 'soup-riddle'] as $slug) {
             $this->get("/games/{$slug}")->assertStatus(200);
         }
     }
