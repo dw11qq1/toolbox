@@ -13,15 +13,14 @@
   @forelse($tools as $category => $group)
     <section class="group">
       <div class="group-title">{{ $category }}</div>
-      @foreach($group as $tool)
-        <a class="card" href="{{ route('tools.show', $tool) }}">
-          <div class="card-row">
-            <h2>{{ $tool->name }}</h2>
-            <span class="arrow">→</span>
-          </div>
-          <p class="desc">{{ $tool->description }}</p>
-        </a>
-      @endforeach
+      <div class="nav-grid">
+        @foreach($group as $tool)
+          <a class="nav-card" href="{{ route('tools.show', $tool) }}">
+            <span class="nav-card__name">{{ $tool->name }} <span class="arrow">→</span></span>
+            <span class="nav-card__desc">{{ $tool->description }}</span>
+          </a>
+        @endforeach
+      </div>
     </section>
   @empty
     <p class="empty">工具上架中，敬请期待。</p>

@@ -1,14 +1,12 @@
 <div class="pb-world">
 
 <div class="pb-hero">
-  <span class="pb-float pb-f1"></span><span class="pb-float pb-f2"></span><span class="pb-float pb-f3"></span><span class="pb-float pb-f4"></span>
-  <h2 class="pb-title">🧸 拼豆图纸小作坊</h2>
-  <p class="pb-sub">点豆子 · 画可爱 · 拼出属于自己的小世界 ♡</p>
-  <span class="pb-star pb-s1">✦</span><span class="pb-star pb-s2">✦</span><span class="pb-star pb-s3">✧</span>
+  <h2 class="pb-title">拼豆图纸工作室</h2>
+  <p class="pb-sub">把喜欢的画面，一颗一颗拼出来 ♡</p>
 </div>
 
 <div class="field pb-card">
-  <span class="fl">📌 底板尺寸</span>
+  <span class="fl">底板尺寸</span>
   <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
     <select id="pbSize" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
       <option value="16">16 × 16（小底板）</option>
@@ -26,7 +24,7 @@
 </div>
 
 <div class="field pb-card">
-  <span class="fl">🎨 色卡型号</span>
+  <span class="fl">色卡型号</span>
   <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
     <select id="pbCard" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
       <option value="mard" selected>MARD 221 色</option>
@@ -39,7 +37,7 @@
 </div>
 
 <div class="field pb-card">
-  <span class="fl">📷 照片转图纸（自动匹配当前色卡）</span>
+  <span class="fl">照片转图纸（自动匹配当前色卡）</span>
   <div class="btn-row" style="gap:0.8rem;flex-wrap:wrap;align-items:center">
     <input type="file" id="pbFile" accept="image/*" style="font-size:0.8rem">
     <label style="font-size:0.8rem;color:var(--ink-2);display:flex;align-items:center;gap:0.3rem">
@@ -53,17 +51,17 @@
 </div>
 
 <div class="field pb-card">
-  <span class="fl">🥞 图层（点豆只影响选中图层；底层半透明显示方便对照）</span>
+  <span class="fl">图层（点豆只影响选中图层；底层半透明显示方便对照）</span>
   <div class="btn-row" id="pbLayers" style="gap:0.4rem;flex-wrap:wrap"></div>
 </div>
 
 <div class="field pb-card">
-  <span class="fl">🧸 色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
+  <span class="fl">色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
   <div id="pbPalette"></div>
 </div>
 
 <div class="field pb-card">
-  <span class="fl">🧩 图纸（按住拖动点豆 · 右键擦除）
+  <span class="fl">图纸（按住拖动点豆 · 右键擦除）
     <span style="float:right;display:inline-flex;gap:0.3rem;align-items:center">
       <button class="btn" id="pbZoomOut" style="padding:0.1rem 0.6rem;font-size:0.85rem">−</button>
       <span id="pbZoomLabel" style="font-size:0.75rem;color:var(--ink-3);font-family:var(--font-mono)">18px</span>
@@ -77,7 +75,7 @@
 </div>
 
 <div class="field pb-card" id="pbCountWrap" style="display:none">
-  <span class="fl">🛒 用豆清单（照着买豆就行，建议多备 5%~10% 损耗）</span>
+  <span class="fl">用豆清单（照着买豆就行，建议多备 5%~10% 损耗）</span>
   <div id="pbCountsActive" style="margin-top:0.3rem"></div>
   <span class="fl" id="pbTotalTitle" style="margin-top:0.8rem;display:none">全部图层合计</span>
   <div id="pbCountsTotal"></div>
@@ -92,121 +90,102 @@
 </div>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
-
-/* ============ 拼豆小岛 · 二次元可爱风（独立于全站风格） ============ */
+/* ============ 拼豆小岛 · 柔和少女风（低饱和玫瑰 × 雾紫，独立于全站） ============ */
 .pb-world{
-  --pb-pink:#ff7fae; --pb-pink-deep:#f0568f; --pb-lav:#b79cff;
-  --pb-mint:#8fe0c6; --pb-lemon:#ffe08a; --pb-plum:#5c3a52; --pb-plum-2:#96708a;
+  --pb-rose:#d97a9e; --pb-rose-deep:#c05c85; --pb-mauve:#9d87c9;
+  --pb-plum:#4f3a48; --pb-plum-2:#8d7385;
   position:relative;
-  background:linear-gradient(160deg,#fff5fa 0%,#fdf0f7 45%,#f3edff 100%);
-  border:1px solid #ffd3e6;
-  border-radius:24px;
-  padding:1.6rem 1.5rem 1.4rem;
+  background:linear-gradient(165deg,#fdf8fa 0%,#faf5f9 55%,#f7f4fb 100%);
   background-image:
-    radial-gradient(#ffd6e8 1.6px, transparent 1.6px),
-    radial-gradient(#e3d8ff 1.6px, transparent 1.6px);
-  background-size:34px 34px;
-  background-position:0 0, 17px 17px;
-  box-shadow:0 10px 34px rgba(255,143,183,0.16);
+    radial-gradient(#f5e4ec 1.4px, transparent 1.4px),
+    radial-gradient(#ece5f7 1.4px, transparent 1.4px);
+  background-size:36px 36px;
+  background-position:0 0, 18px 18px;
+  border:1px solid #f0dbe5;
+  border-radius:20px;
+  padding:1.5rem 1.4rem 1.3rem;
+  box-shadow:0 8px 28px rgba(190,120,150,0.10);
 }
 
-/* ---- 顶部横幅 ---- */
+/* ---- 顶部横幅：安静的粉雾渐变 ---- */
 .pb-hero{
   position:relative;overflow:hidden;
-  background:linear-gradient(120deg,#ffb7d5,#d9c6ff 60%,#bfe9ff);
-  border:2px solid #fff;border-radius:18px;
-  padding:1.3rem 1.4rem 1.15rem;
-  margin-bottom:1.4rem;
-  box-shadow:0 6px 20px rgba(240,86,143,0.18);
+  background:linear-gradient(120deg,#f8dce8,#eadef6 55%,#dce8f6);
+  border:1px solid #fff;border-radius:14px;
+  padding:1.15rem 1.35rem 1.05rem;
+  margin-bottom:1.25rem;
+  box-shadow:0 4px 16px rgba(190,120,150,0.12);
 }
-.pb-hero::after{content:'';position:absolute;inset:0;border-radius:16px;
-  background-image:radial-gradient(rgba(255,255,255,0.55) 1.8px, transparent 1.8px);
-  background-size:22px 22px;pointer-events:none}
-.pb-title{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;font-size:1.65rem;color:#fff;
-  letter-spacing:0.06em;margin:0;text-shadow:0 2px 0 rgba(240,86,143,0.35),0 4px 12px rgba(240,86,143,0.3);position:relative;z-index:1}
-.pb-sub{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;font-size:0.95rem;color:#7a4a68;margin:0.35rem 0 0;position:relative;z-index:1}
-.pb-star{position:absolute;font-size:1rem;color:#fff;opacity:0.9;animation:pbTwinkle 2.4s ease-in-out infinite}
-.pb-s1{top:14px;right:56px}
-.pb-s2{top:44px;right:110px;font-size:0.7rem;animation-delay:0.8s}
-.pb-s3{bottom:14px;right:34px;animation-delay:1.5s}
-@keyframes pbTwinkle{0%,100%{opacity:0.25;transform:scale(0.8)}50%{opacity:1;transform:scale(1.15)}}
-.pb-float{position:absolute;border-radius:38%;opacity:0.85;animation:pbFloat 5s ease-in-out infinite}
-.pb-f1{width:18px;height:18px;background:#ff9fca;top:-6px;left:24%;animation-delay:0s}
-.pb-f2{width:12px;height:12px;background:#fff;bottom:-4px;left:58%;animation-delay:1.2s}
-.pb-f3{width:10px;height:10px;background:#ffe08a;top:18px;left:78%;animation-delay:2.1s}
-.pb-f4{width:14px;height:14px;background:#bfe3ff;bottom:6px;left:38%;animation-delay:3s}
-@keyframes pbFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-9px) rotate(14deg)}}
+.pb-hero::after{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,0.5) 1.5px, transparent 1.5px);
+  background-size:26px 26px;pointer-events:none}
+.pb-title{font-size:1.4rem;font-weight:700;letter-spacing:0.05em;color:var(--pb-plum);margin:0;position:relative;z-index:1}
+.pb-sub{font-size:0.88rem;color:var(--pb-plum-2);margin:0.3rem 0 0;letter-spacing:0.03em;position:relative;z-index:1}
 
-/* ---- 白色软糖卡片 ---- */
+/* ---- 白色卡片 ---- */
 .pb-world .pb-card{
-  background:#fff;border:1.5px solid #ffd9e8;border-radius:18px;
-  padding:0.95rem 1.05rem 1rem;margin-bottom:1rem;
-  box-shadow:0 4px 14px rgba(255,143,183,0.1);
+  background:#fff;border:1px solid #f0dbe5;border-radius:14px;
+  padding:0.9rem 1rem 0.95rem;margin-bottom:0.9rem;
+  box-shadow:0 2px 10px rgba(190,120,150,0.07);
 }
 .pb-world .pb-card>.fl{
-  display:inline-block;font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;
-  font-size:0.92rem;color:var(--pb-plum);letter-spacing:0.04em;
-  background:linear-gradient(120deg,#fff0f6,#f6f0ff);
-  border:1.5px dashed #ffb1cd;border-radius:12px;
-  padding:0.22rem 0.75rem;margin-bottom:0.7rem;
-  transform:rotate(-1.2deg);
-  transition:transform 180ms ease;
+  display:inline-block;font-size:0.8rem;font-weight:600;color:var(--pb-rose-deep);
+  letter-spacing:0.06em;
+  background:#fdf3f7;border:1px solid #f3dde7;border-radius:999px;
+  padding:0.18rem 0.75rem;margin-bottom:0.65rem;
 }
-.pb-world .pb-card>.fl:hover{transform:rotate(0.6deg) scale(1.02)}
 
-/* ---- 糖果按钮 ---- */
+/* ---- 按钮：统一的玫瑰胶囊 ---- */
 .pb-world .btn{
-  background:linear-gradient(180deg,#ffa7c4,#ff7fae);
-  border:1.5px solid #f76c9d;color:#fff;border-radius:999px;
-  font-weight:600;box-shadow:0 3px 0 rgba(240,86,143,0.35);
+  background:linear-gradient(180deg,#e795b4,#d97a9e);
+  border:1px solid #c96a90;color:#fff;border-radius:999px;
+  font-weight:500;box-shadow:0 2px 0 rgba(192,92,133,0.28);
   transition:transform 140ms ease,box-shadow 140ms ease,filter 140ms ease;
 }
-.pb-world .btn:hover{filter:brightness(1.06);transform:translateY(-2px);box-shadow:0 5px 0 rgba(240,86,143,0.35)}
-.pb-world .btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(240,86,143,0.35)}
-.pb-world .btn:nth-child(even){background:linear-gradient(180deg,#cbb5ff,#b79cff);border-color:#9d7ef0;box-shadow:0 3px 0 rgba(157,126,240,0.35)}
-.pb-world .btn:nth-child(even):hover{box-shadow:0 5px 0 rgba(157,126,240,0.35)}
-.pb-world .btn:nth-child(even):active{box-shadow:0 1px 0 rgba(157,126,240,0.35)}
+.pb-world .btn:hover{filter:brightness(1.05);transform:translateY(-1px);box-shadow:0 3px 6px rgba(192,92,133,0.3)}
+.pb-world .btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(192,92,133,0.28)}
+.pb-world .btn.pb-ghost{background:#fff;color:var(--pb-rose-deep);border:1px solid #eec3d4;box-shadow:none}
 
 /* ---- 表单控件 ---- */
 .pb-world select,.pb-world input[type="number"],.pb-world textarea{
-  border:1.5px solid #ffc9db!important;border-radius:12px!important;background:#fffdfe!important;color:var(--pb-plum)!important}
-.pb-world select:focus,.pb-world textarea:focus{outline:2px solid var(--pb-pink);outline-offset:2px}
-.pb-world input[type="checkbox"]{accent-color:var(--pb-pink);width:15px;height:15px}
-.pb-world .fl b,.pb-world p b{color:var(--pb-pink-deep)}
+  border:1px solid #eed3de!important;border-radius:10px!important;background:#fefcfd!important;color:var(--pb-plum)!important}
+.pb-world select:focus,.pb-world textarea:focus{outline:2px solid var(--pb-rose);outline-offset:2px}
+.pb-world input[type="checkbox"]{accent-color:var(--pb-rose);width:15px;height:15px}
+.pb-world .fl b,.pb-world p b{color:var(--pb-rose-deep)}
 .pb-world p{color:var(--pb-plum-2)}
 .pb-world .fl{color:var(--pb-plum-2)}
+.pb-world .pb-card>.fl{color:var(--pb-rose-deep)}
 
 /* ---- 色板 ---- */
 #pbPalette{max-width:560px}
 .pb-group{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;flex-wrap:wrap}
-.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.68rem;color:#fff;background:var(--pb-lav);
+.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.68rem;color:var(--pb-plum-2);background:#f4eff8;
   width:52px;text-align:center;padding:3px 0;border-radius:999px;flex-shrink:0;margin-top:3px}
-.pb-swatch{width:22px;height:22px;border-radius:30%;cursor:pointer;border:1px solid rgba(0,0,0,0.15);box-sizing:border-box;transition:transform 120ms ease}
-.pb-swatch:hover{transform:scale(1.25) rotate(8deg)}
-.pb-swatch.on{border:2px solid var(--pb-plum);transform:scale(1.2);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--pb-pink)}
+.pb-swatch{width:22px;height:22px;border-radius:30%;cursor:pointer;border:1px solid rgba(0,0,0,0.12);box-sizing:border-box;transition:transform 120ms ease}
+.pb-swatch:hover{transform:scale(1.22)}
+.pb-swatch.on{border:2px solid var(--pb-plum);transform:scale(1.2);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--pb-rose)}
 
 /* ---- 图层 & 用豆 chips ---- */
-.pb-layer{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;padding:0.3rem 0.75rem;border:1.5px solid #ffd9e8;border-radius:999px;cursor:pointer;background:#fff;color:var(--pb-plum-2);transition:all 140ms ease}
-.pb-layer:hover{border-color:var(--pb-pink);transform:translateY(-1px)}
-.pb-layer.on{border-color:var(--pb-pink);color:var(--pb-pink-deep);font-weight:600;background:linear-gradient(120deg,#fff0f6,#ffe9f3);box-shadow:0 2px 8px rgba(240,86,143,0.15)}
-.pb-layer i{font-style:normal;cursor:pointer;opacity:0.65}
+.pb-layer{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;padding:0.28rem 0.75rem;border:1px solid #eed3de;border-radius:999px;cursor:pointer;background:#fff;color:var(--pb-plum-2);transition:all 140ms ease}
+.pb-layer:hover{border-color:var(--pb-rose);transform:translateY(-1px)}
+.pb-layer.on{border-color:var(--pb-rose);color:var(--pb-rose-deep);font-weight:600;background:#fdf3f7}
+.pb-layer i{font-style:normal;cursor:pointer;opacity:0.6}
 .pb-layer i:hover{opacity:1}
 #pbCountsActive,#pbCountsTotal{display:flex;flex-wrap:wrap;gap:0.4rem}
-.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--pb-plum);border:1.5px solid #ffd9e8;border-radius:999px;padding:0.22rem 0.7rem 0.22rem 0.32rem;background:#fffbfd}
-.pb-count i{width:16px;height:16px;border-radius:5px;display:inline-block;border:1px solid rgba(0,0,0,0.15)}
+.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--pb-plum);border:1px solid #f0dbe5;border-radius:999px;padding:0.2rem 0.7rem 0.2rem 0.3rem;background:#fefcfd}
+.pb-count i{width:16px;height:16px;border-radius:5px;display:inline-block;border:1px solid rgba(0,0,0,0.12)}
 .pb-count b{font-family:var(--font-mono)}
 
 /* ---- 画布区 ---- */
 #pbWrap::-webkit-scrollbar{height:9px;width:9px}
-#pbWrap::-webkit-scrollbar-track{background:#ffeef5;border-radius:99px}
-#pbWrap::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#ffb1cd,#ff8ab4);border-radius:99px}
-#pbWrap::-webkit-scrollbar-thumb:hover{background:#f76c9d}
+#pbWrap::-webkit-scrollbar-track{background:#faf0f4;border-radius:99px}
+#pbWrap::-webkit-scrollbar-thumb{background:#e3b3c6;border-radius:99px}
+#pbWrap::-webkit-scrollbar-thumb:hover{background:var(--pb-rose)}
 
 /* ---- 科普区块同风格化 ---- */
-.pb-world .explain{margin-top:1.6rem;padding-top:1.1rem;border-top:2px dashed #ffd9e8}
-.pb-world .explain h3{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;font-size:1rem;color:var(--pb-pink-deep);letter-spacing:0.08em;text-transform:none;margin-bottom:0.6rem}
-.pb-world .ex-formula{background:#fff7fb;border:1.5px dashed #ffc9db;border-radius:12px;color:var(--pb-plum)}
+.pb-world .explain{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #f0dbe5}
+.pb-world .explain h3{font-size:0.8rem;font-weight:700;color:var(--pb-rose-deep);letter-spacing:0.1em;margin-bottom:0.6rem}
+.pb-world .ex-formula{background:#fdf6f9;border:1px solid #f0dbe5;border-radius:10px;color:var(--pb-plum)}
 .pb-world .ex-text{color:var(--pb-plum-2)}
 .pb-world .ex-text b{color:var(--pb-plum)}
 </style>
@@ -315,25 +294,56 @@
   }
 
   // 豆子：圆角方块 + 顶部高光，糖果质感
+  // 豆子渐变缓存：上亮下暗的立体糖果质感
+  var BEADGrad = {};
+  function beadGrad(c2, hex, px){
+    var key = hex + '|' + px;
+    if(!BEADGrad[key]){
+      var g = c2.createLinearGradient(0, 0, 0, px);
+      var c = hexRgb(hex);
+      function t(amt){ return 'rgb(' + Math.round(c[0] + (255 - c[0]) * amt) + ',' + Math.round(c[1] + (255 - c[1]) * amt) + ',' + Math.round(c[2] + (255 - c[2]) * amt) + ')'; }
+      g.addColorStop(0, t(0.34));
+      g.addColorStop(0.42, hex);
+      g.addColorStop(1, 'rgb(' + Math.round(c[0] * 0.82) + ',' + Math.round(c[1] * 0.82) + ',' + Math.round(c[2] * 0.82) + ')');
+      BEADGrad[key] = g;
+    }
+    return BEADGrad[key];
+  }
   function drawBeads(c2, grid, px){
-    var inset = px * 0.06;
+    var inset = px * 0.055;
     var side = px - inset * 2;
-    var rad = side * 0.3;
+    var rad = side * 0.26;
     for(var y = 0; y < rows; y++){
+      c2.save();
       for(var x = 0; x < cols; x++){
         var color = grid[y][x];
         if(!color) continue;
-        rr(c2, x * px + inset, y * px + inset, side, side, rad);
-        c2.fillStyle = color;
+        var bx = x * px + inset, by = y * px + inset;
+        c2.translate(bx, by);
+        // 主体：上亮下暗渐变
+        rr(c2, 0, 0, side, side, rad);
+        c2.fillStyle = beadGrad(c2, color, side);
         c2.fill();
-        rr(c2, x * px + inset + px * 0.09, y * px + inset + px * 0.07, side - px * 0.18, side * 0.4, rad * 0.65);
-        c2.fillStyle = lightenHex(color, 0.4);
-        c2.fill();
-        rr(c2, x * px + inset, y * px + inset, side, side, rad);
-        c2.lineWidth = Math.max(0.8, px * 0.04);
-        c2.strokeStyle = 'rgba(0,0,0,0.13)';
+        // 底部软阴影边缘
+        c2.lineWidth = Math.max(0.7, px * 0.035);
+        c2.strokeStyle = 'rgba(0,0,0,0.10)';
         c2.stroke();
+        // 顶部高光条（柔和圆角，不是整块亮斑）
+        if(px >= 12){
+          rr(c2, side * 0.14, side * 0.10, side * 0.72, side * 0.22, side * 0.11);
+          c2.fillStyle = 'rgba(255,255,255,0.38)';
+          c2.fill();
+          // 左上小亮点
+          if(px >= 18){
+            c2.beginPath();
+            c2.arc(side * 0.24, side * 0.20, side * 0.055, 0, Math.PI * 2);
+            c2.fillStyle = 'rgba(255,255,255,0.65)';
+            c2.fill();
+          }
+        }
+        c2.translate(-bx, -by);
       }
+      c2.restore();
     }
   }
 

@@ -19,49 +19,44 @@
     @if(isset($grouped[$cat]))
       <section class="group">
         <div class="group-title">{{ $cat }}</div>
-        @foreach($grouped[$cat] as $tool)
-          <a class="card" href="{{ route('tools.show', $tool) }}">
-            <div class="card-row">
-              <h2>{{ $tool->name }}</h2>
-              <span class="arrow">→</span>
-            </div>
-            <p class="desc">{{ $tool->description }}</p>
-          </a>
-        @endforeach
+        <div class="nav-grid">
+          @foreach($grouped[$cat] as $tool)
+            <a class="nav-card" href="{{ route('tools.show', $tool) }}">
+              <span class="nav-card__name">{{ $tool->name }} <span class="arrow">→</span></span>
+              <span class="nav-card__desc">{{ $tool->description }}</span>
+            </a>
+          @endforeach
+        </div>
       </section>
     @endif
   @endforeach
 
   <section class="group">
     <div class="group-title">趣味测试 · Tests</div>
-    @forelse($quizzes as $quiz)
-      <a class="card" href="{{ route('quizzes.show', $quiz) }}">
-        <div class="card-row">
-          <h2>{{ $quiz->name }}</h2>
-          <span class="arrow">→</span>
-        </div>
-        <p class="desc">{{ $quiz->description }}</p>
+    <div class="nav-grid">
+      @forelse($quizzes as $quiz)
+        <a class="nav-card" href="{{ route('quizzes.show', $quiz) }}">
+          <span class="nav-card__name">{{ $quiz->name }} <span class="arrow">→</span></span>
+          <span class="nav-card__desc">{{ $quiz->description }}</span>
+        </a>
+      @empty
+        <p class="empty">测试上线中，敬请期待。</p>
+      @endforelse
+      <a class="nav-card" href="{{ route('quizzes.index') }}">
+        <span class="nav-card__name">全部测试 <span class="arrow">→</span></span>
+        <span class="nav-card__desc">四个趣味测试一览。</span>
       </a>
-    @empty
-      <p class="empty">测试上线中，敬请期待。</p>
-    @endforelse
-    <a class="card" href="{{ route('quizzes.index') }}">
-      <div class="card-row">
-        <h2>全部测试</h2>
-        <span class="arrow">→</span>
-      </div>
-    </a>
+    </div>
   </section>
 
   <section class="group">
     <div class="group-title">博客 · Blog</div>
-    <a class="card" href="{{ route('blog.index') }}">
-      <div class="card-row">
-        <h2>写下来的思考</h2>
-        <span class="arrow">→</span>
-      </div>
-      <p class="desc">开发路上踩过的坑、想明白的事。</p>
-    </a>
+    <div class="nav-grid">
+      <a class="nav-card" href="{{ route('blog.index') }}">
+        <span class="nav-card__name">写下来的思考 <span class="arrow">→</span></span>
+        <span class="nav-card__desc">开发路上踩过的坑、想明白的事。</span>
+      </a>
+    </div>
   </section>
 </div>
 @endsection
