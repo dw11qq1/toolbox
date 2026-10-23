@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\Games\Pages;
+namespace App\Filament\Resources\Posts\Pages;
 
-use App\Filament\Resources\Games\GameResource;
+use App\Filament\Resources\Posts\PostResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Str;
 
-class EditGame extends EditRecord
+class EditPost extends EditRecord
 {
-    protected static string $resource = GameResource::class;
+    protected static string $resource = PostResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -21,7 +21,7 @@ class EditGame extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if (blank($data['slug'] ?? null)) {
-            $data['slug'] = Str::slug($data['name'] ?? '') ?: 'game-'.Str::random(6);
+            $data['slug'] = Str::slug($data['title'] ?? '') ?: 'post-'.Str::random(6);
         }
 
         return $data;

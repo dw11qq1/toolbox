@@ -2,14 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Game;
-use App\Models\Link;
 use App\Models\Quiz;
 use App\Models\Tool;
 use Illuminate\Database\Seeder;
 
 /**
- * ToolBox 内容 Seeder：工具 + 游戏。
+ * ToolBox 内容 Seeder：工具（含音乐创作）与趣味测试。
  * 使用 updateOrCreate，可重复执行，不会产生重复数据。
  */
 class ContentSeeder extends Seeder
@@ -17,98 +15,49 @@ class ContentSeeder extends Seeder
     public function run(): void
     {
         $tools = [
+            // 计算
             [
-                'name' => 'JSON 格式化',
-                'slug' => 'json-formatter',
-                'category' => '开发',
-                'sort_order' => 1,
+                'name' => '社保计算器', 'slug' => 'social-insurance', 'category' => '计算', 'sort_order' => 1,
+                'description' => '输入月工资基数与城市比例，即刻算出五险一金个人与单位月缴明细和到手工资。',
+            ],
+            [
+                'name' => '贷款/月供计算器', 'slug' => 'loan-calculator', 'category' => '计算', 'sort_order' => 2,
+                'description' => '等额本息 / 等额本金两种方式对比，月供、总利息、还款总额一目了然。',
+            ],
+            [
+                'name' => '复利/定投计算器', 'slug' => 'compound-calculator', 'category' => '计算', 'sort_order' => 3,
+                'description' => '输入本金、月定投、年化与年限，曲线图直观展示资产增长，复利效应一目了然。',
+            ],
+            [
+                'name' => '利率换算器', 'slug' => 'rate-converter', 'category' => '计算', 'sort_order' => 4,
+                'description' => '日息 / 月息 / 年息互转，单利复利换算，名义利率转实际年化 APR。',
+            ],
+            [
+                'name' => '夏普率计算器', 'slug' => 'sharpe-calculator', 'category' => '计算', 'sort_order' => 5,
+                'description' => '粘贴每月收益率序列，自动算年化收益、年化波动率与夏普比率，评估策略风险调整后收益。',
+            ],
+            // 开发
+            [
+                'name' => 'JSON 格式化', 'slug' => 'json-formatter', 'category' => '开发', 'sort_order' => 1,
                 'description' => '粘贴 JSON 即刻格式化、压缩与校验，报错行号直接标出。全程在浏览器本地完成，数据不上传。',
             ],
             [
-                'name' => '时间戳转换',
-                'slug' => 'timestamp-converter',
-                'category' => '开发',
-                'sort_order' => 2,
+                'name' => '时间戳转换', 'slug' => 'timestamp-converter', 'category' => '开发', 'sort_order' => 2,
                 'description' => 'Unix 时间戳与日期互转，支持秒/毫秒，附当前时间戳实时刷新。',
             ],
+            // 转换
             [
-                'name' => 'Base64 编解码',
-                'slug' => 'base64-encoder',
-                'category' => '转换',
-                'sort_order' => 3,
+                'name' => 'Base64 编解码', 'slug' => 'base64-encoder', 'category' => '转换', 'sort_order' => 1,
                 'description' => '文本与 Base64 双向转换，支持中文，URL 安全模式可选。',
             ],
-        ];
-
-        $games = [
+            // 音乐
             [
-                'name' => '2048',
-                'slug' => '2048',
-                'sort_order' => 1,
-                'description' => '经典数字合并游戏，方向键或滑动操作，本地记录最高分。',
-                'how_to_play' => '方向键或滑动屏幕移动方块，相同数字碰撞合并，凑出 2048 即胜利。',
-            ],
-            [
-                'name' => '记忆翻牌',
-                'slug' => 'memory-flip',
-                'sort_order' => 2,
-                'description' => '8 对图案翻牌配对，计时计步，挑战最短时间。',
-                'how_to_play' => '点击卡片翻开，每次翻两张，配对成功保持翻开，全部配对即通关。',
-            ],
-            [
-                'name' => '网页音乐盒',
-                'slug' => 'music-box',
-                'sort_order' => 3,
+                'name' => '网页音乐盒', 'slug' => 'music-box', 'category' => '音乐', 'sort_order' => 1,
                 'description' => '十六步音序器，点亮格子自己作曲，五声音阶随便点都好听，还能一键随机找灵感。',
-                'how_to_play' => '点击格子点亮音符，按播放循环你的旋律；「随机灵感」一键生成一段，速度滑块可调 BPM。',
             ],
             [
-                'name' => '节奏工坊',
-                'slug' => 'beat-studio',
-                'sort_order' => 4,
+                'name' => '节奏工坊', 'slug' => 'beat-studio', 'category' => '音乐', 'sort_order' => 2,
                 'description' => '四组打击乐 + 四件旋律乐器的多轨音序器，叠出有层次感的节奏，内置电子和嘻哈预置。',
-                'how_to_play' => '每行一件乐器，点亮格子排节奏；先放「电子 / 嘻哈」预置听效果，再改动格子做成自己的 beat。',
-            ],
-            [
-                'name' => '人生重开模拟器',
-                'slug' => 'life-restart',
-                'sort_order' => 5,
-                'description' => '抽天赋、点属性，一键重开一整段人生——从出生到落幕自动推进，看看你能活出什么剧本。',
-                'how_to_play' => '开局三选一天赋 + 分配属性点，之后人生自动快进，每年随机触发事件，死亡后回顾一生时间线。',
-            ],
-            [
-                'name' => '海龟汤推理',
-                'slug' => 'soup-riddle',
-                'sort_order' => 6,
-                'description' => '经典情境推理：一个离奇的汤面，逐步解锁线索，还原背后的真相——越少用提示越强，每局题目顺序随机。',
-                'how_to_play' => '读完汤面先自己想，卡住了再逐条解锁线索，最后对照汤底看你猜得对不对。',
-            ],
-        ];
-
-        $quizzes = [
-            [
-                'name' => 'MBTI 16 型人格测试',
-                'slug' => 'mbti',
-                'sort_order' => 1,
-                'description' => '48 题精简版，从精力来源、信息获取、决策方式、生活态度四个维度测出你的 16 型人格。',
-            ],
-            [
-                'name' => '恋爱类型测试',
-                'slug' => 'love-style',
-                'sort_order' => 2,
-                'description' => '12 题测出你在亲密关系中的依恋风格：安全型、专注型、回避型还是恐惧型。',
-            ],
-            [
-                'name' => '逻辑思维测试',
-                'slug' => 'logic-test',
-                'sort_order' => 3,
-                'description' => '10 道数列与推理题，测测你的逻辑脑，附完整解析。',
-            ],
-            [
-                'name' => '反应速度测试',
-                'slug' => 'reaction-test',
-                'sort_order' => 4,
-                'description' => '红变绿的瞬间点下去，5 轮平均测出你的反应毫秒数。',
             ],
         ];
 
@@ -116,33 +65,15 @@ class ContentSeeder extends Seeder
             Tool::updateOrCreate(['slug' => $tool['slug']], $tool);
         }
 
-        foreach ($games as $game) {
-            Game::updateOrCreate(['slug' => $game['slug']], $game);
-        }
+        $quizzes = [
+            ['name' => 'MBTI 人格测试', 'slug' => 'mbti', 'sort_order' => 1, 'description' => '48 道题测出你的 16 型人格，带各维度分析与职业倾向参考。'],
+            ['name' => '恋爱类型测试', 'slug' => 'love-style', 'sort_order' => 2, 'description' => '从依恋风格到相处模式，看看你在感情里是哪种类型。'],
+            ['name' => '逻辑思维测试', 'slug' => 'logic-test', 'sort_order' => 3, 'description' => '数列推理、逻辑判断、图形规律，10 题测出你的逻辑段位。'],
+            ['name' => '反应速度测试', 'slug' => 'reaction-test', 'sort_order' => 4, 'description' => '背景变色的一瞬间点下去，5 轮平均反应时间见分晓。'],
+        ];
 
         foreach ($quizzes as $quiz) {
             Quiz::updateOrCreate(['slug' => $quiz['slug']], $quiz);
-        }
-
-        $links = [
-            // 常用
-            ['name' => 'GitHub', 'url' => 'https://github.com', 'category' => '常用', 'sort_order' => 1, 'description' => '全球最大代码托管平台'],
-            ['name' => '哔哩哔哩', 'url' => 'https://www.bilibili.com', 'category' => '常用', 'sort_order' => 2, 'description' => '技术教程视频最多的中文社区'],
-            ['name' => '知乎', 'url' => 'https://www.zhihu.com', 'category' => '常用', 'sort_order' => 3, 'description' => '中文问答社区'],
-            // 开发
-            ['name' => 'Laravel 文档', 'url' => 'https://laravel.com/docs', 'category' => '开发', 'sort_order' => 1, 'description' => 'Laravel 官方文档，写得像教程一样好读'],
-            ['name' => 'MDN Web Docs', 'url' => 'https://developer.mozilla.org', 'category' => '开发', 'sort_order' => 2, 'description' => 'Web 技术权威参考手册'],
-            ['name' => 'PHP 官方文档', 'url' => 'https://www.php.net/manual/zh/', 'category' => '开发', 'sort_order' => 3, 'description' => 'PHP 中文手册'],
-            ['name' => 'Can I Use', 'url' => 'https://caniuse.com', 'category' => '开发', 'sort_order' => 4, 'description' => '浏览器兼容性查询'],
-            ['name' => 'Composer Packagist', 'url' => 'https://packagist.org', 'category' => '开发', 'sort_order' => 5, 'description' => 'PHP 包仓库'],
-            // 学习
-            ['name' => '菜鸟教程', 'url' => 'https://www.runoob.com', 'category' => '学习', 'sort_order' => 1, 'description' => '入门友好的中文教程站'],
-            ['name' => 'LeetCode 力扣', 'url' => 'https://leetcode.cn', 'category' => '学习', 'sort_order' => 2, 'description' => '算法刷题平台'],
-            ['name' => 'Stack Overflow', 'url' => 'https://stackoverflow.com', 'category' => '学习', 'sort_order' => 3, 'description' => '程序员问答社区'],
-        ];
-
-        foreach ($links as $link) {
-            Link::updateOrCreate(['url' => $link['url']], $link);
         }
     }
 }

@@ -17,9 +17,8 @@
   <a href="{{ route('home') }}" class="wordmark">工具<span class="box">匣</span></a>
   <nav>
     <a href="{{ route('tools.index') }}" @if(request()->routeIs('tools.*')) aria-current="page" @endif>工具</a>
-    <a href="{{ route('games.index') }}" @if(request()->routeIs('games.*')) aria-current="page" @endif>游戏</a>
     <a href="{{ route('quizzes.index') }}" @if(request()->routeIs('quizzes.*')) aria-current="page" @endif>测试</a>
-    <a href="{{ route('nav.index') }}" @if(request()->routeIs('nav.*')) aria-current="page" @endif>导航</a>
+    <a href="{{ route('blog.index') }}" @if(request()->routeIs('blog.*')) aria-current="page" @endif>博客</a>
     <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
     </button>

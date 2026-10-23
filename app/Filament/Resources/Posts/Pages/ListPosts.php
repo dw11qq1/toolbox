@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Links\Pages;
+namespace App\Filament\Resources\Posts\Pages;
 
-use App\Filament\Resources\Links\LinkResource;
+use App\Filament\Resources\Posts\PostResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListLinks extends ListRecords
+class ListPosts extends ListRecords
 {
-    protected static string $resource = LinkResource::class;
+    protected static string $resource = PostResource::class;
 
     protected function getHeaderActions(): array
     {

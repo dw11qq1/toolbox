@@ -1,33 +1,33 @@
 <?php
 
-namespace App\Filament\Resources\Games\Tables;
+namespace App\Filament\Resources\Posts\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class GamesTable
+class PostsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->reorderable('sort_order')
-            ->defaultSort('sort_order')
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
-                TextColumn::make('how_to_play')
+                TextColumn::make('excerpt')
                     ->searchable(),
-                TextColumn::make('sort_order')
-                    ->numeric()
-                    ->sortable(),
-                IconColumn::make('is_active')
+                ImageColumn::make('cover_image'),
+                IconColumn::make('is_published')
                     ->boolean(),
+                TextColumn::make('published_at')
+                    ->dateTime()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

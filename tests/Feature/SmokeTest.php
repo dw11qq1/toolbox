@@ -23,20 +23,25 @@ class SmokeTest extends TestCase
         $this->get('/')->assertStatus(200)->assertSee('工具匣');
     }
 
-    public function test_四个板块索引页正常(): void
+    public function test_三个板块索引页正常(): void
     {
         $this->seedContent();
-        foreach (['/tools', '/games', '/tests', '/nav'] as $url) {
+        foreach (['/tools', '/tests', '/blog'] as $url) {
             $this->get($url)->assertStatus(200);
         }
     }
 
-    /* ---------- 工具 ---------- */
+    /* ---------- 工具（10 个） ---------- */
 
-    public function test_三个工具页正常(): void
+    public function test_全部工具页正常(): void
     {
         $this->seedContent();
-        foreach (['json-formatter', 'timestamp-converter', 'base64-encoder'] as $slug) {
+        foreach ([
+            'json-formatter', 'timestamp-converter', 'base64-encoder',
+            'social-insurance', 'loan-calculator', 'compound-calculator',
+            'rate-converter', 'sharpe-calculator',
+            'music-box', 'beat-studio',
+        ] as $slug) {
             $this->get("/tools/{$slug}")->assertStatus(200);
         }
     }
@@ -46,19 +51,11 @@ class SmokeTest extends TestCase
         $this->get('/tools/not-exist')->assertStatus(404);
     }
 
-    /* ---------- 游戏 ---------- */
-
-    public function test_五个游戏页正常(): void
+    public function test_旧路由已下线(): void
     {
-        $this->seedContent();
-        foreach (['2048', 'memory-flip', 'music-box', 'beat-studio', 'life-restart', 'soup-riddle'] as $slug) {
-            $this->get("/games/{$slug}")->assertStatus(200);
+        foreach (['/games', '/games/2048', '/nav', '/games/survival-tales'] as $url) {
+            $this->get($url)->assertStatus(404);
         }
-    }
-
-    public function test_不存在的游戏返回404(): void
-    {
-        $this->get('/games/not-exist')->assertStatus(404);
     }
 
     /* ---------- 测试板块 ---------- */
@@ -76,12 +73,34 @@ class SmokeTest extends TestCase
         $this->get('/tests/not-exist')->assertStatus(404);
     }
 
-    /* ---------- 导航站 ---------- */
+    /* ---------- 博客 ---------- */
 
-    public function test_导航站渲染出链接(): void
+    public function test_博客空列表正常(): void
     {
         $this->seedContent();
-        $this->get('/nav')->assertStatus(200)->assertSee('GitHub');
+        $this->get('/blog')->assertStatus(200);
+    }
+
+    public function test_已发布文章可访问且草稿404(): void
+    {
+        $this->seedContent();
+
+        $post = \App\Models\Post::create([
+            'title' => '测试文章',
+            'slug' => 'hello-world',
+            'content' => '<p>你好</p>',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+        $this->get('/blog/hello-world')->assertStatus(200)->assertSee('测试文章');
+
+        $draft = \App\Models\Post::create([
+            'title' => '草稿文章',
+            'slug' => 'draft-one',
+            'content' => '<p>草稿</p>',
+            'is_published' => false,
+        ]);
+        $this->get('/blog/draft-one')->assertStatus(404);
     }
 
     /* ---------- 上下架隔离 ---------- */
@@ -94,17 +113,9 @@ class SmokeTest extends TestCase
         $tool->update(['is_active' => false]);
         $this->get('/tools/json-formatter')->assertStatus(404);
 
-        $game = \App\Models\Game::where('slug', '2048')->first();
-        $game->update(['is_active' => false]);
-        $this->get('/games/2048')->assertStatus(404);
-
         $quiz = \App\Models\Quiz::where('slug', 'mbti')->first();
         $quiz->update(['is_active' => false]);
         $this->get('/tests/mbti')->assertStatus(404);
-
-        $link = \App\Models\Link::where('url', 'https://github.com')->first();
-        $link->update(['is_active' => false]);
-        $this->get('/nav')->assertOk()->assertDontSee('href="https://github.com"', false);
     }
 
     /* ---------- 后台 ---------- */
@@ -122,6 +133,6 @@ class SmokeTest extends TestCase
     public function test_静态资源文件存在(): void
     {
         $this->assertFileExists(public_path('css/app.css'));
-        $this->assertFileExists(public_path('js/games/2048.js'));
+        $this->assertFileExists(public_path('js/filament/filament/app.js'));
     }
 }
