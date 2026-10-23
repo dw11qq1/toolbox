@@ -1,5 +1,6 @@
+<div class="pb-world">
 <div class="field">
-  <span class="fl">底板尺寸</span>
+  <span class="fl">📌 底板尺寸</span>
   <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
     <select id="pbSize" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
       <option value="16">16 × 16（小底板）</option>
@@ -8,13 +9,16 @@
       <option value="40">40 × 40（拼两块）</option>
       <option value="58">58 × 58（拼四块）</option>
     </select>
-    <button class="btn" id="pbHeart" style="padding:0.35rem 0.9rem">示例：爱心</button>
+    <button class="btn pb-pat" data-pat="love" style="padding:0.35rem 0.8rem">🩷 爱心</button>
+    <button class="btn pb-pat" data-pat="star" style="padding:0.35rem 0.8rem">⭐ 星星</button>
+    <button class="btn pb-pat" data-pat="mushroom" style="padding:0.35rem 0.8rem">🍄 小蘑菇</button>
+    <button class="btn pb-pat" data-pat="bunny" style="padding:0.35rem 0.8rem">🐰 小兔子</button>
     <button class="btn" id="pbClear" style="padding:0.35rem 0.9rem">清空当前图层</button>
   </div>
 </div>
 
 <div class="field">
-  <span class="fl">色卡型号</span>
+  <span class="fl">🎨 色卡型号</span>
   <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
     <select id="pbCard" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
       <option value="mard" selected>MARD 221 色</option>
@@ -27,7 +31,7 @@
 </div>
 
 <div class="field">
-  <span class="fl">照片转图纸（自动匹配当前色卡）</span>
+  <span class="fl">📷 照片转图纸（自动匹配当前色卡）</span>
   <div class="btn-row" style="gap:0.8rem;flex-wrap:wrap;align-items:center">
     <input type="file" id="pbFile" accept="image/*" style="font-size:0.8rem">
     <label style="font-size:0.8rem;color:var(--ink-2);display:flex;align-items:center;gap:0.3rem">
@@ -41,29 +45,29 @@
 </div>
 
 <div class="field">
-  <span class="fl">图层（点豆只影响选中图层；底层半透明显示方便对照）</span>
+  <span class="fl">🥞 图层（点豆只影响选中图层；底层半透明显示方便对照）</span>
   <div class="btn-row" id="pbLayers" style="gap:0.4rem;flex-wrap:wrap"></div>
 </div>
 
 <div class="field">
-  <span class="fl">色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
+  <span class="fl">🧸 色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
   <div id="pbPalette"></div>
 </div>
 
 <div class="field">
-  <span class="fl">图纸（按住拖动点豆 · 右键擦除）
+  <span class="fl">🧩 图纸（按住拖动点豆 · 右键擦除）
     <span style="float:right;display:inline-flex;gap:0.3rem;align-items:center">
       <button class="btn" id="pbZoomOut" style="padding:0.1rem 0.6rem;font-size:0.85rem">−</button>
       <span id="pbZoomLabel" style="font-size:0.75rem;color:var(--ink-3);font-family:var(--font-mono)">18px</span>
       <button class="btn" id="pbZoomIn" style="padding:0.1rem 0.6rem;font-size:0.85rem">＋</button>
     </span>
   </span>
-  <canvas id="pbCanvas" style="border:1px solid var(--line);border-radius:8px;touch-action:none;cursor:crosshair;max-width:100%"></canvas>
-  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">放大到 26px 以上会显示豆子中心的<b>小孔</b>，模拟真实拼豆——默认视图保持干净。</p>
+  <canvas id="pbCanvas" style="border:1px solid #ffd9e5;border-radius:14px;touch-action:none;cursor:crosshair;max-width:100%;background:#fffdf9"></canvas>
+  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">圆角方块的糖果小豆，带一点点高光——放大方便逐格微调，点着很解压。</p>
 </div>
 
 <div class="field" id="pbCountWrap" style="display:none">
-  <span class="fl">用豆清单（照着买豆就行，建议多备 5%~10% 损耗）</span>
+  <span class="fl">🛒 用豆清单（照着买豆就行，建议多备 5%~10% 损耗）</span>
   <div id="pbCountsActive" style="margin-top:0.3rem"></div>
   <span class="fl" id="pbTotalTitle" style="margin-top:0.8rem;display:none">全部图层合计</span>
   <div id="pbCountsTotal"></div>
@@ -75,8 +79,16 @@
   <button class="btn" id="pbExport" style="padding:0.35rem 0.9rem">导出 PNG</button>
   <button class="btn" id="pbPdf" style="padding:0.35rem 0.9rem">导出 PDF（图纸 + 用量清单）</button>
 </div>
+</div>
 
 <style>
+.pb-world .btn{background:linear-gradient(180deg,#ffa7c4,#ff7fa8);border:1px solid #f76c9d;color:#fff;border-radius:999px;box-shadow:0 1px 0 rgba(247,108,157,0.25)}
+.pb-world .btn:hover{filter:brightness(1.06)}
+.pb-world .btn:active{transform:translateY(1px)}
+.pb-world select{border-color:#ffc9db!important;border-radius:999px!important}
+.pb-world .pb-layer.on{border-color:#f76c9d;color:#e0447f}
+.pb-world .pb-count{border-color:#ffd3e0;border-radius:999px}
+.pb-world .pb-swatch.on{border-color:#f76c9d;box-shadow:0 0 0 2px #fff5f8,0 0 0 4px #f76c9d}
 #pbPalette{max-width:560px}
 .pb-group{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;flex-wrap:wrap}
 .pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.7rem;color:var(--ink-3);width:52px;padding-top:4px;flex-shrink:0}
@@ -185,11 +197,22 @@
     c2.closePath();
   }
 
-  // 豆子：带圆角的正方形填充；格子足够大时中心留小孔模拟真实空心豆
+  // 亮色缓存：豆子顶部高光用
+  var LIGHT = {};
+  function lightenHex(hex, amt){
+    var key = hex + '|' + amt;
+    if(!LIGHT[key]){
+      var c = hexRgb(hex);
+      LIGHT[key] = 'rgb(' + Math.round(c[0] + (255 - c[0]) * amt) + ',' + Math.round(c[1] + (255 - c[1]) * amt) + ',' + Math.round(c[2] + (255 - c[2]) * amt) + ')';
+    }
+    return LIGHT[key];
+  }
+
+  // 豆子：圆角方块 + 顶部高光，糖果质感
   function drawBeads(c2, grid, px){
-    var inset = px * 0.055;
-    var rad = px * 0.2;
+    var inset = px * 0.06;
     var side = px - inset * 2;
+    var rad = side * 0.3;
     for(var y = 0; y < rows; y++){
       for(var x = 0; x < cols; x++){
         var color = grid[y][x];
@@ -197,28 +220,26 @@
         rr(c2, x * px + inset, y * px + inset, side, side, rad);
         c2.fillStyle = color;
         c2.fill();
-        c2.lineWidth = Math.max(0.8, px * 0.045);
-        c2.strokeStyle = 'rgba(0,0,0,0.18)';
+        rr(c2, x * px + inset + px * 0.09, y * px + inset + px * 0.07, side - px * 0.18, side * 0.4, rad * 0.65);
+        c2.fillStyle = lightenHex(color, 0.4);
+        c2.fill();
+        rr(c2, x * px + inset, y * px + inset, side, side, rad);
+        c2.lineWidth = Math.max(0.8, px * 0.04);
+        c2.strokeStyle = 'rgba(0,0,0,0.13)';
         c2.stroke();
-        if(px >= 26){
-          c2.beginPath();
-          c2.arc(x * px + px / 2, y * px + px / 2, px * 0.1, 0, Math.PI * 2);
-          c2.fillStyle = 'rgba(255,255,255,0.8)';
-          c2.fill();
-        }
       }
     }
   }
 
   function draw(){
-    ctx.fillStyle = '#fdfdfb';
+    ctx.fillStyle = '#fffdf9';
     ctx.fillRect(0, 0, cols * cell, rows * cell);
     layers.forEach(function(layer, i){
       ctx.globalAlpha = (i === active || !layers[active]) ? 1 : 0.35;
       if(layer.visible) drawBeads(ctx, layer.grid, cell);
     });
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+    ctx.strokeStyle = 'rgba(190,120,150,0.13)';
     ctx.lineWidth = 1;
     for(var x = 0; x <= cols; x++){
       ctx.beginPath(); ctx.moveTo(x * cell + 0.5, 0); ctx.lineTo(x * cell + 0.5, rows * cell); ctx.stroke();
@@ -393,18 +414,98 @@
     layers[active].grid = newGrid(rows, cols); draw();
   });
 
-  $('pbHeart').addEventListener('click', function(){
-    var g = newGrid(rows, cols);
-    var s = 3.1, c0 = (cols - 1) / 2, r0 = (rows - 1) / 2 + 1.2;
-    for(var y = 0; y < rows; y++){
-      for(var x = 0; x < cols; x++){
-        var dx = (x - c0) / cols * s;
-        var dy = -(y - r0) / rows * s;
-        var v = Math.pow(dx * dx + dy * dy - 0.32, 3) - dx * dx * Math.pow(dy, 3);
-        if(v <= 0) g[y][x] = '#FC3D45';
-      }
-    }
-    layers[active].grid = g; draw();
+  /* ---------- 可爱像素图案预设 ---------- */
+  var PATTERNS = {
+    love: { colors: { R: '#FC3D45', P: '#FFC2D4' }, rows: [
+      '................',
+      '..RRR......RRR..',
+      '.RRRRR....RRRRR.',
+      'RRRRRRR..RRRRRRR',
+      'RRRRRRRRRRRRRRRR',
+      'RPPRRRRRRRRRRRRR',
+      'RPPRRRRRRRRRRRRR',
+      'RRRRRRRRRRRRRRRR',
+      '.RRRRRRRRRRRRRR.',
+      '..RRRRRRRRRRRR..',
+      '...RRRRRRRRRR...',
+      '....RRRRRRRR....',
+      '.....RRRRRR.....',
+      '......RRRR......',
+      '.......RR.......',
+      '................',
+    ]},
+    star: { colors: { Y: '#FFD21F' }, rows: [
+      '.......YY.......',
+      '.......YY.......',
+      '......YYYY......',
+      '......YYYY......',
+      'YYYYYYYYYYYYYYYY',
+      '.YYYYYYYYYYYYYY.',
+      '..YYYYYYYYYYYY..',
+      '...YYYYYYYYYY...',
+      '....YYYYYYYY....',
+      '...YYYYYYYYYY...',
+      '...YYYY..YYYY...',
+      '..YYY......YYY..',
+      '.YYY........YYY.',
+      '.YY..........YY.',
+      'YY............YY',
+      '................',
+    ]},
+    mushroom: { colors: { R: '#FC3D45', W: '#FFF6E9', K: '#2C2C2C' }, rows: [
+      '....RRRRRRRR....',
+      '..RRRRRRRRRRRR..',
+      '.RRWWRRRRRRWWRR.',
+      '.RWWWWRRRRWWWWR.',
+      'RRWWWWRRRRWWWWRR',
+      'RRRWWRRRRRRWWRRR',
+      'RRRRRRRRRRRRRRRR',
+      '.RRRRRRRRRRRRRR.',
+      '..WWWWWWWWWWWW..',
+      '..WWKWWWWWWKWW..',
+      '..WWKWWWWWWKWW..',
+      '..WWWWWWWWWWWW..',
+      '...WWWWWWWWWW...',
+      '...WWWWWWWWWW...',
+      '....WWWWWWWW....',
+      '................',
+    ]},
+    bunny: { colors: { W: '#FFFFFF', P: '#FFB3C7', K: '#2C2C2C' }, rows: [
+      '...WW......WW...',
+      '...WW......WW...',
+      '...WPW....WPW...',
+      '...WWW....WWW...',
+      '...WWWWWWWWWW...',
+      '..WWWWWWWWWWWW..',
+      '.WWKWWWWWWWWKWW.',
+      '.WWPWWWWWWWWPWW.',
+      '.WWWWWWPPWWWWWW.',
+      '.WWWWWWWWWWWWWW.',
+      '..WWWWWWWWWWWW..',
+      '..WWWWWWWWWWWW..',
+      '...WWWWWWWWWW...',
+      '...WWWWWWWWWW...',
+      '..WWWWWWWWWWWW..',
+      '................',
+    ]},
+  };
+
+  document.querySelectorAll('.pb-pat').forEach(function(b){
+    b.addEventListener('click', function(){
+      var pat = PATTERNS[this.getAttribute('data-pat')];
+      if(!pat) return;
+      var g = newGrid(rows, cols);
+      var ox = Math.floor((cols - 16) / 2), oy = Math.floor((rows - 16) / 2);
+      pat.rows.forEach(function(row, y){
+        for(var x = 0; x < 16; x++){
+          var ch = row[x];
+          if(ch === '.' || !pat.colors[ch]) continue;
+          var gy = y + oy, gx = x + ox;
+          if(gy >= 0 && gy < rows && gx >= 0 && gx < cols) g[gy][gx] = pat.colors[ch];
+        }
+      });
+      layers[active].grid = g; draw();
+    });
   });
 
   /* ================= 照片转图纸 ================= */
@@ -596,5 +697,5 @@
 <div class="explain">
   <h3>玩法 & 怎么用</h3>
   <p class="ex-formula">用豆数 = 图纸上该色号占据的格子数（多图层自动合计）<br>总豆数 = 各色号用量之和，建议多备 5%~10% 损耗</p>
-  <p class="ex-text">豆子渲染为<b>带圆角的正方形</b>——接近真实拼豆熨烫后的轮廓，同时保持网格对齐的整洁感；放大到 26px 以上会显示中心的<b>小孔</b>（真实拼豆是空心圆柱），默认视图自动隐藏。三张色卡随时切换：<b>MARD 221</b>（国产主流）、<b>Perler 48</b>（美国经典）、<b>Artkal S 系 159</b>（色号最全），换卡后点「转换」图纸上的豆会自动映射到新卡里最接近的色号——用 MARD 画的图纸可以直接转成 Artkal 采购单。照片转图纸、多图层立体拼豆、PNG/PDF 导出用法同前：照片开抖动更细腻，像素画关抖动保持干净。</p>
+  <p class="ex-text">豆子渲染为<b>带圆角的方块</b>加一点顶部高光，糖果质感——接近真实拼豆熨烫后的圆润轮廓，点起来也解压。四个<b>可爱像素预设</b>（🩷爱心 / ⭐星星 / 🍄小蘑菇 / 🐰小兔子）一键起手，再慢慢改造。三张色卡随时切换：<b>MARD 221</b>（国产主流）、<b>Perler 48</b>（美国经典）、<b>Artkal S 系 159</b>（色号最全），换卡后点「转换」图纸上的豆会自动映射到新卡里最接近的色号——用 MARD 画的图纸可以直接转成 Artkal 采购单。照片转图纸、多图层立体拼豆、PNG/PDF 导出：照片开抖动更细腻，像素画关抖动保持干净。</p>
 </div>
