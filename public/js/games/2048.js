@@ -10,12 +10,12 @@
   var best = +(localStorage.getItem('tb2048best') || 0);
   bestEl.textContent = best;
 
-  /* 配色：低数值用绿灰系，高数值渐暖，16 宫格内联色 */
+  /* 配色：明快蓝系，高数值渐深，4096+ 用橙红区分 */
   var COLORS = {
-    2:'#dfe5da', 4:'#c8d4c0', 8:'#9dc3a4', 16:'#78b189',
-    32:'#5da271', 64:'#2f6b4f', 128:'#4a9b7c', 256:'#3f8a6c',
-    512:'#2f6b4f', 1024:'#245640', 2048:'#1c4530',
-    4096:'#8c3a2e', 8192:'#6e2d24'
+    2:'#e3e9f4', 4:'#c9d7f2', 8:'#9dc0f5', 16:'#74a7f8',
+    32:'#4f8df9', 64:'#2563eb', 128:'#3f7ef0', 256:'#3169e0',
+    512:'#2563eb', 1024:'#1d4fc4', 2048:'#173f9e',
+    4096:'#f97316', 8192:'#c2410c'
   };
 
   function reset(){
@@ -107,7 +107,7 @@
       var x = PAD + c*(CELL+PAD*0.9);
       var y = PAD + r*(CELL+PAD*0.9);
       var v = grid[r][c];
-      ctx.fillStyle = v ? (COLORS[v] || '#1c4530') : 'rgba(0,0,0,0.05)';
+      ctx.fillStyle = v ? (COLORS[v] || '#173f9e') : 'rgba(0,0,0,0.05)';
       roundRect(x, y, CELL, CELL, 8);
       ctx.fill();
       if(v){

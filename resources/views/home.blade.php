@@ -54,13 +54,34 @@
   </section>
 
   <section class="group">
-    <div class="group-title">技术笔记 · Blog</div>
-    <a class="card" href="{{ route('blog.index') }}">
+    <div class="group-title">趣味测试 · Tests</div>
+    @forelse($quizzes as $quiz)
+      <a class="card" href="{{ route('quizzes.show', $quiz) }}">
+        <div class="card-row">
+          <h2>{{ $quiz->name }}</h2>
+          <span class="arrow">→</span>
+        </div>
+        <p class="desc">{{ $quiz->description }}</p>
+      </a>
+    @empty
+      <p class="empty">测试上线中，敬请期待。</p>
+    @endforelse
+    <a class="card" href="{{ route('quizzes.index') }}">
       <div class="card-row">
-        <h2>写下来的思考</h2>
+        <h2>全部测试</h2>
         <span class="arrow">→</span>
       </div>
-      <p class="desc">开发路上踩过的坑、想明白的事。</p>
+    </a>
+  </section>
+
+  <section class="group">
+    <div class="group-title">导航站 · Nav</div>
+    <a class="card" href="{{ route('nav.index') }}">
+      <div class="card-row">
+        <h2>常去的站，都在这</h2>
+        <span class="arrow">→</span>
+      </div>
+      <p class="desc">按用途分组的精选链接导航。</p>
     </a>
   </section>
 </div>

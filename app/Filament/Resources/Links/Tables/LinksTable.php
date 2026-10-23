@@ -1,33 +1,33 @@
 <?php
 
-namespace App\Filament\Resources\Posts\Tables;
+namespace App\Filament\Resources\Links\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class PostsTable
+class LinksTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->reorderable('sort_order')
+            ->defaultSort('sort_order')
             ->columns([
-                TextColumn::make('title')
+                TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('slug')
+                TextColumn::make('url')
                     ->searchable(),
-                TextColumn::make('excerpt')
+                TextColumn::make('category')
                     ->searchable(),
-                ImageColumn::make('cover_image'),
-                IconColumn::make('is_published')
-                    ->boolean(),
-                TextColumn::make('published_at')
-                    ->dateTime()
+                TextColumn::make('sort_order')
+                    ->numeric()
                     ->sortable(),
+                IconColumn::make('is_active')
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

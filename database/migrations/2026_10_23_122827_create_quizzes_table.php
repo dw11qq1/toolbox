@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('quizzes', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('name');
             $table->string('slug')->unique();
-            $table->string('excerpt')->nullable();
-            $table->longText('content');
-            $table->string('cover_image')->nullable();
-            $table->boolean('is_published')->default(false);
-            $table->timestamp('published_at')->nullable();
+            $table->text('description')->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('quizzes');
     }
 };
