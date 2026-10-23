@@ -12,7 +12,7 @@
 
   @php
     $grouped = $tools->groupBy('category');
-    $order = ['计算', '开发', '转换', '音乐', '创作'];
+    $order = ['计算', '开发', '转换', '音乐'];
   @endphp
 
   @foreach($order as $cat)
@@ -45,6 +45,16 @@
       <a class="nav-card" href="{{ route('quizzes.index') }}">
         <span class="nav-card__name">全部测试 <span class="arrow">→</span></span>
         <span class="nav-card__desc">四个趣味测试一览。</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="group">
+    <div class="group-title">拼豆 · Creation</div>
+    <div class="nav-grid">
+      <a class="nav-card" href="{{ route('tools.show', 'perler-patterns') }}">
+        <span class="nav-card__name">拼豆图纸工作室 <span class="arrow">→</span></span>
+        <span class="nav-card__desc">照片一键转拼豆图纸：MARD / Perler / Artkal 三色卡匹配互转、多图层编辑、自动用豆统计、导出 PNG/PDF。</span>
       </a>
     </div>
   </section>

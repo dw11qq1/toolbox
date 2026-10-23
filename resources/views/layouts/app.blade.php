@@ -16,7 +16,8 @@
 <header class="top">
   <a href="{{ route('home') }}" class="wordmark">工具<span class="box">匣</span></a>
   <nav>
-    <a href="{{ route('tools.index') }}" @if(request()->routeIs('tools.*')) aria-current="page" @endif>工具</a>
+    <a href="{{ route('tools.index') }}" @if(request()->routeIs('tools.index')) aria-current="page" @endif>工具</a>
+    <a href="{{ route('tools.show', 'perler-patterns') }}" @if(request()->is('tools/perler-patterns')) aria-current="page" @endif>拼豆</a>
     <a href="{{ route('quizzes.index') }}" @if(request()->routeIs('quizzes.*')) aria-current="page" @endif>测试</a>
     <a href="{{ route('blog.index') }}" @if(request()->routeIs('blog.*')) aria-current="page" @endif>博客</a>
     <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
