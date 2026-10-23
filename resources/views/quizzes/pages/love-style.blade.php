@@ -53,12 +53,12 @@
     document.getElementById('lBar').style.width = (idx / Q.length * 100) + '%';
     lText.textContent = Q[idx][0] + '？';
     for(var i = 0; i < 3; i++){
-      document.getElementById(['lA','lB','lC'][i]).textContent = Q[idx][1].split('|')[i];
+      document.getElementById(['lA','lB','lC'][i]).textContent = Q[idx][1 + i].split('|')[0];
     }
   }
 
   function answer(i){
-    score[Q[idx][1].split('|')[i].split('|')[1]]++;
+    score[Q[idx][1 + i].split('|')[1]]++;
     idx++;
     if(idx < Q.length) render(); else finish();
   }

@@ -113,13 +113,12 @@
     qNow.textContent = idx + 1;
     qBar.style.width = (idx / Q.length * 100) + '%';
     qText.textContent = Q[idx][0] + '？';
-    var pair = Q[idx][1].split('|');
-    optA.textContent = pair[0];
-    optB.textContent = pair[1];
+    optA.textContent = Q[idx][1].split('|')[0];
+    optB.textContent = Q[idx][2].split('|')[0];
   }
 
   function answer(which){
-    var tag = Q[idx][1].split('|')[which].split('|')[1];
+    var tag = Q[idx][1 + which].split('|')[1];
     dims[tag]++;
     idx++;
     if(idx < Q.length){ render(); }
