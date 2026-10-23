@@ -1,5 +1,13 @@
 <div class="pb-world">
-<div class="field">
+
+<div class="pb-hero">
+  <span class="pb-float pb-f1"></span><span class="pb-float pb-f2"></span><span class="pb-float pb-f3"></span><span class="pb-float pb-f4"></span>
+  <h2 class="pb-title">🧸 拼豆图纸小作坊</h2>
+  <p class="pb-sub">点豆子 · 画可爱 · 拼出属于自己的小世界 ♡</p>
+  <span class="pb-star pb-s1">✦</span><span class="pb-star pb-s2">✦</span><span class="pb-star pb-s3">✧</span>
+</div>
+
+<div class="field pb-card">
   <span class="fl">📌 底板尺寸</span>
   <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
     <select id="pbSize" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
@@ -17,7 +25,7 @@
   </div>
 </div>
 
-<div class="field">
+<div class="field pb-card">
   <span class="fl">🎨 色卡型号</span>
   <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
     <select id="pbCard" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
@@ -30,7 +38,7 @@
   <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">换色卡后点「转换」，图纸上每个豆会自动映射到当前色卡里最接近的色号（买不同牌子的豆时用）。</p>
 </div>
 
-<div class="field">
+<div class="field pb-card">
   <span class="fl">📷 照片转图纸（自动匹配当前色卡）</span>
   <div class="btn-row" style="gap:0.8rem;flex-wrap:wrap;align-items:center">
     <input type="file" id="pbFile" accept="image/*" style="font-size:0.8rem">
@@ -44,17 +52,17 @@
   <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">照片会缩到当前底板尺寸并逐格匹配最接近的色号，结果写入<b>当前图层</b>。像素画/Logo 建议关抖动，照片开抖动更自然。</p>
 </div>
 
-<div class="field">
+<div class="field pb-card">
   <span class="fl">🥞 图层（点豆只影响选中图层；底层半透明显示方便对照）</span>
   <div class="btn-row" id="pbLayers" style="gap:0.4rem;flex-wrap:wrap"></div>
 </div>
 
-<div class="field">
+<div class="field pb-card">
   <span class="fl">🧸 色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
   <div id="pbPalette"></div>
 </div>
 
-<div class="field">
+<div class="field pb-card">
   <span class="fl">🧩 图纸（按住拖动点豆 · 右键擦除）
     <span style="float:right;display:inline-flex;gap:0.3rem;align-items:center">
       <button class="btn" id="pbZoomOut" style="padding:0.1rem 0.6rem;font-size:0.85rem">−</button>
@@ -68,7 +76,7 @@
   <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">圆角方块的糖果小豆，带一点点高光——放大方便逐格微调，画布超出时上下左右滚动，比例永远是 1:1 不变形。</p>
 </div>
 
-<div class="field" id="pbCountWrap" style="display:none">
+<div class="field pb-card" id="pbCountWrap" style="display:none">
   <span class="fl">🛒 用豆清单（照着买豆就行，建议多备 5%~10% 损耗）</span>
   <div id="pbCountsActive" style="margin-top:0.3rem"></div>
   <span class="fl" id="pbTotalTitle" style="margin-top:0.8rem;display:none">全部图层合计</span>
@@ -84,27 +92,123 @@
 </div>
 
 <style>
-.pb-world .btn{background:linear-gradient(180deg,#ffa7c4,#ff7fa8);border:1px solid #f76c9d;color:#fff;border-radius:999px;box-shadow:0 1px 0 rgba(247,108,157,0.25)}
-.pb-world .btn:hover{filter:brightness(1.06)}
-.pb-world .btn:active{transform:translateY(1px)}
-.pb-world select{border-color:#ffc9db!important;border-radius:999px!important}
-.pb-world .pb-layer.on{border-color:#f76c9d;color:#e0447f}
-.pb-world .pb-count{border-color:#ffd3e0;border-radius:999px}
-.pb-world .pb-swatch.on{border-color:#f76c9d;box-shadow:0 0 0 2px #fff5f8,0 0 0 4px #f76c9d}
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
+/* ============ 拼豆小岛 · 二次元可爱风（独立于全站风格） ============ */
+.pb-world{
+  --pb-pink:#ff7fae; --pb-pink-deep:#f0568f; --pb-lav:#b79cff;
+  --pb-mint:#8fe0c6; --pb-lemon:#ffe08a; --pb-plum:#5c3a52; --pb-plum-2:#96708a;
+  position:relative;
+  background:linear-gradient(160deg,#fff5fa 0%,#fdf0f7 45%,#f3edff 100%);
+  border:1px solid #ffd3e6;
+  border-radius:24px;
+  padding:1.6rem 1.5rem 1.4rem;
+  background-image:
+    radial-gradient(#ffd6e8 1.6px, transparent 1.6px),
+    radial-gradient(#e3d8ff 1.6px, transparent 1.6px);
+  background-size:34px 34px;
+  background-position:0 0, 17px 17px;
+  box-shadow:0 10px 34px rgba(255,143,183,0.16);
+}
+
+/* ---- 顶部横幅 ---- */
+.pb-hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#ffb7d5,#d9c6ff 60%,#bfe9ff);
+  border:2px solid #fff;border-radius:18px;
+  padding:1.3rem 1.4rem 1.15rem;
+  margin-bottom:1.4rem;
+  box-shadow:0 6px 20px rgba(240,86,143,0.18);
+}
+.pb-hero::after{content:'';position:absolute;inset:0;border-radius:16px;
+  background-image:radial-gradient(rgba(255,255,255,0.55) 1.8px, transparent 1.8px);
+  background-size:22px 22px;pointer-events:none}
+.pb-title{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;font-size:1.65rem;color:#fff;
+  letter-spacing:0.06em;margin:0;text-shadow:0 2px 0 rgba(240,86,143,0.35),0 4px 12px rgba(240,86,143,0.3);position:relative;z-index:1}
+.pb-sub{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;font-size:0.95rem;color:#7a4a68;margin:0.35rem 0 0;position:relative;z-index:1}
+.pb-star{position:absolute;font-size:1rem;color:#fff;opacity:0.9;animation:pbTwinkle 2.4s ease-in-out infinite}
+.pb-s1{top:14px;right:56px}
+.pb-s2{top:44px;right:110px;font-size:0.7rem;animation-delay:0.8s}
+.pb-s3{bottom:14px;right:34px;animation-delay:1.5s}
+@keyframes pbTwinkle{0%,100%{opacity:0.25;transform:scale(0.8)}50%{opacity:1;transform:scale(1.15)}}
+.pb-float{position:absolute;border-radius:38%;opacity:0.85;animation:pbFloat 5s ease-in-out infinite}
+.pb-f1{width:18px;height:18px;background:#ff9fca;top:-6px;left:24%;animation-delay:0s}
+.pb-f2{width:12px;height:12px;background:#fff;bottom:-4px;left:58%;animation-delay:1.2s}
+.pb-f3{width:10px;height:10px;background:#ffe08a;top:18px;left:78%;animation-delay:2.1s}
+.pb-f4{width:14px;height:14px;background:#bfe3ff;bottom:6px;left:38%;animation-delay:3s}
+@keyframes pbFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-9px) rotate(14deg)}}
+
+/* ---- 白色软糖卡片 ---- */
+.pb-world .pb-card{
+  background:#fff;border:1.5px solid #ffd9e8;border-radius:18px;
+  padding:0.95rem 1.05rem 1rem;margin-bottom:1rem;
+  box-shadow:0 4px 14px rgba(255,143,183,0.1);
+}
+.pb-world .pb-card>.fl{
+  display:inline-block;font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;
+  font-size:0.92rem;color:var(--pb-plum);letter-spacing:0.04em;
+  background:linear-gradient(120deg,#fff0f6,#f6f0ff);
+  border:1.5px dashed #ffb1cd;border-radius:12px;
+  padding:0.22rem 0.75rem;margin-bottom:0.7rem;
+  transform:rotate(-1.2deg);
+  transition:transform 180ms ease;
+}
+.pb-world .pb-card>.fl:hover{transform:rotate(0.6deg) scale(1.02)}
+
+/* ---- 糖果按钮 ---- */
+.pb-world .btn{
+  background:linear-gradient(180deg,#ffa7c4,#ff7fae);
+  border:1.5px solid #f76c9d;color:#fff;border-radius:999px;
+  font-weight:600;box-shadow:0 3px 0 rgba(240,86,143,0.35);
+  transition:transform 140ms ease,box-shadow 140ms ease,filter 140ms ease;
+}
+.pb-world .btn:hover{filter:brightness(1.06);transform:translateY(-2px);box-shadow:0 5px 0 rgba(240,86,143,0.35)}
+.pb-world .btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(240,86,143,0.35)}
+.pb-world .btn:nth-child(even){background:linear-gradient(180deg,#cbb5ff,#b79cff);border-color:#9d7ef0;box-shadow:0 3px 0 rgba(157,126,240,0.35)}
+.pb-world .btn:nth-child(even):hover{box-shadow:0 5px 0 rgba(157,126,240,0.35)}
+.pb-world .btn:nth-child(even):active{box-shadow:0 1px 0 rgba(157,126,240,0.35)}
+
+/* ---- 表单控件 ---- */
+.pb-world select,.pb-world input[type="number"],.pb-world textarea{
+  border:1.5px solid #ffc9db!important;border-radius:12px!important;background:#fffdfe!important;color:var(--pb-plum)!important}
+.pb-world select:focus,.pb-world textarea:focus{outline:2px solid var(--pb-pink);outline-offset:2px}
+.pb-world input[type="checkbox"]{accent-color:var(--pb-pink);width:15px;height:15px}
+.pb-world .fl b,.pb-world p b{color:var(--pb-pink-deep)}
+.pb-world p{color:var(--pb-plum-2)}
+.pb-world .fl{color:var(--pb-plum-2)}
+
+/* ---- 色板 ---- */
 #pbPalette{max-width:560px}
 .pb-group{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;flex-wrap:wrap}
-.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.7rem;color:var(--ink-3);width:52px;padding-top:4px;flex-shrink:0}
-.pb-swatch{width:22px;height:22px;border-radius:22%;cursor:pointer;border:1px solid rgba(0,0,0,0.15);box-sizing:border-box;transition:transform .1s}
-.pb-swatch:hover{transform:scale(1.2)}
-.pb-swatch.on{border:2px solid var(--ink);transform:scale(1.2);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
-.pb-layer{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;padding:0.3rem 0.7rem;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);color:var(--ink-2)}
-.pb-layer.on{border-color:var(--ink);color:var(--ink);font-weight:600}
-.pb-layer i{font-style:normal;cursor:pointer;opacity:0.7}
+.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.68rem;color:#fff;background:var(--pb-lav);
+  width:52px;text-align:center;padding:3px 0;border-radius:999px;flex-shrink:0;margin-top:3px}
+.pb-swatch{width:22px;height:22px;border-radius:30%;cursor:pointer;border:1px solid rgba(0,0,0,0.15);box-sizing:border-box;transition:transform 120ms ease}
+.pb-swatch:hover{transform:scale(1.25) rotate(8deg)}
+.pb-swatch.on{border:2px solid var(--pb-plum);transform:scale(1.2);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--pb-pink)}
+
+/* ---- 图层 & 用豆 chips ---- */
+.pb-layer{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;padding:0.3rem 0.75rem;border:1.5px solid #ffd9e8;border-radius:999px;cursor:pointer;background:#fff;color:var(--pb-plum-2);transition:all 140ms ease}
+.pb-layer:hover{border-color:var(--pb-pink);transform:translateY(-1px)}
+.pb-layer.on{border-color:var(--pb-pink);color:var(--pb-pink-deep);font-weight:600;background:linear-gradient(120deg,#fff0f6,#ffe9f3);box-shadow:0 2px 8px rgba(240,86,143,0.15)}
+.pb-layer i{font-style:normal;cursor:pointer;opacity:0.65}
 .pb-layer i:hover{opacity:1}
 #pbCountsActive,#pbCountsTotal{display:flex;flex-wrap:wrap;gap:0.4rem}
-.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--ink-2);border:1px solid var(--line);border-radius:6px;padding:0.2rem 0.65rem 0.2rem 0.3rem}
-.pb-count i{width:16px;height:16px;border-radius:4px;display:inline-block;border:1px solid rgba(0,0,0,0.15)}
+.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--pb-plum);border:1.5px solid #ffd9e8;border-radius:999px;padding:0.22rem 0.7rem 0.22rem 0.32rem;background:#fffbfd}
+.pb-count i{width:16px;height:16px;border-radius:5px;display:inline-block;border:1px solid rgba(0,0,0,0.15)}
 .pb-count b{font-family:var(--font-mono)}
+
+/* ---- 画布区 ---- */
+#pbWrap::-webkit-scrollbar{height:9px;width:9px}
+#pbWrap::-webkit-scrollbar-track{background:#ffeef5;border-radius:99px}
+#pbWrap::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#ffb1cd,#ff8ab4);border-radius:99px}
+#pbWrap::-webkit-scrollbar-thumb:hover{background:#f76c9d}
+
+/* ---- 科普区块同风格化 ---- */
+.pb-world .explain{margin-top:1.6rem;padding-top:1.1rem;border-top:2px dashed #ffd9e8}
+.pb-world .explain h3{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;font-size:1rem;color:var(--pb-pink-deep);letter-spacing:0.08em;text-transform:none;margin-bottom:0.6rem}
+.pb-world .ex-formula{background:#fff7fb;border:1.5px dashed #ffc9db;border-radius:12px;color:var(--pb-plum)}
+.pb-world .ex-text{color:var(--pb-plum-2)}
+.pb-world .ex-text b{color:var(--pb-plum)}
 </style>
 
 <script>
