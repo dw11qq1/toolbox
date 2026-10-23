@@ -14,8 +14,8 @@
 </div>
 <div class="field">
   <span class="fl">测试文本</span>
-  <textarea id="reText" rows="6">联系我：boss@example.com 备用 wangyang@xqlwy.online
-手机号 13812345678，官网 https://www.xqlwy.online
+  <textarea id="reText" rows="6">联系我：boss@example.com 备用 spare@test.org
+手机号 13812345678，官网 https://www.example.com
 日期 2026-10-23，IP 192.168.1.1
 无效邮箱 hello@、@nope.com</textarea>
 </div>

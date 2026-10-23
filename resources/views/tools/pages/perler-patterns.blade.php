@@ -62,8 +62,10 @@
       <button class="btn" id="pbZoomIn" style="padding:0.1rem 0.6rem;font-size:0.85rem">＋</button>
     </span>
   </span>
-  <canvas id="pbCanvas" style="border:1px solid #ffd9e5;border-radius:14px;touch-action:none;cursor:crosshair;max-width:100%;background:#fffdf9"></canvas>
-  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">圆角方块的糖果小豆，带一点点高光——放大方便逐格微调，点着很解压。</p>
+  <div id="pbWrap" style="overflow:auto;max-width:100%;border-radius:14px;scrollbar-width:thin">
+    <canvas id="pbCanvas" style="border:1px solid #ffd9e5;border-radius:14px;touch-action:none;cursor:crosshair;background:#fffdf9"></canvas>
+  </div>
+  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">圆角方块的糖果小豆，带一点点高光——放大方便逐格微调，画布超出时上下左右滚动，比例永远是 1:1 不变形。</p>
 </div>
 
 <div class="field" id="pbCountWrap" style="display:none">

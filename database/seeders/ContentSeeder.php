@@ -64,6 +64,10 @@ class ContentSeeder extends Seeder
                 'name' => '风险回报比计算器', 'slug' => 'risk-reward-calculator', 'category' => '计算', 'sort_order' => 12,
                 'description' => '入场、止损、止盈三个价格算出 R:R 与打平胜率，下单前最后一道性价比闸门。',
             ],
+            [
+                'name' => '金融指标矩阵', 'slug' => 'finance-matrix', 'category' => '计算', 'sort_order' => 13,
+                'description' => '粘贴月度收益序列，一次算出年化、波动、回撤、夏普、索提诺、卡玛、盈亏比、期望值全套指标矩阵。',
+            ],
             // 开发
             [
                 'name' => 'JSON 格式化', 'slug' => 'json-formatter', 'category' => '开发', 'sort_order' => 1,
@@ -84,6 +88,18 @@ class ContentSeeder extends Seeder
             [
                 'name' => '时间戳自然语言', 'slug' => 'natural-time', 'category' => '开发', 'sort_order' => 5,
                 'description' => '贴时间戳或选日期，翻译成「3 天后」「昨天」这样的人话，附星期、年底倒计时。',
+            ],
+            [
+                'name' => 'JSON → TypeScript 接口', 'slug' => 'json-to-ts', 'category' => '开发', 'sort_order' => 6,
+                'description' => '贴响应 JSON 生成 TypeScript interface：嵌套对象自动拆接口、数组字段联合类型、缺失字段标可选。',
+            ],
+            [
+                'name' => 'cURL → 请求代码', 'slug' => 'curl-to-code', 'category' => '开发', 'sort_order' => 7,
+                'description' => '粘贴 cURL 命令，一键生成 fetch / axios / PHP cURL / Laravel Http / Python requests / Go 六种请求代码。',
+            ],
+            [
+                'name' => '文本格式互转', 'slug' => 'format-convert', 'category' => '开发', 'sort_order' => 8,
+                'description' => 'JSON / YAML / XML / CSV 任意两种格式互转，CSV 走 RFC 4180 引号转义，XML 属性自动展平。',
             ],
             // 转换
             [
