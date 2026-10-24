@@ -112,8 +112,8 @@ class ContentSeeder extends Seeder
                 'description' => '十六步音序器，点亮格子自己作曲，五声音阶随便点都好听，还能一键随机找灵感。',
             ],
             [
-                'name' => '节奏工坊', 'slug' => 'beat-studio', 'category' => '音乐', 'sort_order' => 2,
-                'description' => '四组打击乐 + 四件旋律乐器的多轨音序器，叠出有层次感的节奏，内置电子和嘻哈预置。',
+                'name' => '乐器舞台', 'slug' => 'beat-studio', 'category' => '音乐', 'sort_order' => 2,
+                'description' => '把乐器拖上舞台就能自动演奏：8 件合成乐器各自带节奏型，多件组合叠出完整律动，可换节奏、静音、随机组队。',
             ],
             // 创作
             [
