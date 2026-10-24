@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>@yield('title', '工具匣 ToolBox')</title>
+@hasSection('description')
+<meta name="description" content="@yield('description')">
+@else
+<meta name="description" content="工具匣 ToolBox — 25 个免费在线工具：财务计算器、开发工具、格式互转、拼豆图纸生成器与趣味测试，全部浏览器本地运行。">
+@endif
+<link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 @yield('meta')
 <script>(function(){var t=localStorage.getItem('theme');if(t){document.documentElement.setAttribute('data-theme',t)}else if(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.setAttribute('data-theme','dark')}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">

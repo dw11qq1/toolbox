@@ -1,13 +1,15 @@
 @extends('layouts.app')
 
-@section('title', '工具匣 ToolBox — 在线工具与音乐创作，数据不出浏览器')
+@section('title', '工具匣 ToolBox — 在线计算器、开发工具与拼豆图纸生成器')
+
+@section('description', '工具匣 ToolBox 提供 25 个免费在线工具：贷款与复利计算、风控指标矩阵、社保计算、JSON/正则/Cron 开发工具、格式互转、拼豆图纸生成器与趣味测试，全部浏览器本地运行，数据不出设备。')
 
 @section('content')
 <div class="wrap">
   <div class="page-head">
     <p class="k">ToolBox · 工具匣</p>
-    <h1>小工具，小旋律，开匣即用。</h1>
-    <p class="sub">全部在浏览器本地运行，不注册、不登录，你输入的数据不会离开你的设备。</p>
+    <h1>25 个在线工具，开匣即用。</h1>
+    <p class="sub">计算器、开发工具、格式转换、拼豆图纸——全部在浏览器本地运行，不注册、不登录，你输入的数据不会离开你的设备。</p>
   </div>
 
   @php
