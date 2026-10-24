@@ -1,41 +1,47 @@
 <div id="bsApp">
   <div class="bs-tray" id="bsTray">
-    <span class="bs-tray-label">乐器架<span>拖到舞台，或先点乐器再点空格</span></span>
+    <span class="bs-tray-label">乐器架<span>拖到舞台即自动开始演奏，每件乐器一条独立时间线</span></span>
     <div class="bs-chips" id="bsChips"></div>
   </div>
 
   <div class="score-row">
-    <button class="btn" id="bsPlay">▶ 播放</button>
+    <button class="btn" id="bsPlayAll">▶ 全部开始</button>
+    <button class="btn" id="bsPauseAll">⏸ 全部暂停</button>
     <button class="btn" id="bsRock">⚡ 电子组合</button>
     <button class="btn" id="bsHiphop">🎤 嘻哈组合</button>
     <button class="btn" id="bsRandom">🎲 随机组队</button>
+    <button class="btn" id="bsSave">💾 保存</button>
+    <button class="btn" id="bsLoad">📂 载入</button>
+    <button class="btn" id="bsExport">⬇ 导出音乐</button>
     <button class="btn" id="bsClear">清空舞台</button>
-    <label class="bpm-label">速度 <input type="range" id="bsBpm" min="70" max="170" value="110"> <b id="bsBpmVal">110</b> BPM</label>
+    <label class="bpm-label">基准速度 <input type="range" id="bsBpm" min="70" max="170" value="110"> <b id="bsBpmVal">110</b> BPM</label>
   </div>
 
   <div class="bs-stage" id="bsStage"></div>
+  <div class="bs-toast" id="bsToast"></div>
 
-  <p class="fl" style="margin-top:0.8rem">每件乐器上台后都会按自己的节奏自动演奏——底鼓踩正拍、踩镲走八分、贝斯铺底、铃铛点缀，钢琴按五声音阶走旋律。13 件合成乐器（含 Beatbox 人声四件套）任意组合，点卡片上的「换节奏」可以切换它的演奏型态。</p>
+  <p class="fl" style="margin-top:0.8rem">每件乐器上台后立刻开始自己的循环，<b>各自一条独立时间线、速率略有差异</b>——所以多件乐器叠加后会不断错动、演化，像真乐队在互相呼应而不是齐步走。卡片上的小圆点是它自己的 16 步进度，各走各的。</p>
 </div>
 
 <script>
 (function(){
-  /* 乐器库：打击乐 + Beatbox 人声打击 + 旋律乐器，全部 Web Audio 实时合成 */
+  /* 乐器库：打击乐 + Beatbox 人声打击 + 旋律乐器，全部 Web Audio 实时合成
+     rate = 该乐器相对基准速度的倍率（各自不同 → 异步错动） */
   var INSTRUMENTS = [
-    {id:'kick',   label:'🥁 底鼓',  group:'打击乐', patterns:['1000000010000000','1000100010001000','1000001000010000']},
-    {id:'snare',  label:'🥢 军鼓',  group:'打击乐', patterns:['0000100000001000','0010001000100010','0000100000100010']},
-    {id:'hat',    label:'🎩 踩镲',  group:'打击乐', patterns:['0010001000100010','0010101000101010','1010101010101010']},
-    {id:'clap',   label:'👏 拍手',  group:'打击乐', patterns:['0000000000001000','0000000000100000','0000000000000010']},
-    {id:'bbBass', label:'🎤 低音 B', group:'Beatbox', patterns:['1000000010000000','1000000001000010','1000010000100000']},
-    {id:'bbK',    label:'🎤 军鼓 K', group:'Beatbox', patterns:['0000100000001000','0000100000100000','0010000000100010']},
-    {id:'bbTss',  label:'🎤 镲 tss', group:'Beatbox', patterns:['0010001000100010','0010101000101010','0000001010000010']},
-    {id:'bbPsh',  label:'🎤 喷气 P', group:'Beatbox', patterns:['0000000000001000','0000001000000010','0000000010000000']},
-    {id:'bass',   label:'🎸 贝斯',  group:'旋律', patterns:['1000100010001000','1000000010000000','1000101010001010'], f:82.41},
-    {id:'synth',  label:'🎹 合成',  group:'旋律', patterns:['1000100010001001','0000100000001000','1000000110000000'], f:164.81},
-    {id:'bell',   label:'🔔 铃铛',  group:'旋律', patterns:['0000000000010000','0000000001000000','0000000000001000'], f:659.25},
-    {id:'pluck',  label:'🪕 拨弦',  group:'旋律', patterns:['0000100000001001','0010001000100010','0000000010000000'], f:329.63},
-    {id:'piano',  label:'🎹 钢琴',  group:'旋律',
-      notes:[261.63, 293.66, 329.63, 392.00, 440.00], // C D E G A 五声音阶，随便弹都好听
+    {id:'kick',   label:'🥁 底鼓',  group:'打击乐', rate:1.00, patterns:['1000000010000000','1000100010001000','1000001000010000']},
+    {id:'snare',  label:'🥢 军鼓',  group:'打击乐', rate:1.06, patterns:['0000100000001000','0010001000100010','0000100000100010']},
+    {id:'hat',    label:'🎩 踩镲',  group:'打击乐', rate:0.97, patterns:['0010001000100010','0010101000101010','1010101010101010']},
+    {id:'clap',   label:'👏 拍手',  group:'打击乐', rate:1.03, patterns:['0000000000001000','0000000000100000','0000000000000010']},
+    {id:'bbBass', label:'🎤 低音 B', group:'Beatbox', rate:0.95, patterns:['1000000010000000','1000000001000010','1000010000100000']},
+    {id:'bbK',    label:'🎤 军鼓 K', group:'Beatbox', rate:1.08, patterns:['0000100000001000','0000100000100000','0010000000100010']},
+    {id:'bbTss',  label:'🎤 镲 tss', group:'Beatbox', rate:1.02, patterns:['0010001000100010','0010101000101010','0000001010000010']},
+    {id:'bbPsh',  label:'🎤 喷气 P', group:'Beatbox', rate:0.99, patterns:['0000000000001000','0000001000000010','0000000010000000']},
+    {id:'bass',   label:'🎸 贝斯',  group:'旋律', rate:1.05, patterns:['1000100010001000','1000000010000000','1000101010001010'], f:82.41},
+    {id:'synth',  label:'🎹 合成',  group:'旋律', rate:0.93, patterns:['1000100010001001','0000100000001000','1000000110000000'], f:164.81},
+    {id:'bell',   label:'🔔 铃铛',  group:'旋律', rate:1.10, patterns:['0000000000010000','0000000001000000','0000000000001000'], f:659.25},
+    {id:'pluck',  label:'🪕 拨弦',  group:'旋律', rate:1.01, patterns:['0000100000001001','0010001000100010','0000000010000000'], f:329.63},
+    {id:'piano',  label:'🎹 钢琴',  group:'旋律', rate:0.96,
+      notes:[261.63, 293.66, 329.63, 392.00, 440.00], // C D E G A 五声音阶
       patterns:['1000100010001000','1001001010010010','0001001000010010']},
   ];
   var byId = {};
@@ -45,9 +51,8 @@
   var stage = document.getElementById('bsStage');
   var chipsBox = document.getElementById('bsChips');
   var slots = [], slotEls = [], dots = [];
-  var audioCtx = null, noiseBuf = null;
-  var playing = false, step = 0, timer = null;
-  var picked = null; // 点选待放置的乐器 id
+  var audioCtx = null, noiseBuf = null, master = null;
+  var picked = null;
 
   function ctxGet(){
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
@@ -65,10 +70,20 @@
     return noiseBuf;
   }
 
-  /* 合成引擎：底鼓扫频、鼓组噪声、旋律振荡器、Beatbox 人声打击、钢琴 */
+  function ensureMaster(){
+    var c = ctxGet();
+    if(!master){
+      master = c.createGain();
+      master.gain.value = 1;
+      master.connect(c.destination);
+    }
+    return master;
+  }
+
+  /* 合成引擎 */
   function playTrack(id, f, step){
     var c = ctxGet(), t = c.currentTime, g = c.createGain(), src;
-    g.connect(c.destination);
+    g.connect(ensureMaster());
     if(id === 'kick'){
       src = c.createOscillator();
       src.type = 'sine';
@@ -85,24 +100,24 @@
       if(id === 'snare'){ flt.type = 'highpass'; flt.frequency.value = 1200; g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16); src.start(t); src.stop(t + 0.18); }
       if(id === 'hat'){ flt.type = 'highpass'; flt.frequency.value = 7000; g.gain.setValueAtTime(0.22, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); src.start(t); src.stop(t + 0.06); }
       if(id === 'clap'){ flt.type = 'bandpass'; flt.frequency.value = 1800; g.gain.setValueAtTime(0.35, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12); src.start(t); src.stop(t + 0.14); }
-      if(id === 'bbK'){ /* Beatbox 军鼓 K：带 2kHz 共振峰的短促噪声 */
+      if(id === 'bbK'){
         flt.type = 'bandpass'; flt.frequency.value = 2000; flt.Q.value = 3;
         g.gain.setValueAtTime(0.42, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
         src.start(t); src.stop(t + 0.12);
       }
-      if(id === 'bbTss'){ /* Beatbox 镲 tss：极短高频噪声 */
+      if(id === 'bbTss'){
         flt.type = 'highpass'; flt.frequency.value = 8200;
         g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
         src.start(t); src.stop(t + 0.045);
       }
-      if(id === 'bbPsh'){ /* Beatbox 喷气 P：扫频带通噪声 */
+      if(id === 'bbPsh'){
         flt.type = 'bandpass'; flt.frequency.setValueAtTime(900, t);
         flt.frequency.exponentialRampToValueAtTime(400, t + 0.09);
         flt.Q.value = 1.2;
         g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
         src.start(t); src.stop(t + 0.13);
       }
-    } else if(id === 'bbBass'){ /* Beatbox 低音 B：带低通的锯齿，喉音感 */
+    } else if(id === 'bbBass'){
       src = c.createOscillator();
       src.type = 'sawtooth';
       src.frequency.setValueAtTime(110, t);
@@ -116,13 +131,13 @@
       var ins = byId['piano'];
       var freq = (ins.notes && ins.notes.length ? ins.notes : [261.63])[(step || 0) % ins.notes.length];
       var o1 = c.createOscillator(); o1.type = 'triangle'; o1.frequency.value = freq;
-      var o2 = c.createOscillator(); o2.type = 'sine'; o2.frequency.value = freq * 2.01; // 微微失谐的八度泛音
+      var o2 = c.createOscillator(); o2.type = 'sine'; o2.frequency.value = freq * 2.01;
       var g1 = c.createGain(), g2 = c.createGain();
       g1.gain.setValueAtTime(0.22, t);
       g1.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
       g2.gain.setValueAtTime(0.07, t);
       g2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-      o1.connect(g1).connect(c.destination); o2.connect(g2).connect(c.destination);
+      o1.connect(g1).connect(ensureMaster()); o2.connect(g2).connect(ensureMaster());
       o1.start(t); o1.stop(t + 0.9); o2.start(t); o2.stop(t + 0.45);
     } else {
       src = c.createOscillator();
@@ -133,27 +148,27 @@
       g.gain.setValueAtTime(vol, t);
       g.gain.exponentialRampToValueAtTime(0.001, t + dur);
       if(id === 'bell'){
-        var o2 = c.createOscillator(), g2 = c.createGain();
-        o2.type = 'sine'; o2.frequency.value = f * 2;
-        g2.gain.setValueAtTime(0.06, t);
-        g2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-        o2.connect(g2).connect(c.destination);
-        o2.start(t); o2.stop(t + 0.42);
+        var o2b = c.createOscillator(), g2b = c.createGain();
+        o2b.type = 'sine'; o2b.frequency.value = f * 2;
+        g2b.gain.setValueAtTime(0.06, t);
+        g2b.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+        o2b.connect(g2b).connect(ensureMaster());
+        o2b.start(t); o2b.stop(t + 0.42);
       }
       src.connect(g); src.start(t); src.stop(t + dur + 0.05);
     }
   }
 
-  /* ---------- 乐器架 chips（按分组） ---------- */
+  /* ---------- 乐器架（按分组） ---------- */
   var GROUPS = ['打击乐', 'Beatbox', '旋律'];
   GROUPS.forEach(function(grp){
-    var list = INSTRUMENTS.filter(function(i){ return i.group === grp; });
-    if(!list.length) return;
-    var tag = document.createElement('span');
-    tag.className = 'bs-group';
-    tag.textContent = grp;
-    chipsBox.appendChild(tag);
-    list.forEach(function(ins){
+    INSTRUMENTS.filter(function(i){ return i.group === grp; }).forEach(function(ins){
+      if(!chipsBox.querySelector('.bs-group')){
+        var tag0 = document.createElement('span');
+        tag0.className = 'bs-group';
+        tag0.textContent = grp;
+        chipsBox.appendChild(tag0);
+      }
       var chip = document.createElement('button');
       chip.className = 'bs-chip';
       chip.draggable = true;
@@ -173,16 +188,17 @@
     });
   });
 
+  function syncChips(){
+    Array.prototype.forEach.call(chipsBox.querySelectorAll('.bs-chip'), function(el){
+      el.classList.toggle('picked', el.dataset.id === picked);
+    });
+  }
+
   /* ---------- 舞台 ---------- */
   function buildSlot(i){
     var el = document.createElement('div');
     el.className = 'bs-slot';
     el.dataset.i = i;
-
-    var empty = document.createElement('div');
-    empty.className = 'bs-empty';
-    empty.textContent = '+';
-    el.appendChild(empty);
 
     el.addEventListener('dragover', function(e){ e.preventDefault(); el.classList.add('over'); });
     el.addEventListener('dragleave', function(){ el.classList.remove('over'); });
@@ -202,9 +218,10 @@
   function place(i, id){
     var ins = byId[id];
     if(!ins) return;
-    slots[i] = {id: id, pattern: ins.patterns[0], muted: false};
+    if(slots[i]) stopSlot(i);
+    slots[i] = {id: id, pattern: ins.patterns[0], muted: false, step: 0, timer: null, rate: ins.rate};
     renderSlot(i);
-    if(!playing) playTrack(id, ins.f, 0); // 放下即试听一声
+    startSlot(i); // 上台即开始自己的循环
   }
 
   function renderSlot(i){
@@ -232,7 +249,9 @@
     del.title = '移下舞台';
     del.addEventListener('click', function(e){
       e.stopPropagation();
-      slots[i] = null; renderSlot(i);
+      stopSlot(i);
+      slots[i] = null;
+      renderSlot(i);
     });
     head.appendChild(del);
     el.appendChild(head);
@@ -276,7 +295,7 @@
     });
 
     var silent = document.createElement('button');
-    silent.className = 'bs-mini' + (s.muted ? '' : ' off');
+    silent.className = 'bs-mini' + (s.muted ? '' : 'off');
     silent.textContent = '静音';
     silent.addEventListener('click', function(e){
       e.stopPropagation();
@@ -287,70 +306,88 @@
     el.appendChild(tools);
   }
 
-  function syncChips(){
-    Array.prototype.forEach.call(chipsBox.children, function(el){
-      el.classList.toggle('picked', el.dataset.id === picked);
-    });
+  /* ---------- 每件乐器自己的时钟 ---------- */
+  function slotInterval(s){
+    var base = 60000 / (+document.getElementById('bsBpm').value) / 4;
+    return base * s.rate;
   }
 
-  /* ---------- 播放循环 ---------- */
-  function stepPlay(){
-    for(var i = 0; i < SLOTS; i++){
-      var s = slots[i];
-      if(!s || s.muted) continue;
-      if(s.pattern[step] === '1'){
-        playTrack(s.id, byId[s.id].f, step);
-        if(slotEls[i]) {
-          slotEls[i].classList.remove('hit');
-          void slotEls[i].offsetWidth;
-          slotEls[i].classList.add('hit');
-        }
-      }
+  function startSlot(i){
+    var s = slots[i];
+    if(!s || s.timer) return;
+    s.timer = setInterval(function(){ slotStep(i); }, slotInterval(s));
+  }
+
+  function stopSlot(i){
+    var s = slots[i];
+    if(!s) return;
+    clearInterval(s.timer);
+    s.timer = null;
+    setCursor(i, -1);
+  }
+
+  function slotStep(i){
+    var s = slots[i];
+    if(!s) return;
+    if(!s.muted && s.pattern[s.step] === '1'){
+      playTrack(s.id, byId[s.id].f, s.step);
+      var el = slotEls[i];
+      el.classList.remove('hit');
+      void el.offsetWidth;
+      el.classList.add('hit');
     }
-    for(var i2 = 0; i2 < SLOTS; i2++){
-      if(dots[i2]) for(var d = 0; d < dots[i2].length; d++){
-        dots[i2][d].classList.toggle('cur', d === step);
-      }
-    }
-    step = (step + 1) % STEPS;
+    setCursor(i, s.step);
+    s.step = (s.step + 1) % STEPS;
   }
 
-  function clearStage(){
-    for(var i = 0; i < SLOTS; i++){ slots[i] = null; renderSlot(i); }
-  }
-
-  function fill(list){ // list: [{id, pi}]
-    clearStage();
-    list.forEach(function(item, idx){
-      var ins = byId[item.id];
-      if(!ins || idx >= SLOTS) return;
-      slots[idx] = {id: item.id, pattern: ins.patterns[item.pi || 0], muted: false};
-      renderSlot(idx);
-    });
+  function setCursor(i, st){
+    if(!dots[i]) return;
+    for(var d = 0; d < dots[i].length; d++) dots[i][d].classList.toggle('cur', d === st);
   }
 
   for(var i = 0; i < SLOTS; i++) buildSlot(i);
 
-  /* ---------- 控件 ---------- */
-  document.getElementById('bsPlay').addEventListener('click', function(){
-    playing = !playing;
-    this.textContent = playing ? '⏸ 停止' : '▶ 播放';
-    if(playing){
-      step = 0;
-      timer = setInterval(stepPlay, 60000 / +document.getElementById('bsBpm').value / 4);
-    } else {
-      clearInterval(timer);
-      for(var i2 = 0; i2 < SLOTS; i2++)
-        if(dots[i2]) for(var d = 0; d < dots[i2].length; d++) dots[i2][d].classList.remove('cur');
-    }
+  /* ---------- 全局控制 ---------- */
+  document.getElementById('bsPlayAll').addEventListener('click', function(){
+    var started = 0;
+    for(var i2 = 0; i2 < SLOTS; i2++) if(slots[i2]){ startSlot(i2); started++; }
+    toast(started ? '全部开始演奏' : '舞台是空的，先拖乐器上来');
+  });
+
+  document.getElementById('bsPauseAll').addEventListener('click', function(){
+    for(var i2 = 0; i2 < SLOTS; i2++) stopSlot(i2);
+    toast('已全部暂停');
   });
 
   document.getElementById('bsBpm').addEventListener('input', function(){
     document.getElementById('bsBpmVal').textContent = this.value;
-    if(playing){ clearInterval(timer); timer = setInterval(stepPlay, 60000 / +this.value / 4); }
+    // 基准速度变化：重挂在跑的循环，保持各自速率差异
+    for(var i2 = 0; i2 < SLOTS; i2++){
+      var s = slots[i2];
+      if(s && s.timer){ clearInterval(s.timer); s.timer = null; startSlot(i2); }
+    }
   });
 
+  function clearStage(){
+    for(var i2 = 0; i2 < SLOTS; i2++){
+      stopSlot(i2);
+      slots[i2] = null;
+      renderSlot(i2);
+    }
+  }
+
   document.getElementById('bsClear').addEventListener('click', clearStage);
+
+  function fill(list){
+    clearStage();
+    list.forEach(function(item, idx){
+      var ins = byId[item.id];
+      if(!ins || idx >= SLOTS) return;
+      slots[idx] = {id: item.id, pattern: ins.patterns[item.pi || 0], muted: false, step: 0, timer: null, rate: ins.rate};
+      renderSlot(idx);
+      startSlot(idx);
+    });
+  }
 
   document.getElementById('bsRock').addEventListener('click', function(){
     fill([
@@ -360,13 +397,13 @@
 
   document.getElementById('bsHiphop').addEventListener('click', function(){
     fill([
-      {id:'kick', pi:2}, {id:'snare', pi:2}, {id:'hat', pi:0}, {id:'bass', pi:2}, {id:'bell', pi:0}, {id:'pluck', pi:1},
+      {id:'bbBass', pi:1}, {id:'bbK', pi:0}, {id:'bbTss', pi:1}, {id:'bass', pi:2}, {id:'bell', pi:0}, {id:'pluck', pi:1},
     ]);
   });
 
   document.getElementById('bsRandom').addEventListener('click', function(){
     var pool = INSTRUMENTS.slice();
-    var count = 3 + Math.floor(Math.random() * 3); // 3~5 件
+    var count = 3 + Math.floor(Math.random() * 3);
     var list = [];
     for(var k = 0; k < count; k++){
       var pick = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
@@ -374,6 +411,116 @@
     }
     fill(list);
   });
+
+  /* ---------- 本地保存 / 载入 ---------- */
+  var SAVE_KEY = 'bs.combo.v1';
+
+  function toast(msg){
+    var el = document.getElementById('bsToast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.classList.remove('show'); }, 2200);
+  }
+
+  document.getElementById('bsSave').addEventListener('click', function(){
+    var data = {
+      bpm: +document.getElementById('bsBpm').value,
+      slots: slots.map(function(s){ return s ? {id: s.id, pattern: s.pattern, muted: !!s.muted} : null; })
+    };
+    try{
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      toast('已保存到本地，下次打开自动恢复');
+    }catch(e){
+      toast('保存失败：浏览器存储不可用');
+    }
+  });
+
+  function loadCombo(silent){
+    var raw = null;
+    try{ raw = localStorage.getItem(SAVE_KEY); }catch(e){}
+    if(!raw){ if(!silent) toast('本地没有保存过的编曲'); return false; }
+    var data;
+    try{ data = JSON.parse(raw); }catch(e){ return false; }
+    document.getElementById('bsBpm').value = data.bpm || 110;
+    document.getElementById('bsBpmVal').textContent = document.getElementById('bsBpm').value;
+    (data.slots || []).forEach(function(s, i){
+      if(s && byId[s.id] && i < SLOTS){
+        slots[i] = {id: s.id, pattern: s.pattern, muted: !!s.muted, step: 0, timer: null, rate: byId[s.id].rate};
+        renderSlot(i);
+        startSlot(i);
+      }
+    });
+    if(!silent) toast('已载入本地编曲');
+    return true;
+  }
+
+  document.getElementById('bsLoad').addEventListener('click', function(){ loadCombo(false); });
+  loadCombo(true); // 打开页面自动恢复
+
+  /* ---------- 导出音乐：录 8 秒自动下载 ---------- */
+  var exportBtn = document.getElementById('bsExport');
+  var recDest = null, mediaRec = null, recChunks = [], recording = false, recTimer = null;
+
+  exportBtn.addEventListener('click', function(){
+    if(recording){ stopRecording(); return; }
+    if(!window.MediaRecorder){ toast('当前浏览器不支持录音导出，请用 Chrome / Edge'); return; }
+    if(!slots.some(function(s){ return s; })){ toast('舞台是空的，先拖几件乐器上来'); return; }
+
+    var c = ctxGet();
+    try{
+      recDest = c.createMediaStreamDestination();
+      ensureMaster().connect(recDest);
+    }catch(e){
+      toast('录音初始化失败，换个浏览器试试');
+      return;
+    }
+
+    var mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].filter(function(m){
+      return MediaRecorder.isTypeSupported(m);
+    })[0];
+
+    recChunks = [];
+    try{
+      mediaRec = new MediaRecorder(recDest.stream, mime ? {mimeType: mime} : undefined);
+    }catch(e){
+      try{ master.disconnect(recDest); }catch(err){}
+      toast('录音器启动失败，请用 Chrome / Edge');
+      return;
+    }
+
+    mediaRec.ondataavailable = function(e){ if(e.data && e.data.size) recChunks.push(e.data); };
+    mediaRec.onstop = function(){
+      try{ master.disconnect(recDest); }catch(e){}
+      var type = (mediaRec && mediaRec.mimeType) || 'audio/webm';
+      var blob = new Blob(recChunks, {type: type});
+      var ext = type.indexOf('ogg') >= 0 ? 'ogg' : 'webm';
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'toolbox-beat-' + Date.now() + '.' + ext;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 8000);
+      recording = false;
+      exportBtn.textContent = '⬇ 导出音乐';
+      exportBtn.classList.remove('rec');
+    };
+
+    recording = true;
+    mediaRec.start();
+    exportBtn.textContent = '■ 停止并导出';
+    exportBtn.classList.add('rec');
+    // 确保所有乐器都在跑
+    for(var i2 = 0; i2 < SLOTS; i2++) if(slots[i2]) startSlot(i2);
+    toast('录制中（8 秒后自动下载），也可点按钮提前停止');
+    recTimer = setTimeout(stopRecording, 8000);
+  });
+
+  function stopRecording(){
+    clearTimeout(recTimer);
+    if(mediaRec && mediaRec.state === 'recording') mediaRec.stop();
+  }
 })();
 </script>
 
@@ -400,12 +547,15 @@
 #bsApp .bs-dots{display:flex;gap:2px;margin:0.45rem 0}
 #bsApp .bs-dots i{flex:1;height:6px;border-radius:2px;background:var(--line)}
 #bsApp .bs-dots i.on{background:var(--accent)}
-#bsApp .bs-dots i.beat{margin-left:0}
 #bsApp .bs-dots i.cur{box-shadow:0 0 0 1.5px var(--accent)}
 #bsApp .bs-card-tools{display:flex;gap:0.3rem;flex-wrap:wrap}
 #bsApp .bs-mini{border:1px solid var(--line);background:var(--panel);color:var(--ink-2);font-size:0.68rem;border-radius:999px;padding:0.15rem 0.5rem;cursor:pointer;transition:all 120ms ease}
 #bsApp .bs-mini:hover{border-color:var(--accent);color:var(--accent)}
 #bsApp .bs-mini.off{opacity:0.55}
+#bsApp .btn.rec{background:var(--accent);color:#fff;border-color:var(--accent)}
+#bsApp .bs-toast{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,1rem);background:var(--ink);color:var(--bg,#fff);
+  font-size:0.82rem;padding:0.5rem 1rem;border-radius:999px;opacity:0;pointer-events:none;transition:opacity 200ms ease,transform 200ms ease;z-index:99}
+#bsApp .bs-toast.show{opacity:0.95;transform:translate(-50%,0)}
 #bsApp .bpm-label{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--ink-2)}
 #bsApp .bpm-label b{font-family:var(--font-mono);color:var(--accent)}
 @media (max-width:600px){
@@ -416,6 +566,6 @@
 </style>
 
 <div class="explain">
-  <h3>玩法 & 这个工具在做什么</h3>
-  <p class="ex-text">这是个「搭乐队」的沙盒：<b>乐器架</b>里 8 件乐器（4 件打击乐 + 4 件旋律乐器）全部由 Web Audio 实时合成，不加载任何音频文件。把乐器拖到舞台，它就会按自己的节奏型自动演奏——底鼓踩正拍、踩镲走八分音符、贝斯铺底、铃铛和拨弦做点缀。多件乐器叠加时，每件的节奏型在时间轴上互补，就组成了完整的律动；每张卡片上的小圆点显示它的 16 步节奏，播放时会跟着走光标。想换手感就点「换节奏」（每件乐器预置 3 种型态），嫌吵就「静音」，试听单件就「试听」。六件以上同台时建议先把 BPM 降到 80 左右，层次会更清楚。</p>
+  <h3>玩法 &amp; 这个工具在做什么</h3>
+  <p class="ex-text">这是个「一个人就是一支乐队」的沙盒：乐器架里 13 件乐器（4 件打击乐 + 4 件 Beatbox 人声打击 + 5 件旋律乐器）全部由 Web Audio 实时合成，不加载任何音频文件。把乐器拖到舞台，<b>它会立刻开始自己的循环，每件乐器一条独立的时间线</b>——而且每件乐器的速率都做了细微差别（0.93~1.10 倍），所以多件叠加后会不断错动、互相呼应，而不是齐步走，听感更像真乐队在即兴。卡片上的小圆点是它自己的 16 步进度，各走各的；触屏上先点乐器再点空格即可上台。「换节奏」切换该乐器的三种演奏型态，「试听」单听一件，「静音」把它从合奏里摘出来。「保存」把当前编曲存到浏览器本地（刷新、关页面都不丢，下次打开自动恢复），「导出音乐」用 MediaRecorder 录 8 秒实时混音，自动下载成音频文件（Chrome / Edge 效果最好）。</p>
 </div>
