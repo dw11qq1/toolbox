@@ -57,7 +57,6 @@
     <span class="muted">© {{ date('Y') }} 工具匣 ToolBox · 数据不出浏览器</span>
     <span class="foot-links">
       <a href="{{ route('privacy') }}">隐私政策</a>
-      <a href="{{ route('sitemap') }}">站点地图</a>
     </span>
   </div>
 </footer>
