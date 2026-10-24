@@ -113,7 +113,7 @@ class ContentSeeder extends Seeder
             ],
             [
                 'name' => '乐器舞台', 'slug' => 'beat-studio', 'category' => '音乐', 'sort_order' => 2,
-                'description' => '把乐器拖上舞台就能自动演奏：8 件合成乐器各自带节奏型，多件组合叠出完整律动，可换节奏、静音、随机组队。',
+                'description' => '把乐器拖上舞台就能自动演奏：13 件合成乐器（含 Beatbox 人声四件套与钢琴）各带节奏型，任意组合叠出律动。',
             ],
             // 创作
             [

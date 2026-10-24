@@ -15,21 +15,28 @@
 
   <div class="bs-stage" id="bsStage"></div>
 
-  <p class="fl" style="margin-top:0.8rem">每件乐器上台后都会按自己的节奏自动演奏——底鼓踩正拍、踩镲走八分、贝斯铺底、铃铛点缀。拖上三四件就能叠出完整律动，点卡片上的「换节奏」可以切换它的演奏型态。</p>
+  <p class="fl" style="margin-top:0.8rem">每件乐器上台后都会按自己的节奏自动演奏——底鼓踩正拍、踩镲走八分、贝斯铺底、铃铛点缀，钢琴按五声音阶走旋律。13 件合成乐器（含 Beatbox 人声四件套）任意组合，点卡片上的「换节奏」可以切换它的演奏型态。</p>
 </div>
 
 <script>
 (function(){
-  /* 乐器库：4 打击乐（合成鼓组）+ 4 旋律乐器（固定音高） */
+  /* 乐器库：打击乐 + Beatbox 人声打击 + 旋律乐器，全部 Web Audio 实时合成 */
   var INSTRUMENTS = [
-    {id:'kick',  label:'🥁 底鼓',  patterns:['1000000010000000','1000100010001000','1000001000010000']},
-    {id:'snare', label:'🥢 军鼓',  patterns:['0000100000001000','0010001000100010','0000100000100010']},
-    {id:'hat',   label:'🎩 踩镲',  patterns:['0010001000100010','0010101000101010','1010101010101010']},
-    {id:'clap',  label:'👏 拍手',  patterns:['0000000000001000','0000000000100000','0000000000000010']},
-    {id:'bass',  label:'🎸 贝斯',  patterns:['1000100010001000','1000000010000000','1000101010001010'], f:82.41},
-    {id:'synth', label:'🎹 合成',  patterns:['1000100010001001','0000100000001000','1000000110000000'], f:164.81},
-    {id:'bell',  label:'🔔 铃铛',  patterns:['0000000000010000','0000000001000000','0000000000001000'], f:659.25},
-    {id:'pluck', label:'🪕 拨弦',  patterns:['0000100000001001','0010001000100010','0000000010000000'], f:329.63},
+    {id:'kick',   label:'🥁 底鼓',  group:'打击乐', patterns:['1000000010000000','1000100010001000','1000001000010000']},
+    {id:'snare',  label:'🥢 军鼓',  group:'打击乐', patterns:['0000100000001000','0010001000100010','0000100000100010']},
+    {id:'hat',    label:'🎩 踩镲',  group:'打击乐', patterns:['0010001000100010','0010101000101010','1010101010101010']},
+    {id:'clap',   label:'👏 拍手',  group:'打击乐', patterns:['0000000000001000','0000000000100000','0000000000000010']},
+    {id:'bbBass', label:'🎤 低音 B', group:'Beatbox', patterns:['1000000010000000','1000000001000010','1000010000100000']},
+    {id:'bbK',    label:'🎤 军鼓 K', group:'Beatbox', patterns:['0000100000001000','0000100000100000','0010000000100010']},
+    {id:'bbTss',  label:'🎤 镲 tss', group:'Beatbox', patterns:['0010001000100010','0010101000101010','0000001010000010']},
+    {id:'bbPsh',  label:'🎤 喷气 P', group:'Beatbox', patterns:['0000000000001000','0000001000000010','0000000010000000']},
+    {id:'bass',   label:'🎸 贝斯',  group:'旋律', patterns:['1000100010001000','1000000010000000','1000101010001010'], f:82.41},
+    {id:'synth',  label:'🎹 合成',  group:'旋律', patterns:['1000100010001001','0000100000001000','1000000110000000'], f:164.81},
+    {id:'bell',   label:'🔔 铃铛',  group:'旋律', patterns:['0000000000010000','0000000001000000','0000000000001000'], f:659.25},
+    {id:'pluck',  label:'🪕 拨弦',  group:'旋律', patterns:['0000100000001001','0010001000100010','0000000010000000'], f:329.63},
+    {id:'piano',  label:'🎹 钢琴',  group:'旋律',
+      notes:[261.63, 293.66, 329.63, 392.00, 440.00], // C D E G A 五声音阶，随便弹都好听
+      patterns:['1000100010001000','1001001010010010','0001001000010010']},
   ];
   var byId = {};
   INSTRUMENTS.forEach(function(i){ byId[i.id] = i; });
@@ -58,8 +65,8 @@
     return noiseBuf;
   }
 
-  /* 与节奏工坊同一套合成引擎：底鼓扫频、鼓组噪声、旋律振荡器 */
-  function playTrack(id, f){
+  /* 合成引擎：底鼓扫频、鼓组噪声、旋律振荡器、Beatbox 人声打击、钢琴 */
+  function playTrack(id, f, step){
     var c = ctxGet(), t = c.currentTime, g = c.createGain(), src;
     g.connect(c.destination);
     if(id === 'kick'){
@@ -70,7 +77,7 @@
       g.gain.setValueAtTime(0.5, t);
       g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
       src.connect(g); src.start(t); src.stop(t + 0.2);
-    } else if(id === 'snare' || id === 'hat' || id === 'clap'){
+    } else if(id === 'snare' || id === 'hat' || id === 'clap' || id === 'bbK' || id === 'bbTss' || id === 'bbPsh'){
       src = c.createBufferSource();
       src.buffer = noise();
       var flt = c.createBiquadFilter();
@@ -78,6 +85,45 @@
       if(id === 'snare'){ flt.type = 'highpass'; flt.frequency.value = 1200; g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16); src.start(t); src.stop(t + 0.18); }
       if(id === 'hat'){ flt.type = 'highpass'; flt.frequency.value = 7000; g.gain.setValueAtTime(0.22, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); src.start(t); src.stop(t + 0.06); }
       if(id === 'clap'){ flt.type = 'bandpass'; flt.frequency.value = 1800; g.gain.setValueAtTime(0.35, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12); src.start(t); src.stop(t + 0.14); }
+      if(id === 'bbK'){ /* Beatbox 军鼓 K：带 2kHz 共振峰的短促噪声 */
+        flt.type = 'bandpass'; flt.frequency.value = 2000; flt.Q.value = 3;
+        g.gain.setValueAtTime(0.42, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+        src.start(t); src.stop(t + 0.12);
+      }
+      if(id === 'bbTss'){ /* Beatbox 镲 tss：极短高频噪声 */
+        flt.type = 'highpass'; flt.frequency.value = 8200;
+        g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+        src.start(t); src.stop(t + 0.045);
+      }
+      if(id === 'bbPsh'){ /* Beatbox 喷气 P：扫频带通噪声 */
+        flt.type = 'bandpass'; flt.frequency.setValueAtTime(900, t);
+        flt.frequency.exponentialRampToValueAtTime(400, t + 0.09);
+        flt.Q.value = 1.2;
+        g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+        src.start(t); src.stop(t + 0.13);
+      }
+    } else if(id === 'bbBass'){ /* Beatbox 低音 B：带低通的锯齿，喉音感 */
+      src = c.createOscillator();
+      src.type = 'sawtooth';
+      src.frequency.setValueAtTime(110, t);
+      src.frequency.exponentialRampToValueAtTime(48, t + 0.14);
+      var lp = c.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 420; lp.Q.value = 6;
+      g.gain.setValueAtTime(0.4, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+      src.connect(lp).connect(g); src.start(t); src.stop(t + 0.18);
+    } else if(id === 'piano'){
+      var ins = byId['piano'];
+      var freq = (ins.notes && ins.notes.length ? ins.notes : [261.63])[(step || 0) % ins.notes.length];
+      var o1 = c.createOscillator(); o1.type = 'triangle'; o1.frequency.value = freq;
+      var o2 = c.createOscillator(); o2.type = 'sine'; o2.frequency.value = freq * 2.01; // 微微失谐的八度泛音
+      var g1 = c.createGain(), g2 = c.createGain();
+      g1.gain.setValueAtTime(0.22, t);
+      g1.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+      g2.gain.setValueAtTime(0.07, t);
+      g2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      o1.connect(g1).connect(c.destination); o2.connect(g2).connect(c.destination);
+      o1.start(t); o1.stop(t + 0.9); o2.start(t); o2.stop(t + 0.45);
     } else {
       src = c.createOscillator();
       src.type = id === 'bass' ? 'sawtooth' : id === 'bell' ? 'sine' : 'square';
@@ -98,24 +144,33 @@
     }
   }
 
-  /* ---------- 乐器架 chips ---------- */
-  INSTRUMENTS.forEach(function(ins){
-    var chip = document.createElement('button');
-    chip.className = 'bs-chip';
-    chip.draggable = true;
-    chip.dataset.id = ins.id;
-    chip.innerHTML = '<b>' + ins.label + '</b>';
-    chip.addEventListener('dragstart', function(e){
-      e.dataTransfer.setData('text/plain', ins.id);
-      e.dataTransfer.effectAllowed = 'copy';
-      chip.classList.add('dragging');
+  /* ---------- 乐器架 chips（按分组） ---------- */
+  var GROUPS = ['打击乐', 'Beatbox', '旋律'];
+  GROUPS.forEach(function(grp){
+    var list = INSTRUMENTS.filter(function(i){ return i.group === grp; });
+    if(!list.length) return;
+    var tag = document.createElement('span');
+    tag.className = 'bs-group';
+    tag.textContent = grp;
+    chipsBox.appendChild(tag);
+    list.forEach(function(ins){
+      var chip = document.createElement('button');
+      chip.className = 'bs-chip';
+      chip.draggable = true;
+      chip.dataset.id = ins.id;
+      chip.innerHTML = '<b>' + ins.label + '</b>';
+      chip.addEventListener('dragstart', function(e){
+        e.dataTransfer.setData('text/plain', ins.id);
+        e.dataTransfer.effectAllowed = 'copy';
+        chip.classList.add('dragging');
+      });
+      chip.addEventListener('dragend', function(){ chip.classList.remove('dragging'); });
+      chip.addEventListener('click', function(){
+        picked = (picked === ins.id) ? null : ins.id;
+        syncChips();
+      });
+      chipsBox.appendChild(chip);
     });
-    chip.addEventListener('dragend', function(){ chip.classList.remove('dragging'); });
-    chip.addEventListener('click', function(){
-      picked = (picked === ins.id) ? null : ins.id;
-      Array.prototype.forEach.call(chipsBox.children, function(el){ el.classList.toggle('picked', el === chip && picked); });
-    });
-    chipsBox.appendChild(chip);
   });
 
   /* ---------- 舞台 ---------- */
@@ -149,7 +204,7 @@
     if(!ins) return;
     slots[i] = {id: id, pattern: ins.patterns[0], muted: false};
     renderSlot(i);
-    if(!playing) playTrack(id, ins.f); // 放下即试听一声
+    if(!playing) playTrack(id, ins.f, 0); // 放下即试听一声
   }
 
   function renderSlot(i){
@@ -216,7 +271,7 @@
       if(s.muted){
         s.muted = false; renderSlot(i);
       } else {
-        playTrack(s.id, ins.f);
+        playTrack(s.id, ins.f, 0);
       }
     });
 
@@ -244,7 +299,7 @@
       var s = slots[i];
       if(!s || s.muted) continue;
       if(s.pattern[step] === '1'){
-        playTrack(s.id, byId[s.id].f);
+        playTrack(s.id, byId[s.id].f, step);
         if(slotEls[i]) {
           slotEls[i].classList.remove('hit');
           void slotEls[i].offsetWidth;
@@ -326,7 +381,8 @@
 #bsApp .bs-tray{margin-bottom:0.9rem}
 #bsApp .bs-tray-label{display:flex;align-items:baseline;gap:0.6rem;font-family:var(--font-mono);font-size:0.68rem;color:var(--ink-3);letter-spacing:0.08em;margin-bottom:0.5rem}
 #bsApp .bs-tray-label span{font-family:var(--font-sans);letter-spacing:0}
-#bsApp .bs-chips{display:flex;flex-wrap:wrap;gap:0.45rem}
+#bsApp .bs-chips{display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center}
+#bsApp .bs-group{font-family:var(--font-mono);font-size:0.62rem;color:var(--ink-3);letter-spacing:0.1em;padding:0.1rem 0.35rem;border-left:2px solid var(--line);margin-left:0.2rem}
 #bsApp .bs-chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:0.35rem 0.8rem;font-size:0.85rem;cursor:grab;transition:transform 120ms ease,border-color 120ms ease,background-color 120ms ease}
 #bsApp .bs-chip:hover{border-color:var(--accent);transform:translateY(-2px)}
 #bsApp .bs-chip.dragging{opacity:0.5}
