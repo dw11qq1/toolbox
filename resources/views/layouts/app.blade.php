@@ -9,6 +9,16 @@
 @else
 <meta name="description" content="工具匣 ToolBox — 25 个免费在线工具：财务计算器、开发工具、格式互转、拼豆图纸生成器与趣味测试，全部浏览器本地运行。">
 @endif
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="工具匣 ToolBox">
+<meta property="og:title" content="@yield('title', '工具匣 ToolBox')">
+@hasSection('description')
+<meta property="og:description" content="@yield('description')">
+@else
+<meta property="og:description" content="25 个免费在线工具：财务计算器、开发工具、格式互转、拼豆图纸生成器，全部浏览器本地运行。">
+@endif
+<meta property="og:url" content="{{ url()->current() }}">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 @yield('meta')
 <script>(function(){var t=localStorage.getItem('theme');if(t){document.documentElement.setAttribute('data-theme',t)}else if(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.setAttribute('data-theme','dark')}})();</script>
@@ -22,6 +32,10 @@
 
 <header class="top">
   <a href="{{ route('home') }}" class="wordmark">工具<span class="box">匣</span></a>
+  <div class="top-search">
+    <input type="search" id="tbSearch" placeholder="搜索工具…" autocomplete="off" aria-label="搜索工具">
+    <div class="tb-suggest" id="tbSuggest" hidden></div>
+  </div>
   <nav>
     <a href="{{ route('tools.index') }}" @if(request()->routeIs('tools.index')) aria-current="page" @endif>工具</a>
     <a href="{{ route('tools.show', 'perler-patterns') }}" @if(request()->is('tools/perler-patterns')) aria-current="page" @endif>拼豆</a>
@@ -41,9 +55,16 @@
   <div class="inner">
     <a class="wordmark" href="{{ route('home') }}">工具匣</a>
     <span class="muted">© {{ date('Y') }} 工具匣 ToolBox · 数据不出浏览器</span>
+    <span class="foot-links">
+      <a href="{{ route('privacy') }}">隐私政策</a>
+      <a href="{{ route('sitemap') }}">站点地图</a>
+    </span>
   </div>
 </footer>
 
+<script>
+window.TB_INDEX = @json($searchIndex ?? []);
+</script>
 <script>
 (function(){
   var root = document.documentElement;
@@ -51,6 +72,50 @@
     var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
+  });
+
+  /* ---- 全站搜索 ---- */
+  var index = window.TB_INDEX || [];
+  var input = document.getElementById('tbSearch');
+  var box = document.getElementById('tbSuggest');
+  if(!input || !box) return;
+
+  function close(){ box.hidden = true; box.innerHTML = ''; }
+
+  function render(){
+    var q = input.value.trim().toLowerCase();
+    box.innerHTML = '';
+    if(!q){ close(); return; }
+    var hits = index.filter(function(i){
+      return (i.n + ' ' + i.d + ' ' + (i.c || '')).toLowerCase().indexOf(q) >= 0;
+    }).slice(0, 8);
+    if(!hits.length){
+      box.innerHTML = '<p class="tb-empty">没有匹配的工具</p>';
+      box.hidden = false;
+      return;
+    }
+    hits.forEach(function(h){
+      var a = document.createElement('a');
+      a.className = 'tb-item';
+      a.href = h.u;
+      a.innerHTML = '<span class="tb-item__n">' + h.n + '</span>' +
+                    '<span class="tb-item__c">' + (h.c || '') + '</span>';
+      box.appendChild(a);
+    });
+    box.hidden = false;
+  }
+
+  input.addEventListener('input', render);
+  input.addEventListener('focus', render);
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      var first = box.querySelector('a.tb-item');
+      if(first){ window.location.href = first.href; }
+    }
+    if(e.key === 'Escape'){ close(); input.blur(); }
+  });
+  document.addEventListener('click', function(e){
+    if(!box.contains(e.target) && e.target !== input) close();
   });
 })();
 </script>

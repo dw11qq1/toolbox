@@ -98,6 +98,30 @@ footer{border-top:1px solid var(--line);background:var(--panel)}
 footer .inner{max-width:880px;margin:0 auto;padding:2rem clamp(1.25rem,4vw,3rem);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 footer .wordmark{font-family:var(--font-display);font-weight:700;text-decoration:none}
 footer .muted{font-family:var(--font-mono);font-size:0.75rem;color:var(--ink-3)}
+.foot-links{display:flex;gap:0.9rem;font-family:var(--font-mono);font-size:0.75rem}
+.foot-links a{color:var(--ink-3);text-decoration:none;transition:color 160ms ease}
+.foot-links a:hover{color:var(--accent)}
+
+/* ---- 顶部搜索 ---- */
+.top-search{position:relative;flex:1;max-width:280px;min-width:0}
+.top-search input{
+  width:100%;box-sizing:border-box;font-size:0.85rem;padding:0.4rem 0.85rem;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;
+}
+.top-search input::placeholder{color:var(--ink-3)}
+.top-search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.12)}
+.tb-suggest{
+  position:absolute;top:calc(100% + 0.4rem);left:0;right:0;z-index:60;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.12);overflow:hidden;max-height:340px;overflow-y:auto;
+}
+.tb-item{display:flex;justify-content:space-between;align-items:center;gap:0.6rem;
+  padding:0.55rem 0.85rem;text-decoration:none;color:var(--ink);border-bottom:1px solid var(--line)}
+.tb-item:last-child{border-bottom:none}
+.tb-item:hover{background:var(--accent-soft,rgba(37,99,235,0.08))}
+.tb-item__n{font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-item__c{font-family:var(--font-mono);font-size:0.68rem;color:var(--ink-3);flex-shrink:0}
+.tb-empty{padding:0.7rem 0.85rem;font-size:0.8rem;color:var(--ink-3);margin:0}
 
 ::selection{background:var(--accent);color:var(--accent-ink)}
 
@@ -111,6 +135,10 @@ footer .muted{font-family:var(--font-mono);font-size:0.75rem;color:var(--ink-3)}
   .nav-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.6rem}
   .nav-card{padding:0.8rem 0.9rem}
   .prose{padding:1.2rem 0 3rem}
+  .top-search{max-width:150px}
+  .top-search input{font-size:16px}
+  .top-search input::placeholder{font-size:0.8rem}
+  footer .inner{flex-direction:column;gap:0.6rem}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:0ms!important;animation-duration:0ms!important}

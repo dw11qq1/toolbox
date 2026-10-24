@@ -134,9 +134,30 @@ class SmokeTest extends TestCase
         $this->get('/admin')->assertRedirect();
     }
 
+    public function test_隐私政策页正常(): void
+    {
+        $this->get('/privacy')->assertStatus(200)->assertSee('隐私政策');
+    }
+
+    public function test_站点地图返回XML且包含工具链接(): void
+    {
+        $this->seedContent();
+        $response = $this->get('/sitemap.xml');
+        $response->assertStatus(200)
+            ->assertSee('<urlset', false)
+            ->assertSee('/tools/json-formatter', false);
+        $this->assertStringContainsString('xml', (string) $response->headers->get('content-type'));
+    }
+
+    public function test_robots声明站点地图(): void
+    {
+        $this->assertStringContainsString('Sitemap:', file_get_contents(public_path('robots.txt')));
+    }
+
     public function test_静态资源文件存在(): void
     {
         $this->assertFileExists(public_path('css/app.css'));
         $this->assertFileExists(public_path('js/filament/filament/app.js'));
+        $this->assertFileExists(public_path('favicon.svg'));
     }
 }

@@ -17,6 +17,13 @@ class ToolController extends Controller
     {
         abort_unless($tool->is_active, 404);
 
-        return view('tools.show', ['tool' => $tool]);
+        $related = Tool::active()
+            ->where('id', '!=', $tool->id)
+            ->orderByRaw("category = ? desc", [$tool->category])
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
+
+        return view('tools.show', ['tool' => $tool, 'related' => $related]);
     }
 }
