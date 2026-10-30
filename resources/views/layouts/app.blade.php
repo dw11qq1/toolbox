@@ -18,7 +18,11 @@
 <meta property="og:description" content="25 个免费在线工具：财务计算器、开发工具、格式互转、拼豆图纸生成器，全部浏览器本地运行。">
 @endif
 <meta property="og:url" content="{{ url()->current() }}">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="{{ url()->current() }}">
+<meta property="og:image" content="{{ asset('og-default.png') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="google-adsense-account" content="ca-pub-1389652054868935">
 <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 @yield('meta')
