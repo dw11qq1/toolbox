@@ -71,4 +71,29 @@
     </div>
   </section>
 </div>
+@push('jsonld')
+<script type="application/ld+json">
+{!! json_encode([
+  '@@context' => 'https://schema.org',
+  '@@graph' => [
+    [
+      '@@type' => 'Organization',
+      '@@id' => url('/').'#organization',
+      'name' => '工具匣 ToolBox',
+      'url' => url('/'),
+      'logo' => asset('favicon.svg'),
+      'description' => '25 个免费在线工具：财务计算器、开发工具、格式互转、拼豆图纸生成器与趣味测试，全部浏览器本地运行。',
+    ],
+    [
+      '@@type' => 'WebSite',
+      '@@id' => url('/').'#website',
+      'url' => url('/'),
+      'name' => '工具匣 ToolBox',
+      'inLanguage' => 'zh-CN',
+      'publisher' => ['@@id' => url('/').'#organization'],
+    ],
+  ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
 @endsection

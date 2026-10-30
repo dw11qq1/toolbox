@@ -119,6 +119,7 @@ window.TB_INDEX = @json($searchIndex ?? []);
   });
 })();
 </script>
+@stack('jsonld')
 @stack('scripts')
 </body>
 </html>

@@ -26,4 +26,16 @@
     <p class="empty">工具上架中，敬请期待。</p>
   @endforelse
 </div>
+@push('jsonld')
+<script type="application/ld+json">
+{!! json_encode([
+  '@@context' => 'https://schema.org',
+  '@@type' => 'BreadcrumbList',
+  'itemListElement' => [
+    ['@@type' => 'ListItem', 'position' => 1, 'name' => '首页', 'item' => url('/')],
+    ['@@type' => 'ListItem', 'position' => 2, 'name' => '工具', 'item' => route('tools.index')],
+  ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
 @endsection

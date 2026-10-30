@@ -37,4 +37,32 @@
     .ex-text b{color:var(--ink)}
   </style>
 </div>
+
+@push('jsonld')
+<script type="application/ld+json">
+{!! json_encode([
+  '@@context' => 'https://schema.org',
+  '@@graph' => [
+    [
+      '@@type' => 'Product',
+      'name' => $tool->name,
+      'description' => $tool->description,
+      'url' => route('tools.show', $tool),
+      'applicationCategory' => 'UtilityApplication',
+      'operatingSystem' => 'Any',
+      'brand' => ['@@type' => 'Brand', 'name' => '工具匣 ToolBox'],
+      'offers' => ['@@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'CNY'],
+    ],
+    [
+      '@@type' => 'BreadcrumbList',
+      'itemListElement' => [
+        ['@@type' => 'ListItem', 'position' => 1, 'name' => '首页', 'item' => url('/')],
+        ['@@type' => 'ListItem', 'position' => 2, 'name' => '工具', 'item' => route('tools.index')],
+        ['@@type' => 'ListItem', 'position' => 3, 'name' => $tool->name, 'item' => route('tools.show', $tool)],
+      ],
+    ],
+  ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
 @endsection

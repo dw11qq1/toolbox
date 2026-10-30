@@ -14,4 +14,37 @@
   </div>
   <div class="prose">{!! $post->content !!}</div>
 </div>
+
+@push('jsonld')
+<script type="application/ld+json">
+{!! json_encode([
+  '@@context' => 'https://schema.org',
+  '@@graph' => [
+    [
+      '@@type' => 'Article',
+      'headline' => $post->title,
+      'description' => $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 150),
+      'author' => ['@@type' => 'Organization', 'name' => '工具匣 ToolBox'],
+      'publisher' => [
+        '@@type' => 'Organization',
+        'name' => '工具匣 ToolBox',
+        'logo' => ['@@type' => 'ImageObject', 'url' => asset('favicon.svg')],
+      ],
+      'datePublished' => $post->published_at->toIso8601String(),
+      'dateModified' => ($post->updated_at ?? $post->published_at)->toIso8601String(),
+      'mainEntityOfPage' => ['@@type' => 'WebPage', '@@id' => route('blog.show', $post)],
+      'image' => $post->cover_image ? asset($post->cover_image) : asset('favicon.svg'),
+    ],
+    [
+      '@@type' => 'BreadcrumbList',
+      'itemListElement' => [
+        ['@@type' => 'ListItem', 'position' => 1, 'name' => '首页', 'item' => url('/')],
+        ['@@type' => 'ListItem', 'position' => 2, 'name' => '博客', 'item' => route('blog.index')],
+        ['@@type' => 'ListItem', 'position' => 3, 'name' => $post->title, 'item' => route('blog.show', $post)],
+      ],
+    ],
+  ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
 @endsection

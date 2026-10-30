@@ -15,4 +15,18 @@
 
   @includeIf('quizzes.pages.'.$quiz->slug)
 </div>
+
+@push('jsonld')
+<script type="application/ld+json">
+{!! json_encode([
+  '@@context' => 'https://schema.org',
+  '@@type' => 'BreadcrumbList',
+  'itemListElement' => [
+    ['@@type' => 'ListItem', 'position' => 1, 'name' => '首页', 'item' => url('/')],
+    ['@@type' => 'ListItem', 'position' => 2, 'name' => '测试', 'item' => route('quizzes.index')],
+    ['@@type' => 'ListItem', 'position' => 3, 'name' => $quiz->name, 'item' => route('quizzes.show', $quiz)],
+  ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
 @endsection
