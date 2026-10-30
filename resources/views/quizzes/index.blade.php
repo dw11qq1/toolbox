@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="wrap">
+  @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '测试', 'url' => route('quizzes.index')]]; @endphp
+  @include('partials.breadcrumb')
   <div class="page-head">
     <p class="k">Tests · 趣味测试</p>
     <h1>测一测，更了解自己。</h1>

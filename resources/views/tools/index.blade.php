@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="wrap">
+  @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '工具', 'url' => route('tools.index')]]; @endphp
+  @include('partials.breadcrumb')
   <div class="page-head">
     <p class="k">Tools · 工具索引</p>
     <h1>全部工具。</h1>

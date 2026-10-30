@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="wrap">
+  @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '博客', 'url' => route('blog.index')]]; @endphp
+  @include('partials.breadcrumb')
   <div class="page-head">
     <p class="k">Blog · 博客</p>
     <h1>写下来的思考。</h1>

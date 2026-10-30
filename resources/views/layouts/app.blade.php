@@ -61,7 +61,11 @@
     <a class="wordmark" href="{{ route('home') }}">工具匣</a>
     <span class="muted">© {{ date('Y') }} 工具匣 ToolBox · 数据不出浏览器</span>
     <span class="foot-links">
+      <a href="{{ route('about') }}">关于</a>
+      <a href="{{ route('contact') }}">联系</a>
+      <a href="{{ route('faq') }}">常见问题</a>
       <a href="{{ route('privacy') }}">隐私政策</a>
+      <a href="{{ config('site.github') }}" target="_blank" rel="noopener">GitHub</a>
     </span>
   </div>
 </footer>

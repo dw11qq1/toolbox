@@ -7,6 +7,8 @@
 
 @section('content')
 <div class="wrap tool-shell">
+  @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '工具', 'url' => route('tools.index')], ['name' => $tool->name, 'url' => route('tools.show', $tool)]]; @endphp
+  @include('partials.breadcrumb')
   <div class="page-head">
     <p class="k">Tool · {{ $tool->category }}</p>
     <h1>{{ $tool->name }}</h1>

@@ -7,6 +7,8 @@
 
 @section('content')
 <div class="wrap game-shell">
+  @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '测试', 'url' => route('quizzes.index')], ['name' => $quiz->name, 'url' => route('quizzes.show', $quiz)]]; @endphp
+  @include('partials.breadcrumb')
   <div class="page-head">
     <p class="k">Test · 趣味测试</p>
     <h1>{{ $quiz->name }}</h1>

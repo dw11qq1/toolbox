@@ -16,4 +16,8 @@ Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post}', [BlogController::class, 'show'])->name('blog.show');
 
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/llms.txt', [PageController::class, 'llms'])->name('llms');
 Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
