@@ -31,7 +31,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+SC:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link href="{{ asset('css/app.css') }}" rel="stylesheet">
+<link href="{{ asset('css/tokens.css') }}?v={{ filemtime(public_path('css/tokens.css')) }}" rel="stylesheet">
+<link href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}" rel="stylesheet">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1389652054868935" crossorigin="anonymous"></script>
 </head>
 <body>
