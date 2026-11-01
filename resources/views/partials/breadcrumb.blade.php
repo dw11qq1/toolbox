@@ -9,11 +9,4 @@
     @endif
   @endforeach
 </nav>
-<style>
-.tb-breadcrumb{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem;font-size:.82rem;color:var(--ink-3);margin:0 0 1.4rem}
-.tb-breadcrumb a{color:var(--ink-3);text-decoration:none}
-.tb-breadcrumb a:hover{color:var(--ink);text-decoration:underline}
-.tb-breadcrumb .sep{color:var(--line)}
-.tb-breadcrumb .current{color:var(--ink-2);font-weight:500}
-</style>
 @endif

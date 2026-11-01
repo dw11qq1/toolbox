@@ -1,18 +1,16 @@
 @extends('layouts.app')
 
 @section('title', $quiz->name . ' — 工具匣 ToolBox')
-@section('meta')
-<meta name="description" content="{{ $quiz->description }}">
-@endsection
+@section('description', $quiz->description)
 
 @section('content')
 <div class="wrap game-shell">
   @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '测试', 'url' => route('quizzes.index')], ['name' => $quiz->name, 'url' => route('quizzes.show', $quiz)]]; @endphp
   @include('partials.breadcrumb')
   <div class="page-head">
-    <p class="k">Test · 趣味测试</p>
     <h1>{{ $quiz->name }}</h1>
     <p class="sub">{{ $quiz->description }}</p>
+    <p class="page-meta">趣味测试 · 本地计分 · 结果不保存</p>
   </div>
 
   @includeIf('quizzes.pages.'.$quiz->slug)

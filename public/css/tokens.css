@@ -1,0 +1,109 @@
+/* Hallmark · genre: editorial · macrostructure: Index-First · theme: Almanac
+ * palette: warm oat paper · seal-vermilion accent · serif display + sans body + mono outlier
+ * note: legacy variable names (--bg/--panel/--line/--ink/--accent) are aliased below so the
+ *       25 existing tool pages keep working without touching their markup.
+ */
+:root {
+  /* ---- colour: paper / ink / rule ---- */
+  --color-paper:        oklch(96.4% 0.014 80);
+  --color-paper-2:      oklch(93.6% 0.016 80);
+  --color-paper-3:      oklch(90.5% 0.018 78);
+  --color-rule:         oklch(85.0% 0.012 80);
+  --color-rule-strong:  oklch(72.0% 0.012 75);
+  --color-ink:          oklch(21.0% 0.014 60);
+  --color-ink-2:        oklch(38.0% 0.012 65);
+  --color-ink-3:        oklch(52.0% 0.010 70);
+
+  /* ---- colour: single accent (seal vermilion) — ≤3% of any viewport ---- */
+  --color-accent:       oklch(52.0% 0.170 30);
+  --color-accent-deep:  oklch(44.0% 0.160 30);
+  --color-accent-soft:  oklch(93.0% 0.030 40);
+  --color-accent-ink:   oklch(97.0% 0.010 80);
+  --color-focus:        oklch(52.0% 0.170 30);
+
+  /* ---- typography: 2 + 1 (display · body · outlier) ---- */
+  --font-display: "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif;
+  --font-body:    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-outlier: "JetBrains Mono", "Noto Sans SC", ui-monospace, monospace;
+  --font-mono:    var(--font-outlier);
+
+  /* ---- type scale: major third (1.25) ---- */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-md:   1.125rem;
+  --text-lg:   1.375rem;
+  --text-xl:   1.75rem;
+  --text-2xl:  2.25rem;
+  --text-3xl:  2.75rem;
+  --text-display: clamp(1.9rem, 1.2rem + 3vw, 3.1rem);
+
+  /* ---- spacing: 4pt named scale ---- */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+
+  /* ---- motion ---- */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long:  420ms;
+
+  /* ---- radii / rules ---- */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-pill: 999px;
+  --rule-hair: 1px;
+  --shadow-whisper: 0 1px 2px oklch(21% 0.014 60 / 0.06);
+
+  /* ---- z-index scale ---- */
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* ---- legacy aliases (do not remove: 25 tool pages reference these) ---- */
+  --bg: var(--color-paper);
+  --panel: var(--color-paper-2);
+  --panel2: var(--color-paper-3);
+  --line: var(--color-rule);
+  --line2: var(--color-rule-strong);
+  --ink: var(--color-ink);
+  --ink-2: var(--color-ink-2);
+  --ink-3: var(--color-ink-3);
+  --accent: var(--color-accent);
+  --accent-ink: var(--color-accent-ink);
+  --accent-soft: var(--color-accent-soft);
+}
+
+[data-theme="dark"] {
+  --color-paper:        oklch(15.5% 0.010 60);
+  --color-paper-2:      oklch(19.5% 0.012 60);
+  --color-paper-3:      oklch(23.5% 0.014 60);
+  --color-rule:         oklch(30.0% 0.012 60);
+  --color-rule-strong:  oklch(42.0% 0.012 60);
+  --color-ink:          oklch(93.0% 0.008 80);
+  --color-ink-2:        oklch(78.0% 0.008 75);
+  --color-ink-3:        oklch(64.0% 0.008 70);
+
+  --color-accent:       oklch(74.0% 0.130 35);
+  --color-accent-deep:  oklch(66.0% 0.140 35);
+  --color-accent-soft:  oklch(27.0% 0.030 40);
+  --color-accent-ink:   oklch(16.0% 0.020 40);
+  --color-focus:        oklch(74.0% 0.130 35);
+
+  --shadow-whisper: 0 1px 2px oklch(0% 0 0 / 0.35);
+}

@@ -1,42 +1,47 @@
 @extends('layouts.app')
 
 @section('title', $tool->name . ' — 工具匣 ToolBox')
-@section('meta')
-<meta name="description" content="{{ $tool->description }}">
-@endsection
+@section('description', $tool->description)
 
 @section('content')
 <div class="wrap tool-shell">
-  @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '工具', 'url' => route('tools.index')], ['name' => $tool->name, 'url' => route('tools.show', $tool)]]; @endphp
-  @include('partials.breadcrumb')
-  <div class="page-head">
-    <p class="k">Tool · {{ $tool->category }}</p>
-    <h1>{{ $tool->name }}</h1>
-    <p class="sub">{{ $tool->description }}</p>
-  </div>
+  @if($tool->slug !== 'perler-patterns')
+    @php $breadcrumbs = [['name' => '首页', 'url' => url('/')], ['name' => '工具', 'url' => route('tools.index')], ['name' => $tool->name, 'url' => route('tools.show', $tool)]]; @endphp
+    @include('partials.breadcrumb')
+    <div class="page-head">
+      <h1>{{ $tool->name }}</h1>
+      <p class="sub">{{ $tool->description }}</p>
+      <p class="page-meta">分类 · {{ $tool->category }}<span aria-hidden="true"> · </span>浏览器本地运行</p>
+    </div>
+  @else
+    <h1 class="sr-only">{{ $tool->name }}</h1>
+  @endif
 
   @includeIf('tools.pages.'.$tool->slug)
 
-  @if($related->isNotEmpty())
-    <section class="group" style="margin-top:2rem">
-      <div class="group-title">相关工具</div>
-      <div class="nav-grid">
-        @foreach($related as $item)
-          <a class="nav-card" href="{{ route('tools.show', $item) }}">
-            <span class="nav-card__name">{{ $item->name }} <span class="arrow">→</span></span>
-            <span class="nav-card__desc">{{ $item->description }}</span>
-          </a>
-        @endforeach
+  @if($tool->slug !== 'perler-patterns' && $related->isNotEmpty())
+    <section class="idx" aria-labelledby="related-tools" style="margin-top:var(--space-xl)">
+      <div class="idx-head">
+        <h2 id="related-tools">相关工具</h2>
+        <span class="idx-count">{{ $related->count() }}</span>
+        <a class="idx-more" href="{{ route('tools.index') }}">全部工具 →</a>
       </div>
+      @foreach($related as $item)
+        <a class="idx-row" href="{{ route('tools.show', $item) }}">
+          <span class="idx-name">{{ $item->name }}</span>
+          <span class="idx-desc">{{ $item->description }}</span>
+          <span class="idx-mark" aria-hidden="true">→</span>
+        </a>
+      @endforeach
     </section>
   @endif
 
   <style>
-    .explain{margin-top:1.8rem;padding-top:1.2rem;border-top:1px solid var(--line)}
-    .explain h3{font-size:0.72rem;color:var(--ink-3);font-weight:600;letter-spacing:0.12em;margin:0 0 0.6rem;text-transform:uppercase}
-    .ex-formula{font-family:var(--font-mono);font-size:0.85rem;line-height:1.8;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:0.7rem 0.9rem;margin:0 0 0.7rem;color:var(--ink);overflow-x:auto}
-    .ex-text{font-size:0.88rem;color:var(--ink-2);line-height:1.95;margin:0}
-    .ex-text b{color:var(--ink)}
+    .explain{margin-top:var(--space-xl);padding-top:var(--space-md);border-top:var(--rule-hair) solid var(--color-rule)}
+    .explain h3{font-family:var(--font-outlier);font-size:var(--text-xs);color:var(--color-ink-3);font-weight:400;letter-spacing:0.08em;margin:0 0 var(--space-xs);text-transform:uppercase}
+    .ex-formula{font-family:var(--font-outlier);font-size:0.84rem;line-height:1.8;background:var(--color-paper-2);border:var(--rule-hair) solid var(--color-rule);border-radius:var(--radius-sm);padding:0.7rem 0.9rem;margin:0 0 0.7rem;color:var(--color-ink);overflow-x:auto}
+    .ex-text{font-size:var(--text-sm);color:var(--color-ink-2);line-height:1.95;margin:0}
+    .ex-text b{color:var(--color-ink)}
   </style>
 </div>
 

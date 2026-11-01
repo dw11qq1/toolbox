@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
 @section('title', '关于 — 工具匣 ToolBox')
-@section('meta')
-<meta name="description" content="工具匣 ToolBox 是一个纯前端、数据不出浏览器的在线工具站，由后端开发工程师汪洋独立开发与维护。">
-@endsection
+@section('description', '工具匣 ToolBox 是一个纯前端、数据不出浏览器的在线工具站，由后端开发工程师汪洋独立开发与维护。')
 
 @section('content')
 <div class="wrap">
@@ -11,7 +9,6 @@
   @include('partials.breadcrumb')
 
   <div class="page-head">
-    <p class="k">About · 关于</p>
     <h1>关于工具匣。</h1>
     <p class="sub">一个只想把小事做好的工具站。</p>
   </div>

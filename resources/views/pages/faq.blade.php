@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
 @section('title', '常见问题 — 工具匣 ToolBox')
-@section('meta')
-<meta name="description" content="关于工具匣 ToolBox 的常见问题：数据隐私、拼豆图纸、乐器舞台、计算器公式与免费政策。">
-@endsection
+@section('description', '关于工具匣 ToolBox 的常见问题：数据隐私、拼豆图纸、乐器舞台、计算器公式与免费政策。')
 
 @php
 $faqs = [
@@ -40,8 +38,8 @@ $faqs = [
   @include('partials.breadcrumb')
 
   <div class="page-head">
-    <p class="k">FAQ · 常见问题</p>
     <h1>你可能想问。</h1>
+    <p class="sub">关于隐私、图纸、乐器与免费政策，几个常被问到的问题。</p>
   </div>
 
   <div class="faq-list">
@@ -53,13 +51,6 @@ $faqs = [
     @endforeach
   </div>
 </div>
-
-<style>
-.faq-list{display:flex;flex-direction:column;gap:1.4rem;margin-top:.5rem}
-.faq-item{border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.3rem;background:var(--panel, #fff)}
-.faq-q{font-size:1rem;margin:0 0 .5rem;color:var(--ink)}
-.faq-a{font-size:.92rem;line-height:1.9;color:var(--ink-2);margin:0}
-</style>
 
 @push('jsonld')
 <script type="application/ld+json">
