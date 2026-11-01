@@ -1,12 +1,12 @@
-{{-- 工具匣 · 拼豆工坊（暗黑竞技风 · 独立原创实现） --}}
-{{-- 视觉语言借鉴 VALORANT 风格，代码/命名/品牌均为工具匣自有，非搬运第三方成品 --}}
+{{-- 工具匣 · 拼豆工坊（Almanac 编辑风，沿用全站设计令牌） --}}
+{{-- 功能与交互保持独立实现，仅统一视觉层 --}}
 <div class="pbw-app" id="pbwApp">
 
   <header class="pbw-top">
     <div class="pbw-brand">
-      <span class="pbw-logo">▰</span>
+      <span class="pbw-logo" aria-hidden="true">▰</span>
       <span class="pbw-brandname">工具匣<i>·</i>拼豆工坊</span>
-      <span class="pbw-tag">PERLER STUDIO</span>
+      <span class="pbw-tag" aria-hidden="true">PERLER STUDIO</span>
     </div>
     <div class="pbw-title-wrap">
       <input class="pbw-tasktitle" id="pbwTaskTitle" value="我的拼豆作品" maxlength="24" spellcheck="false" aria-label="作品标题">
@@ -28,10 +28,10 @@
     {{-- 左侧控制面板 --}}
     <aside class="pbw-dock">
       <section class="pbw-card">
-        <div class="pbw-card-h">① 导入画面</div>
+        <div class="pbw-card-h"><span><span class="pbw-num">01</span>导入画面</span></div>
         <label class="pbw-upload" id="pbwUploadLabel">
-          <input type="file" id="pbwFile" accept="image/*" hidden>
-          <span class="pbw-upload-ico">⬆</span>
+          <input type="file" id="pbwFile" accept="image/*" class="pbw-file">
+          <span class="pbw-upload-ico" aria-hidden="true">↑</span>
           <span class="pbw-upload-txt">上传图片转图纸</span>
           <span class="pbw-upload-sub">自动按调色板匹配豆色</span>
         </label>
@@ -39,7 +39,7 @@
       </section>
 
       <section class="pbw-card">
-        <div class="pbw-card-h">② 拼豆板尺寸</div>
+        <div class="pbw-card-h"><span><span class="pbw-num">02</span>拼豆板尺寸</span></div>
         <div class="pbw-seg" id="pbwSizeSeg">
           <button data-w="29" data-h="29">29×29</button>
           <button data-w="52" data-h="52" class="on">52×52</button>
@@ -54,11 +54,11 @@
       </section>
 
       <section class="pbw-card">
-        <div class="pbw-card-h">③ 调色板 <span class="pbw-hint" id="pbwPalName">—</span></div>
+        <div class="pbw-card-h"><span><span class="pbw-num">03</span>调色板</span><span class="pbw-hint" id="pbwPalName">—</span></div>
         <div class="pbw-pal" id="pbwPal"></div>
         <div class="pbw-row pbw-row-mid">
           <button class="pbw-swatch pbw-sel-none" id="pbwEraser" title="橡皮（留空）">⌫ 橡皮</button>
-          <button class="pbw-swatch" id="pbwPicker" title="取色">⛏ 取色</button>
+          <button class="pbw-swatch" id="pbwPicker" title="取色">◉ 取色</button>
         </div>
       </section>
 
@@ -93,7 +93,7 @@
         </div>
         <div class="pbw-meltbar" id="pbwMeltbar">
           <button id="pbwMeltPlay">▶ 模拟烫豆</button>
-          <input type="range" id="pbwMeltRange" min="0" max="100" value="100" disabled>
+          <input type="range" id="pbwMeltRange" min="0" max="100" value="100" disabled aria-label="烫豆程度">
           <button id="pbwMeltStyle" data-style="flat">烫法：平烫</button>
         </div>
         <div class="pbw-empty" id="pbwEmpty">上传一张图片，或直接在格子上点画开始创作</div>
@@ -110,7 +110,7 @@
           <div class="pbw-spec-item"><span class="k">图层数</span><b id="pbwSpecLayers">1</b></div>
         </div>
         <div class="pbw-spec-pal">
-          <div class="pbw-card-h">本图使用色</div>
+          <div class="pbw-card-h"><span>本图使用色</span></div>
           <div class="pbw-pal" id="pbwSpecPal"></div>
         </div>
       </div>
@@ -134,7 +134,7 @@
 
       {{-- 拼豆进度记录表 --}}
       <section class="pbw-progress">
-        <div class="pbw-card-h">拼豆进度记录表 <span class="pbw-hint" id="pbwProgDone">0 / 0 色完成</span></div>
+        <div class="pbw-card-h"><span>拼豆进度记录表</span><span class="pbw-hint" id="pbwProgDone">0 / 0 色完成</span></div>
         <div class="pbw-prog-list" id="pbwProgList"></div>
       </section>
     </main>
@@ -142,13 +142,13 @@
     {{-- 右侧工具面板：图层 / 视图 / 缩放（贴近画布，常驻易点） --}}
     <aside class="pbw-dock pbw-dock-right">
       <section class="pbw-card">
-        <div class="pbw-card-h">④ 图层</div>
+        <div class="pbw-card-h"><span><span class="pbw-num">04</span>图层</span></div>
         <div class="pbw-layers" id="pbwLayers"></div>
         <button class="pbw-btn pbw-btn-line pbw-full" id="pbwAddLayer">+ 新建图层</button>
       </section>
 
       <section class="pbw-card">
-        <div class="pbw-card-h">⑤ 视图</div>
+        <div class="pbw-card-h"><span><span class="pbw-num">05</span>视图</span></div>
         <div class="pbw-seg pbw-seg-col" id="pbwViewSeg">
           <button data-view="spec" class="on">规格总览</button>
           <button data-view="pattern">图纸编辑</button>
@@ -157,11 +157,11 @@
       </section>
 
       <section class="pbw-card">
-        <div class="pbw-card-h">⑥ 缩放</div>
+        <div class="pbw-card-h"><span><span class="pbw-num">06</span>缩放</span></div>
         <div class="pbw-zoombox">
-          <button class="pbw-btn pbw-btn-line pbw-zoombtn" id="pbwZoomOut">－</button>
+          <button class="pbw-btn pbw-btn-line pbw-zoombtn" id="pbwZoomOut" aria-label="缩小">－</button>
           <span class="pbw-zoom" id="pbwZoomLabel">100%</span>
-          <button class="pbw-btn pbw-btn-line pbw-zoombtn" id="pbwZoomIn">＋</button>
+          <button class="pbw-btn pbw-btn-line pbw-zoombtn" id="pbwZoomIn" aria-label="放大">＋</button>
         </div>
       </section>
     </aside>
@@ -173,7 +173,7 @@
 <script>
 (function(){
   "use strict";
-  // ============ 设计系统（VALORANT 暗黑竞技风，工具匣自有变量） ============
+  // ============ 设计系统（Almanac：纸面 / 墨色 / 印章红，见 public/css/tokens.css） ============
   var CSS_VARS_LOADED = true; // 见下方 <style>
 
   // ============ 调色板：Perler 风格标准豆色（名称 + hex） ============
@@ -230,6 +230,10 @@
   var assistCanvas=document.getElementById('pbwAssistCanvas');
   var actx=assistCanvas.getContext('2d');
 
+  // 板面纸色与 --pbw-board 同步：深色主题下压暗，避免大面积高亮
+  var BOARD_FILL={ light:'#F5F2EA', dark:'#E2DCD0' };
+  function boardFill(){ return document.documentElement.getAttribute('data-theme')==='dark' ? BOARD_FILL.dark : BOARD_FILL.light; }
+
   // 单颗豆的画法：对齐参考「拼豆专家」2D 默认视图
   //  - 方形像素块（非圆豆，无高光、无中心孔）
   //  - 默认「未烫」：方块之间留缝，像一颗颗摆在板上（meltRatio=1）
@@ -259,7 +263,7 @@
     canvas.width=W; canvas.height=H;
     ctx.clearRect(0,0,W,H);
     // 纸张底
-    ctx.fillStyle='#F5F2EA'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=boardFill(); ctx.fillRect(0,0,W,H);
     // 豆（方形像素块）/ 底板钉柱
     var any=false;
     for(var y=0;y<state.h;y++) for(var x=0;x<state.w;x++){
@@ -311,7 +315,7 @@
     var W=state.w*s, H=state.h*s;
     assistCanvas.width=W; assistCanvas.height=H;
     actx.clearRect(0,0,W,H);
-    actx.fillStyle='#F5F2EA'; actx.fillRect(0,0,W,H);
+    actx.fillStyle=boardFill(); actx.fillRect(0,0,W,H);
     var cols=distinctColors();
     var activeColor = cols.length? cols[Math.min(state.assistIdx, cols.length-1)] : null;
     document.getElementById('pbwAssistIdx').textContent = cols.length? (Math.min(state.assistIdx,cols.length-1)+1)+' / '+cols.length : '0 / 0';
@@ -382,8 +386,8 @@
   function buildPalette(){
     var box=document.getElementById('pbwPal'); box.innerHTML='';
     PALETTE.forEach(function(p){
-      var d=document.createElement('button'); d.className='pbw-swatch'; d.style.background=p.v;
-      d.title=p.n+' '+p.v;
+      var d=document.createElement('button'); d.className='pbw-swatch'; d.type='button'; d.style.background=p.v;
+      d.title=p.n+' '+p.v; d.setAttribute('aria-label', p.n);
       d.addEventListener('click', function(){
         state.eraser=false; state.picker=false; state.curColor=p.v;
         document.querySelectorAll('#pbwPal .pbw-swatch').forEach(function(e){e.classList.remove('on');});
@@ -402,8 +406,11 @@
     var box=document.getElementById('pbwLayers'); box.innerHTML='';
     state.layers.forEach(function(L,i){
       var row=document.createElement('div'); row.className='pbw-layer'+(i===state.active?' on':'');
-      var vis=document.createElement('button'); vis.className='pbw-layer-vis'+(L.visible?' on':''); vis.textContent=L.visible?'👁':'—';
-      vis.addEventListener('click', function(e){ e.stopPropagation(); L.visible=!L.visible; vis.textContent=L.visible?'👁':'—'; vis.classList.toggle('on',L.visible); render(); if(state.view==='assist') renderAssist(); });
+      var vis=document.createElement('button'); vis.className='pbw-layer-vis'+(L.visible?' on':''); vis.type='button';
+      vis.textContent=L.visible?'●':'○';
+      vis.title=L.visible?'隐藏图层':'显示图层';
+      vis.setAttribute('aria-label', vis.title);
+      vis.addEventListener('click', function(e){ e.stopPropagation(); L.visible=!L.visible; vis.textContent=L.visible?'●':'○'; vis.title=L.visible?'隐藏图层':'显示图层'; vis.setAttribute('aria-label', vis.title); vis.classList.toggle('on',L.visible); render(); if(state.view==='assist') renderAssist(); });
       var nm=document.createElement('span'); nm.className='pbw-layer-name'; nm.textContent='图层 '+(i+1);
       var cnt=document.createElement('span'); cnt.className='pbw-layer-cnt';
       var c=0; for(var k=0;k<L.cells.length;k++) if(L.cells[k]) c++;
@@ -543,6 +550,7 @@
     document.getElementById('pbwCanvasWrap').style.display = (v==='pattern')?'block':'none';
     document.getElementById('pbwV3Wrap').style.display = (v==='pattern'&&state.mode==='3d')?'block':'none';
     document.getElementById('pbwMeltbar').style.display = (v==='pattern')?'flex':'none';
+    if(v!=='pattern') document.getElementById('pbwEmpty').style.display='none';
     if(v==='assist') renderAssist();
     if(v==='pattern'){ render(); }
   }
@@ -651,11 +659,11 @@
   // ============ 3D（three.js，自写轨道旋转） ============
   var v3={raf:null, scene:null, cam:null, renderer:null, mesh:null, theta:0.7, phi:0.9, dist:400, dragging:false, lx:0, ly:0};
   function initV3(){
-    if(typeof THREE==='undefined'){ document.getElementById('pbwV3Wrap').innerHTML='<div style="color:#8FA3B3;padding:2rem">3D 组件未加载（需联网加载 three.js）</div>'; return; }
+    if(typeof THREE==='undefined'){ document.getElementById('pbwV3Wrap').innerHTML='<div style="color:var(--color-ink-3);padding:2rem">3D 组件未加载（需联网加载 three.js）</div>'; return; }
     var wrap=document.getElementById('pbwV3Wrap');
     var W=wrap.clientWidth||800, H=wrap.clientHeight||600;
     var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('pbwV3'), antialias:true});
-    renderer.setSize(W,H,false); renderer.setClearColor(0x0b1118,1);
+    renderer.setSize(W,H,false); renderer.setClearColor(parseInt(boardFill().slice(1),16),1);
     var scene=new THREE.Scene();
     var cam=new THREE.PerspectiveCamera(45, W/H, 1, 5000);
     var group=new THREE.Group(); scene.add(group);
@@ -671,7 +679,7 @@
     }
     // 板底
     var baseGeo=new THREE.BoxGeometry(state.w*step, 2, state.h*step);
-    var baseMat=new THREE.MeshStandardMaterial({color:0x16202B, roughness:0.9});
+    var baseMat=new THREE.MeshStandardMaterial({color:0x2B2621, roughness:0.9});
     var base=new THREE.Mesh(baseGeo,baseMat); base.position.y=-step*0.4; group.add(base);
     var light=new THREE.DirectionalLight(0xffffff,0.95); light.position.set(200,400,300); scene.add(light);
     scene.add(new THREE.AmbientLight(0x99aabb,0.6));
@@ -705,158 +713,209 @@
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', initApp); }
   else { initApp(); }
+  // 主题切换时重绘板面（canvas 的纸色不随 CSS 变量自动更新）
+  if(window.MutationObserver){
+    new MutationObserver(function(){
+      render();
+      if(state.view==='assist') renderAssist();
+      if(v3 && v3.renderer) v3.renderer.setClearColor(parseInt(boardFill().slice(1),16),1);
+    }).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  }
   document.getElementById('pbwTaskTitle').addEventListener('change', function(){ /* 切换标题即视为新作品，不自动载入，避免覆盖 */ });
 })();
 </script>
 
 <style>
-:root{
-  --bg:#0F1923; --panel:#141F2A; --panel2:#1B2937; --line:#2A3B4D; --line2:#46586A;
-  --red:#FF4655; --red-dk:#C8323F; --teal:#00C8C8; --txt:#ECE8E1; --txt2:#8FA3B3; --txt3:#5B6B7A;
-  --paper:#F5F2EA; --font-d:"Rajdhani","DIN Alternate","Bahnschrift","Noto Sans SC","PingFang SC",system-ui,sans-serif;
-  --font-b:"Noto Sans SC","PingFang SC","Rajdhani",system-ui,sans-serif;
-  --cut:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
-  --cut-sm:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+/* 拼豆工坊 · Almanac 编辑风：沿用 design.md 令牌，仅在本页定义板面纸色 */
+.pbw-app{
+  --dockw:264px; --pbw-board:#f5f2ea; --pbw-board-ink:oklch(43% 0.012 70);
+  font-family:var(--font-body); color:var(--color-ink); background:var(--color-paper);
+  border:var(--rule-hair) solid var(--color-rule); min-width:0; min-height:72vh;
 }
-.pbw-app{ --dockw:252px; --fs:14px;
-  font-family:var(--font-b); color:var(--txt); background:var(--bg);
-  min-width:0; min-height:72vh; border:1px solid var(--line); box-shadow:0 0 0 1px rgba(0,0,0,.4);
-}
+[data-theme="dark"] .pbw-app{ --pbw-board:#e2dcd0; }
 .pbw-app *{ box-sizing:border-box; }
-.pbw-top{ display:flex; align-items:center; gap:14px; padding:10px 16px; background:linear-gradient(90deg,#16202B,#0F1923);
-  border-bottom:1px solid var(--line); }
-.pbw-brand{ display:flex; align-items:center; gap:8px; }
-.pbw-logo{ color:var(--red); font-size:18px; }
-.pbw-brandname{ font-family:var(--font-d); font-weight:700; font-size:18px; letter-spacing:.04em; }
-.pbw-brandname i{ color:var(--txt3); font-style:normal; margin:0 2px; }
-.pbw-tag{ font-family:var(--font-d); font-size:10px; letter-spacing:.28em; color:var(--txt3); border:1px solid var(--line2); padding:2px 6px; }
-.pbw-title-wrap{ flex:1; display:flex; justify-content:center; }
-.pbw-tasktitle{ background:transparent; border:none; border-bottom:1px dashed var(--line2); color:var(--txt);
-  font-family:var(--font-d); font-weight:700; font-size:18px; text-align:center; letter-spacing:.04em; padding:4px 10px; width:min(360px,50%); }
-.pbw-tasktitle:focus{ outline:none; border-bottom-color:var(--red); }
-.pbw-actions{ display:flex; gap:8px; }
-.pbw-btn{ font-family:var(--font-d); font-weight:700; font-size:13px; letter-spacing:.06em; cursor:pointer; border:none;
-  padding:8px 16px; color:var(--txt); background:var(--panel2); clip-path:var(--cut-sm); transition:.15s; white-space:nowrap; }
-.pbw-btn:hover{ filter:brightness(1.15); }
-.pbw-btn-red{ background:var(--red); color:#fff; }
-.pbw-btn-ghost{ background:transparent; border:1px solid var(--line2); }
-.pbw-btn-line{ background:transparent; border:1px solid var(--line2); color:var(--txt2); }
-.pbw-btn-line:hover{ color:var(--txt); border-color:var(--red); }
+.pbw-app :focus-visible{ outline:2px solid var(--color-focus); outline-offset:2px; }
+
+.pbw-top{ display:flex; align-items:center; gap:var(--space-md); padding:var(--space-sm) var(--space-md); background:var(--color-paper-2); border-bottom:var(--rule-hair) solid var(--color-rule); }
+.pbw-brand{ display:flex; align-items:center; gap:var(--space-xs); min-width:0; }
+.pbw-logo{ color:var(--color-accent); font-family:var(--font-outlier); font-size:15px; line-height:1; }
+.pbw-brandname{ font-family:var(--font-display); font-weight:700; font-size:var(--text-md); letter-spacing:.01em; white-space:nowrap; }
+.pbw-brandname i{ color:var(--color-rule-strong); font-style:normal; margin:0 2px; }
+.pbw-tag{ font-family:var(--font-outlier); font-size:10px; letter-spacing:.18em; color:var(--color-ink-3); white-space:nowrap; }
+.pbw-title-wrap{ flex:1; display:flex; justify-content:center; min-width:0; }
+.pbw-tasktitle{ width:min(340px,50%); padding:4px 8px; background:transparent; border:0; border-bottom:var(--rule-hair) solid var(--color-rule-strong); border-radius:0; color:var(--color-ink); font-family:var(--font-display); font-weight:600; font-size:var(--text-md); text-align:center; letter-spacing:.01em; }
+.pbw-tasktitle:hover{ border-bottom-color:var(--color-ink-3); }
+.pbw-tasktitle:focus{ outline:2px solid var(--color-focus); outline-offset:3px; border-bottom-color:var(--color-accent); }
+.pbw-actions{ display:flex; align-items:center; gap:var(--space-xs); }
+
+.pbw-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:7px 14px; min-height:34px; border:var(--rule-hair) solid var(--color-rule-strong); border-radius:var(--radius-sm); background:transparent; color:var(--color-ink); font-family:var(--font-body); font-weight:500; font-size:var(--text-sm); line-height:1; letter-spacing:.01em; white-space:nowrap; cursor:pointer; transition:color var(--dur-micro) var(--ease-out),background-color var(--dur-micro) var(--ease-out),border-color var(--dur-micro) var(--ease-out),transform var(--dur-micro) var(--ease-out); }
+.pbw-btn:hover{ color:var(--color-accent); border-color:var(--color-accent); }
+.pbw-btn:active{ transform:translateY(1px); }
+.pbw-btn-red{ background:var(--color-accent); border-color:var(--color-accent); color:var(--color-accent-ink); }
+.pbw-btn-red:hover{ background:var(--color-accent-deep); border-color:var(--color-accent-deep); color:var(--color-accent-ink); }
+.pbw-btn-ghost{ border-color:var(--color-rule); }
+.pbw-btn-line{ border-color:var(--color-rule); color:var(--color-ink-2); }
+.pbw-btn-line:hover{ color:var(--color-accent); border-color:var(--color-accent); }
 .pbw-full{ width:100%; }
+
 .pbw-export{ position:relative; }
-.pbw-export-menu{ position:absolute; right:0; top:110%; background:var(--panel); border:1px solid var(--line2); display:none; flex-direction:column; min-width:150px; z-index:30; }
+.pbw-export-menu{ position:absolute; right:0; top:calc(100% + 6px); z-index:var(--z-dropdown); display:none; flex-direction:column; min-width:150px; padding:4px; background:var(--color-paper); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-md); box-shadow:var(--shadow-whisper); }
 .pbw-export-menu.show{ display:flex; }
-.pbw-export-menu button{ background:transparent; border:none; color:var(--txt2); text-align:left; padding:10px 14px; cursor:pointer; font-family:var(--font-d); font-weight:600; font-size:13px; }
-.pbw-export-menu button:hover{ background:var(--panel2); color:var(--txt); }
+.pbw-export-menu button{ padding:8px 10px; background:transparent; border:0; border-radius:var(--radius-sm); color:var(--color-ink-2); font-family:var(--font-body); font-size:var(--text-sm); text-align:left; cursor:pointer; }
+.pbw-export-menu button:hover{ background:var(--color-paper-2); color:var(--color-accent); }
 
 .pbw-body{ display:grid; grid-template-columns:var(--dockw) minmax(0,1fr) var(--dockw); min-height:64vh; min-width:0; }
-.pbw-dock{ background:var(--panel); border-right:1px solid var(--line); padding:12px; display:flex; flex-direction:column; gap:12px; overflow:auto; min-width:0; }
-.pbw-dock-right{ border-right:none; border-left:1px solid var(--line); }
-.pbw-card{ background:var(--panel2); border:1px solid var(--line); padding:10px; clip-path:var(--cut); }
-.pbw-card-h{ font-family:var(--font-d); font-weight:700; font-size:12px; letter-spacing:.14em; color:var(--txt2); text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; }
-.pbw-hint{ color:var(--teal); font-size:11px; letter-spacing:.04em; }
+.pbw-dock{ display:flex; flex-direction:column; gap:0; padding:var(--space-md); background:var(--color-paper-2); border-right:var(--rule-hair) solid var(--color-rule); overflow:auto; min-width:0; }
+.pbw-dock-right{ border-right:0; border-left:var(--rule-hair) solid var(--color-rule); }
+.pbw-card{ padding:0 0 var(--space-md); border-bottom:var(--rule-hair) solid var(--color-rule); }
+.pbw-card + .pbw-card{ padding-top:var(--space-md); }
+.pbw-card:last-child{ padding-bottom:0; border-bottom:0; }
+.pbw-card-h{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-xs); margin-bottom:var(--space-sm); color:var(--color-ink-3); font-family:var(--font-outlier); font-size:11px; font-weight:500; letter-spacing:.08em; }
+.pbw-num{ margin-right:6px; color:var(--color-accent); font-size:10px; letter-spacing:.06em; }
+.pbw-hint{ color:var(--color-ink-3); font-family:var(--font-outlier); font-size:10px; letter-spacing:.02em; }
 
-.pbw-upload{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:14px; border:1px dashed var(--line2); cursor:pointer; text-align:center; transition:.15s; }
-.pbw-upload:hover{ border-color:var(--red); background:rgba(255,70,85,.06); }
-.pbw-upload-ico{ font-size:22px; color:var(--red); }
-.pbw-upload-txt{ font-family:var(--font-d); font-weight:700; font-size:14px; }
-.pbw-upload-sub{ font-size:11px; color:var(--txt3); }
+.pbw-upload{ position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:var(--space-lg) var(--space-md); background:var(--color-paper); border:1px dashed var(--color-rule-strong); border-radius:var(--radius-md); text-align:center; cursor:pointer; transition:border-color var(--dur-micro) var(--ease-out),background-color var(--dur-micro) var(--ease-out); }
+.pbw-upload:hover{ border-color:var(--color-accent); background:var(--color-accent-soft); }
+.pbw-upload:focus-within{ outline:2px solid var(--color-focus); outline-offset:2px; border-color:var(--color-focus); }
+.pbw-upload + .pbw-full{ margin-top:var(--space-sm); }
+.pbw-file{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; overflow:hidden; clip-path:inset(50%); }
+.pbw-upload-ico{ color:var(--color-accent); font-family:var(--font-outlier); font-size:18px; line-height:1; }
+.pbw-upload-txt{ color:var(--color-ink); font-family:var(--font-body); font-weight:500; font-size:var(--text-sm); }
+.pbw-upload-sub{ color:var(--color-ink-3); font-size:11px; }
 
-.pbw-seg{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.pbw-seg{ display:grid; grid-template-columns:1fr 1fr; gap:1px; overflow:hidden; background:var(--color-rule); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
 .pbw-seg-col{ grid-template-columns:1fr; }
-.pbw-seg button{ font-family:var(--font-d); font-weight:700; font-size:12px; letter-spacing:.04em; padding:7px; background:var(--bg); border:1px solid var(--line); color:var(--txt2); cursor:pointer; clip-path:var(--cut-sm); }
-.pbw-seg button.on{ background:var(--red); color:#fff; border-color:var(--red); }
-.pbw-row{ display:flex; gap:6px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+.pbw-seg button{ padding:8px 4px; background:var(--color-paper); border:0; color:var(--color-ink-2); font-family:var(--font-outlier); font-size:11px; letter-spacing:.02em; cursor:pointer; transition:background-color var(--dur-micro) var(--ease-out),color var(--dur-micro) var(--ease-out); }
+.pbw-seg button:hover{ background:var(--color-paper-3); color:var(--color-accent); }
+.pbw-seg button.on{ background:var(--color-ink); color:var(--color-paper); }
+.pbw-seg-col button{ padding:9px 10px; text-align:left; }
+.pbw-row{ display:flex; align-items:center; gap:var(--space-xs); margin-top:var(--space-sm); flex-wrap:wrap; }
 .pbw-row-mid{ justify-content:center; }
-.pbw-mini{ font-size:11px; color:var(--txt3); display:flex; align-items:center; gap:4px; flex:1 1 0; min-width:0; }
-.pbw-row .pbw-mini input{ width:100%; min-width:0; height:30px; padding:4px 6px; line-height:1.2; font-size:12px; background:var(--bg); border:1px solid var(--line); color:var(--txt); box-sizing:border-box; font-family:var(--font-d); }
+.pbw-mini{ display:flex; align-items:center; gap:6px; flex:1 1 0; min-width:0; color:var(--color-ink-3); font-family:var(--font-outlier); font-size:10px; letter-spacing:.06em; }
+.pbw-app .pbw-row .pbw-mini input{ width:100%; min-width:0; height:30px; padding:4px 8px; background:var(--color-paper); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); color:var(--color-ink); font-family:var(--font-outlier); font-size:12px; line-height:1.2; box-sizing:border-box; }
+.pbw-app .pbw-row .pbw-mini input:focus{ outline:2px solid var(--color-focus); outline-offset:1px; border-color:var(--color-focus); }
+.pbw-app .pbw-row > .pbw-btn{ height:30px; min-height:30px; padding:0 var(--space-sm); font-size:11px; }
 
-.pbw-pal{ display:grid; grid-template-columns:repeat(8,1fr); gap:4px; }
-.pbw-swatch{ width:100%; aspect-ratio:1/1; border:none; cursor:pointer; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.25); padding:0; }
-.pbw-swatch.on{ outline:2px solid var(--teal); outline-offset:1px; }
-.pbw-swatch.pbw-sel-none, .pbw-swatch#pbwEraser, .pbw-swatch#pbwPicker{ aspect-ratio:auto; width:auto; flex:1; background:var(--bg); color:var(--txt2); font-family:var(--font-d); font-weight:700; font-size:12px; padding:6px; border:1px solid var(--line); }
-.pbw-swatch.on{ color:var(--txt); }
+.pbw-pal{ display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:4px; }
+.pbw-swatch{ width:100%; aspect-ratio:1/1; padding:0; border:0; border-radius:2px; box-shadow:inset 0 0 0 1px var(--color-rule-strong); cursor:pointer; }
+.pbw-swatch:hover{ outline:1px solid var(--color-ink-3); outline-offset:1px; }
+.pbw-swatch.on{ outline:2px solid var(--color-accent); outline-offset:2px; }
+.pbw-app .pbw-swatch.pbw-sel-none,
+.pbw-app .pbw-swatch#pbwEraser,
+.pbw-app .pbw-swatch#pbwPicker{ aspect-ratio:auto; width:auto; flex:1; padding:7px 10px; background:var(--color-paper); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); box-shadow:none; color:var(--color-ink-2); font-family:var(--font-body); font-weight:500; font-size:12px; }
+.pbw-app .pbw-swatch.pbw-sel-none:hover,
+.pbw-app .pbw-swatch#pbwEraser:hover,
+.pbw-app .pbw-swatch#pbwPicker:hover{ border-color:var(--color-accent); color:var(--color-accent); outline:none; }
+.pbw-app .pbw-swatch.pbw-sel-none.on,
+.pbw-app .pbw-swatch#pbwEraser.on,
+.pbw-app .pbw-swatch#pbwPicker.on{ background:var(--color-ink); border-color:var(--color-ink); color:var(--color-paper); outline:none; }
 
-.pbw-layers{ display:flex; flex-direction:column; gap:5px; margin-bottom:8px; }
-.pbw-layer{ display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--bg); border:1px solid var(--line); cursor:pointer; }
-.pbw-layer.on{ border-color:var(--red); }
-.pbw-layer-vis{ background:transparent; border:none; cursor:pointer; color:var(--teal); font-size:14px; width:24px; height:24px; display:grid; place-items:center; padding:0; line-height:1; border-radius:4px; }
-.pbw-layer-vis:hover{ background:var(--panel2); }
-.pbw-layer-name{ flex:1; font-family:var(--font-d); font-weight:600; font-size:13px; }
-.pbw-layer-cnt{ font-size:11px; color:var(--txt3); }
+.pbw-layers{ display:flex; flex-direction:column; gap:4px; margin-bottom:var(--space-sm); }
+.pbw-layer{ display:flex; align-items:center; gap:var(--space-xs); padding:6px 8px; background:var(--color-paper); border:var(--rule-hair) solid var(--color-rule); border-left:2px solid transparent; border-radius:var(--radius-sm); cursor:pointer; transition:border-color var(--dur-micro) var(--ease-out),background-color var(--dur-micro) var(--ease-out); }
+.pbw-layer:hover{ border-color:var(--color-rule-strong); }
+.pbw-layer.on{ background:var(--color-paper-3); border-left-color:var(--color-accent); }
+.pbw-layer-vis{ display:grid; place-items:center; width:24px; height:24px; padding:0; background:transparent; border:0; border-radius:var(--radius-sm); color:var(--color-ink-3); font-size:12px; line-height:1; cursor:pointer; }
+.pbw-layer-vis:hover{ background:var(--color-paper-2); color:var(--color-ink); }
+.pbw-layer-vis.on{ color:var(--color-accent); }
+.pbw-layer-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--color-ink); font-family:var(--font-body); font-weight:500; font-size:12px; }
+.pbw-layer-cnt{ color:var(--color-ink-3); font-family:var(--font-outlier); font-size:10px; }
 
-.pbw-zoom{ font-family:var(--font-d); font-weight:700; min-width:54px; text-align:center; font-size:15px; }
-.pbw-zoombox{ display:flex; gap:8px; align-items:center; justify-content:center; }
-.pbw-zoombtn{ flex:1; font-size:18px; padding:12px 0; line-height:1; }
+.pbw-zoombox{ display:flex; align-items:center; justify-content:center; gap:var(--space-xs); }
+.pbw-zoom{ min-width:56px; color:var(--color-ink); font-family:var(--font-outlier); font-weight:500; font-size:var(--text-sm); font-variant-numeric:tabular-nums; text-align:center; }
+.pbw-zoombtn{ flex:1; min-height:34px; padding:0; font-size:16px; line-height:1; }
 
-.pbw-stage{ display:flex; flex-direction:column; padding:14px; gap:12px; background:var(--bg); min-width:0; }
-.pbw-stage-bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-.pbw-viewtabs{ display:flex; gap:4px; background:rgba(0,0,0,.35); padding:3px; clip-path:var(--cut-sm); }
-.pbw-viewtabs button{ font-family:var(--font-d); font-weight:700; font-size:13px; letter-spacing:.06em; padding:7px 18px; background:transparent; border:none; color:var(--txt2); cursor:pointer; }
-.pbw-viewtabs button.on{ background:var(--red); color:#fff; clip-path:var(--cut-sm); }
-.pbw-modebar{ display:flex; align-items:center; gap:8px; }
-.pbw-mode-label{ font-family:var(--font-d); font-size:11px; color:var(--txt3); letter-spacing:.1em; }
-.pbw-modeseg{ display:inline-grid; grid-auto-flow:column; grid-auto-columns:1fr; position:relative; background:rgba(0,0,0,.35); }
-.pbw-modeseg-btns{ display:grid; grid-auto-flow:column; grid-auto-columns:1fr; }
-.pbw-modeseg button{ font-family:var(--font-d); font-weight:700; font-size:12px; padding:6px 18px; background:transparent; border:none; color:var(--txt2); cursor:pointer; z-index:2; }
-.pbw-modeseg button.on{ color:#fff; }
-.pbw-knob{ position:absolute; top:0; bottom:0; left:0; width:50%; background:var(--red); z-index:1; transition:transform .26s cubic-bezier(.3,1.35,.5,1); box-shadow:0 0 10px rgba(255,70,85,.4); }
+.pbw-stage{ display:flex; flex-direction:column; gap:var(--space-sm); padding:var(--space-md); background:var(--color-paper); min-width:0; }
+.pbw-stage-bar{ display:flex; align-items:center; justify-content:space-between; gap:var(--space-sm); flex-wrap:wrap; }
+.pbw-viewtabs{ display:flex; gap:2px; padding:2px; background:var(--color-paper-2); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
+.pbw-viewtabs button{ padding:6px 14px; background:transparent; border:0; border-radius:2px; color:var(--color-ink-2); font-family:var(--font-body); font-weight:500; font-size:12px; cursor:pointer; transition:background-color var(--dur-micro) var(--ease-out),color var(--dur-micro) var(--ease-out); }
+.pbw-viewtabs button:hover{ color:var(--color-accent); }
+.pbw-viewtabs button.on{ background:var(--color-ink); color:var(--color-paper); }
+.pbw-modebar{ display:flex; align-items:center; gap:var(--space-xs); }
+.pbw-mode-label{ color:var(--color-ink-3); font-family:var(--font-outlier); font-size:10px; letter-spacing:.08em; }
+.pbw-modeseg{ position:relative; overflow:hidden; background:var(--color-paper-2); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
+.pbw-modeseg-btns{ position:relative; z-index:2; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; }
+.pbw-modeseg button{ position:relative; z-index:2; padding:6px 16px; background:transparent; border:0; color:var(--color-ink-2); font-family:var(--font-body); font-weight:500; font-size:12px; cursor:pointer; transition:color var(--dur-short) var(--ease-out); }
+.pbw-modeseg button.on{ color:var(--color-accent-ink); }
+.pbw-knob{ position:absolute; top:0; bottom:0; left:0; z-index:1; width:50%; background:var(--color-accent); transition:transform var(--dur-short) var(--ease-out); }
+/* 深色主题下墨色反相会把选中段变成大白块，改用印章红保持层级 */
+[data-theme="dark"] .pbw-seg button.on,
+[data-theme="dark"] .pbw-viewtabs button.on{ background:var(--color-accent); color:var(--color-accent-ink); }
+[data-theme="dark"] .pbw-seg button.on:hover,
+[data-theme="dark"] .pbw-viewtabs button.on:hover{ background:var(--color-accent-deep); color:var(--color-accent-ink); }
 
 .pbw-canvas-area{ position:relative; }
-.pbw-canvas-wrap{ position:relative; background:#0b1118; border:1px solid var(--line); min-width:0; min-height:420px; max-height:78vh; overflow:auto; }
+.pbw-canvas-wrap{ position:relative; min-width:0; min-height:420px; max-height:78vh; overflow:auto; background:var(--color-paper-3); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
 .pbw-canvas-inner{ width:max-content; min-height:100%; margin:0 auto; }
 .pbw-canvas-wrap > .pbw-canvas-inner{ padding-bottom:52px; }
-.pbw-canvas{ background:var(--paper); image-rendering:pixelated; display:block; }
+.pbw-canvas{ display:block; background:var(--pbw-board); image-rendering:pixelated; }
 .pbw-v3{ position:absolute; inset:0; display:none; }
 .pbw-v3 canvas{ display:block; width:100%; height:100%; }
-.pbw-empty{ position:absolute; color:var(--txt3); font-family:var(--font-d); font-size:15px; letter-spacing:.06em; pointer-events:none; padding:20px; text-align:center; }
-.pbw-meltbar{ position:absolute; left:14px; right:14px; bottom:12px; display:none; align-items:center; justify-content:center; gap:10px; padding:6px 14px; background:rgba(15,25,35,.7); backdrop-filter:blur(6px); border-top:1px solid rgba(255,255,255,.08); z-index:6; }
-.pbw-meltbar button{ background:transparent; border:1px solid var(--line2); color:var(--txt2); font-family:var(--font-d); font-weight:700; font-size:12px; padding:4px 12px; cursor:pointer; white-space:nowrap; }
-.pbw-meltbar button:hover{ color:var(--txt); border-color:var(--red); }
-.pbw-meltbar input[type=range]{ flex:0 1 280px; accent-color:var(--red); }
+.pbw-empty{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:var(--space-lg); color:var(--pbw-board-ink); font-family:var(--font-display); font-size:var(--text-md); letter-spacing:.01em; text-align:center; pointer-events:none; }
+.pbw-meltbar{ position:absolute; left:50%; bottom:var(--space-sm); z-index:var(--z-raised); transform:translateX(-50%); display:none; align-items:center; justify-content:center; gap:var(--space-xs); max-width:calc(100% - 24px); padding:5px 8px; background:var(--color-paper); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-pill); box-shadow:var(--shadow-whisper); }
+.pbw-meltbar button{ padding:4px 8px; background:transparent; border:0; border-radius:var(--radius-pill); color:var(--color-ink-2); font-family:var(--font-body); font-weight:500; font-size:12px; white-space:nowrap; cursor:pointer; }
+.pbw-meltbar button:hover{ color:var(--color-accent); }
+.pbw-meltbar input[type=range]{ flex:0 1 240px; accent-color:var(--color-accent); }
 
-.pbw-spec{ display:none; background:var(--panel); border:1px solid var(--line); padding:16px; clip-path:var(--cut); }
-.pbw-spec-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
-.pbw-spec-item{ background:var(--panel2); padding:12px; border:1px solid var(--line); clip-path:var(--cut-sm); }
-.pbw-spec-item .k{ display:block; font-size:11px; color:var(--txt3); letter-spacing:.1em; margin-bottom:6px; }
-.pbw-spec-item b{ font-family:var(--font-d); font-weight:700; font-size:20px; color:var(--teal); }
-.pbw-spec-pal .pbw-pal{ margin-top:8px; }
+.pbw-spec{ display:none; padding:var(--space-md); background:transparent; border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
+.pbw-spec-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; margin-bottom:var(--space-md); overflow:hidden; background:var(--color-rule); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
+.pbw-spec-item{ padding:var(--space-sm) var(--space-md); background:var(--color-paper); }
+.pbw-spec-item .k{ display:block; margin-bottom:4px; color:var(--color-ink-3); font-family:var(--font-outlier); font-size:10px; letter-spacing:.06em; }
+.pbw-spec-item b{ color:var(--color-ink); font-family:var(--font-outlier); font-weight:500; font-size:var(--text-lg); font-variant-numeric:tabular-nums; }
+.pbw-spec-pal .pbw-pal{ margin-top:var(--space-xs); }
 
 .pbw-assist{ display:none; }
-.pbw-assist-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-.pbw-assist-tip{ font-size:12px; color:var(--txt3); }
-.pbw-assist-nav{ display:flex; align-items:center; gap:8px; font-family:var(--font-d); font-weight:700; }
-.pbw-assist-canvas-wrap{ background:#0b1118; border:1px solid var(--line); min-width:0; min-height:420px; max-height:78vh; overflow:auto; }
+.pbw-assist-bar{ display:flex; align-items:center; justify-content:space-between; gap:var(--space-sm); margin-bottom:var(--space-sm); flex-wrap:wrap; }
+.pbw-assist-tip{ color:var(--color-ink-3); font-size:12px; }
+.pbw-assist-nav{ display:flex; align-items:center; gap:var(--space-xs); color:var(--color-ink-3); font-family:var(--font-outlier); font-size:11px; }
+.pbw-assist-canvas-wrap{ min-width:0; min-height:420px; max-height:78vh; overflow:auto; background:var(--color-paper-3); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
 
-.pbw-progress{ background:var(--panel); border:1px solid var(--line); padding:14px; clip-path:var(--cut); }
-.pbw-prog-list{ display:flex; flex-direction:column; gap:5px; max-height:240px; overflow:auto; }
-.pbw-prog-row{ display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--panel2); border:1px solid var(--line); cursor:pointer; }
+.pbw-progress{ padding:var(--space-md); border:var(--rule-hair) solid var(--color-rule); border-radius:var(--radius-sm); }
+.pbw-prog-list{ display:flex; flex-direction:column; max-height:240px; overflow:auto; border-top:var(--rule-hair) solid var(--color-rule); }
+.pbw-prog-row{ display:flex; align-items:center; gap:var(--space-sm); padding:7px 4px; border-bottom:var(--rule-hair) solid var(--color-rule); cursor:pointer; transition:background-color var(--dur-micro) var(--ease-out); }
+.pbw-prog-row:hover{ background:var(--color-paper-2); }
 .pbw-prog-row.done{ opacity:.55; }
 .pbw-prog-row.done .pbw-prog-name{ text-decoration:line-through; }
-.pbw-prog-sw{ width:18px; height:18px; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.3); }
-.pbw-prog-name{ flex:1; font-family:var(--font-d); font-weight:600; font-size:14px; }
-.pbw-prog-ct{ font-size:12px; color:var(--txt3); }
+.pbw-prog-sw{ flex:0 0 auto; width:16px; height:16px; border-radius:2px; box-shadow:inset 0 0 0 1px var(--color-rule-strong); }
+.pbw-prog-name{ flex:1; color:var(--color-ink); font-family:var(--font-body); font-size:12px; }
+.pbw-prog-ct{ color:var(--color-ink-3); font-family:var(--font-outlier); font-size:10px; }
 
-@media (max-width:980px){
+/* 平板：保留左栏 + 舞台，右栏收成底部三列，避免控件被拉成整行 */
+@media (max-width:980px) and (min-width:641px){
+  .pbw-body{ grid-template-columns:240px minmax(0,1fr); }
+  .pbw-dock{ border-bottom:0; }
+  .pbw-dock-right{ grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-lg); padding:var(--space-md); border-left:0; border-top:var(--rule-hair) solid var(--color-rule); }
+  .pbw-dock-right .pbw-card{ padding:0; border-bottom:0; }
+  .pbw-dock-right .pbw-card + .pbw-card{ padding-top:0; padding-left:var(--space-lg); border-left:var(--rule-hair) solid var(--color-rule); }
+  .pbw-spec-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .pbw-title-wrap{ flex:1 1 160px; }
+  .pbw-tasktitle{ width:100%; }
+}
+@media (max-width:640px){
   .pbw-body{ grid-template-columns:1fr; }
-  .pbw-dock{ border-right:none; border-left:none; border-bottom:1px solid var(--line); }
-  .pbw-dock-right{ border-left:none; }
-  .pbw-spec-grid{ grid-template-columns:repeat(2,1fr); }
-  .pbw-title-wrap{ display:none; }
+  .pbw-dock{ border-right:0; border-left:0; border-bottom:var(--rule-hair) solid var(--color-rule); }
+  .pbw-dock-right{ border-left:0; border-top:var(--rule-hair) solid var(--color-rule); border-bottom:0; }
+  .pbw-spec-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .pbw-title-wrap{ flex:1 1 160px; }
+  .pbw-tasktitle{ width:100%; }
 }
 @media (max-width:600px){
-  .pbw-top{ flex-wrap:wrap; gap:8px; padding:8px 10px; }
+  .pbw-top{ flex-wrap:wrap; gap:var(--space-xs); padding:var(--space-xs) var(--space-sm); }
   .pbw-tag{ display:none; }
-  .pbw-brandname{ font-size:15px; }
+  .pbw-brandname{ font-size:var(--text-base); }
+  .pbw-title-wrap{ order:3; flex:1 1 100%; }
   .pbw-actions{ margin-left:auto; }
-  .pbw-btn{ padding:7px 12px; font-size:12px; }
-  .pbw-stage{ padding:10px; gap:10px; }
-  .pbw-viewtabs button{ padding:7px 12px; font-size:12px; }
+  .pbw-btn{ min-height:36px; padding:6px 10px; font-size:12px; }
+  .pbw-dock{ padding:var(--space-sm); }
+  .pbw-stage{ padding:var(--space-sm); gap:var(--space-sm); }
+  .pbw-viewtabs button{ padding:6px 10px; font-size:12px; }
   .pbw-mode-label{ display:none; }
   .pbw-canvas-wrap,
   .pbw-assist-canvas-wrap{ min-height:300px; max-height:58vh; }
-  .pbw-meltbar{ left:10px; right:10px; gap:6px; padding:6px 8px; }
-  .pbw-meltbar button{ padding:4px 8px; font-size:11px; }
+  .pbw-meltbar{ bottom:var(--space-xs); gap:2px; padding:4px 6px; }
+  .pbw-meltbar button{ padding:4px 6px; font-size:11px; }
   .pbw-meltbar input[type=range]{ flex:1 1 60px; min-width:60px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .pbw-app *{ transition:none !important; }
 }
 </style>
