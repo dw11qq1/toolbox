@@ -83,6 +83,7 @@
 
     var now = new Date();
     var diffMs = d.getTime() - now.getTime();
+    var past = diffMs < 0;
 
     $('ntHero').innerHTML = '<b>' + rel(diffMs) + '</b><span>' + fmt(d) + '　·　Unix 秒 ' + Math.floor(d.getTime() / 1000) + '　·　毫秒 ' + d.getTime() + '</span>';
 

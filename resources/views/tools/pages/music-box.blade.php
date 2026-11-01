@@ -6,6 +6,7 @@
     <label class="bpm-label">速度 <input type="range" id="mbBpm" min="60" max="180" value="120"> <b id="mbBpmVal">120</b> BPM</label>
   </div>
   <div id="mbGrid"></div>
+  <p class="mb-hint">左右滑动可编辑全部 16 拍</p>
   <p class="fl" style="margin-top:0.7rem">C 大调五声音阶 —— 随便点都好听。点亮格子后按播放，循环播放你的旋律。</p>
 </div>
 
@@ -144,5 +145,12 @@
 #mboxApp .mb-cell.cursor:not(.on){background:var(--line)}
 #mboxApp .bpm-label{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--ink-2)}
 #mboxApp .bpm-label b{font-family:var(--font-mono);color:var(--accent)}
-@media (max-width:600px){#mboxApp .mb-cell{max-width:none;aspect-ratio:1;border-radius:4px}}
+#mboxApp .mb-hint{display:none;margin:0.4rem 0 0;font-size:0.78rem;color:var(--ink-3)}
+@media (max-width:600px){
+  #mboxApp .mb-hint{display:block}
+  #mboxApp #mbGrid{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  #mboxApp .mb-row{min-width:max-content}
+  #mboxApp .mb-row-label{position:sticky;left:0;z-index:1;background:var(--color-paper)}
+  #mboxApp .mb-cell{flex:0 0 34px;aspect-ratio:1;border-radius:4px}
+}
 </style>

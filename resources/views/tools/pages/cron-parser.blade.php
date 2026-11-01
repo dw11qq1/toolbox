@@ -169,7 +169,7 @@
       var limit = new Date(d.getTime() + 2 * 366 * 24 * 3600 * 1000);
       while(out.length < 5 && d < limit){
         if(matches(d, f)){
-          out.push(d);
+          out.push(new Date(d.getTime()));
         }
         d.setMinutes(d.getMinutes() + 1);
       }

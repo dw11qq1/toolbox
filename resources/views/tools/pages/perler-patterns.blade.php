@@ -1,820 +1,862 @@
-<div class="pb-world">
+{{-- 工具匣 · 拼豆工坊（暗黑竞技风 · 独立原创实现） --}}
+{{-- 视觉语言借鉴 VALORANT 风格，代码/命名/品牌均为工具匣自有，非搬运第三方成品 --}}
+<div class="pbw-app" id="pbwApp">
 
-<div class="pb-hero">
-  <h2 class="pb-title">拼豆图纸工作室</h2>
-  <p class="pb-sub">把喜欢的画面，一颗一颗拼出来 ♡</p>
-</div>
+  <header class="pbw-top">
+    <div class="pbw-brand">
+      <span class="pbw-logo">▰</span>
+      <span class="pbw-brandname">工具匣<i>·</i>拼豆工坊</span>
+      <span class="pbw-tag">PERLER STUDIO</span>
+    </div>
+    <div class="pbw-title-wrap">
+      <input class="pbw-tasktitle" id="pbwTaskTitle" value="我的拼豆作品" maxlength="24" spellcheck="false" aria-label="作品标题">
+    </div>
+    <div class="pbw-actions">
+      <button class="pbw-btn pbw-btn-ghost" id="pbwSaveBtn" title="保存到本机">保存</button>
+      <div class="pbw-export">
+        <button class="pbw-btn pbw-btn-red" id="pbwExportBtn">导出 ▾</button>
+        <div class="pbw-export-menu" id="pbwExportMenu">
+          <button data-x="png">PNG 图纸</button>
+          <button data-x="svg">SVG 矢量</button>
+          <button data-x="pdf">PDF 图纸</button>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<div class="field pb-card">
-  <span class="fl">底板尺寸</span>
-  <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
-    <select id="pbSize" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
-      <option value="16">16 × 16（小底板）</option>
-      <option value="20">20 × 20</option>
-      <option value="29" selected>29 × 29（标准大方板）</option>
-      <option value="40">40 × 40（拼两块）</option>
-      <option value="50">50 × 50</option>
-      <option value="58">58 × 58（拼四块）</option>
-      <option value="70">70 × 70（拼六块）</option>
-      <option value="87">87 × 87（拼九块 · 大型挂画）</option>
-    </select>
-    <button class="btn pb-pat" data-pat="love" style="padding:0.35rem 0.8rem">🩷 爱心</button>
-    <button class="btn pb-pat" data-pat="star" style="padding:0.35rem 0.8rem">⭐ 星星</button>
-    <button class="btn pb-pat" data-pat="mushroom" style="padding:0.35rem 0.8rem">🍄 小蘑菇</button>
-    <button class="btn pb-pat" data-pat="bunny" style="padding:0.35rem 0.8rem">🐰 小兔子</button>
-    <button class="btn" id="pbClear" style="padding:0.35rem 0.9rem">清空当前图层</button>
+  <div class="pbw-body">
+    {{-- 左侧控制面板 --}}
+    <aside class="pbw-dock">
+      <section class="pbw-card">
+        <div class="pbw-card-h">① 导入画面</div>
+        <label class="pbw-upload" id="pbwUploadLabel">
+          <input type="file" id="pbwFile" accept="image/*" hidden>
+          <span class="pbw-upload-ico">⬆</span>
+          <span class="pbw-upload-txt">上传图片转图纸</span>
+          <span class="pbw-upload-sub">自动按调色板匹配豆色</span>
+        </label>
+        <button class="pbw-btn pbw-btn-line pbw-full" id="pbwClearBtn">清空画布</button>
+      </section>
+
+      <section class="pbw-card">
+        <div class="pbw-card-h">② 拼豆板尺寸</div>
+        <div class="pbw-seg" id="pbwSizeSeg">
+          <button data-w="29" data-h="29">29×29</button>
+          <button data-w="52" data-h="52" class="on">52×52</button>
+          <button data-w="78" data-h="78">78×78</button>
+          <button data-w="104" data-h="104">104×104</button>
+        </div>
+        <div class="pbw-row">
+          <label class="pbw-mini">宽 <input type="number" id="pbwW" value="52" min="8" max="200"></label>
+          <label class="pbw-mini">高 <input type="number" id="pbwH" value="52" min="8" max="200"></label>
+          <button class="pbw-btn pbw-btn-line" id="pbwApplySize">应用</button>
+        </div>
+      </section>
+
+      <section class="pbw-card">
+        <div class="pbw-card-h">③ 调色板 <span class="pbw-hint" id="pbwPalName">—</span></div>
+        <div class="pbw-pal" id="pbwPal"></div>
+        <div class="pbw-row pbw-row-mid">
+          <button class="pbw-swatch pbw-sel-none" id="pbwEraser" title="橡皮（留空）">⌫ 橡皮</button>
+          <button class="pbw-swatch" id="pbwPicker" title="取色">⛏ 取色</button>
+        </div>
+      </section>
+
+    </aside>
+
+    {{-- 主舞台 --}}
+    <main class="pbw-stage">
+      <div class="pbw-stage-bar">
+        <div class="pbw-viewtabs" id="pbwViewTabs">
+          <button data-view="spec" class="on">规格</button>
+          <button data-view="pattern">图纸</button>
+          <button data-view="assist">辅助拼豆</button>
+        </div>
+        <div class="pbw-modebar">
+          <span class="pbw-mode-label">视角</span>
+          <div class="pbw-modeseg" id="pbwModeSeg">
+            <div class="pbw-modeseg-btns">
+              <button data-mode="flat" class="on">平面</button>
+              <button data-mode="3d">3D</button>
+              <span class="pbw-knob" id="pbwKnob"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbw-canvas-area">
+        <div class="pbw-canvas-wrap" id="pbwCanvasWrap">
+          <div class="pbw-canvas-inner">
+            <canvas id="pbwCanvas" class="pbw-canvas"></canvas>
+          </div>
+          <div class="pbw-v3" id="pbwV3Wrap"><canvas id="pbwV3"></canvas></div>
+        </div>
+        <div class="pbw-meltbar" id="pbwMeltbar">
+          <button id="pbwMeltPlay">▶ 模拟烫豆</button>
+          <input type="range" id="pbwMeltRange" min="0" max="100" value="100" disabled>
+          <button id="pbwMeltStyle" data-style="flat">烫法：平烫</button>
+        </div>
+        <div class="pbw-empty" id="pbwEmpty">上传一张图片，或直接在格子上点画开始创作</div>
+      </div>
+
+      {{-- 规格视图 --}}
+      <div class="pbw-spec" id="pbwSpecView">
+        <div class="pbw-spec-grid">
+          <div class="pbw-spec-item"><span class="k">板尺寸</span><b id="pbwSpecSize">52 × 52</b></div>
+          <div class="pbw-spec-item"><span class="k">总格数</span><b id="pbwSpecCells">2704</b></div>
+          <div class="pbw-spec-item"><span class="k">已填格</span><b id="pbwSpecFilled">0</b></div>
+          <div class="pbw-spec-item"><span class="k">用色数</span><b id="pbwSpecColors">0</b></div>
+          <div class="pbw-spec-item"><span class="k">预估豆量</span><b id="pbwSpecBeads">0</b></div>
+          <div class="pbw-spec-item"><span class="k">图层数</span><b id="pbwSpecLayers">1</b></div>
+        </div>
+        <div class="pbw-spec-pal">
+          <div class="pbw-card-h">本图使用色</div>
+          <div class="pbw-pal" id="pbwSpecPal"></div>
+        </div>
+      </div>
+
+      {{-- 辅助拼豆视图 --}}
+      <div class="pbw-assist" id="pbwAssistView">
+        <div class="pbw-assist-bar">
+          <span class="pbw-assist-tip">按颜色顺序逐块拼：勾掉已完成的颜色，画布只显示当前颜色区域</span>
+          <div class="pbw-assist-nav">
+            <button class="pbw-btn pbw-btn-line" id="pbwAssistPrev">← 上一色</button>
+            <span id="pbwAssistIdx">1 / 1</span>
+            <button class="pbw-btn pbw-btn-line" id="pbwAssistNext">下一色 →</button>
+          </div>
+        </div>
+        <div class="pbw-assist-canvas-wrap" id="pbwAssistWrap">
+          <div class="pbw-canvas-inner">
+            <canvas id="pbwAssistCanvas" class="pbw-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      {{-- 拼豆进度记录表 --}}
+      <section class="pbw-progress">
+        <div class="pbw-card-h">拼豆进度记录表 <span class="pbw-hint" id="pbwProgDone">0 / 0 色完成</span></div>
+        <div class="pbw-prog-list" id="pbwProgList"></div>
+      </section>
+    </main>
+
+    {{-- 右侧工具面板：图层 / 视图 / 缩放（贴近画布，常驻易点） --}}
+    <aside class="pbw-dock pbw-dock-right">
+      <section class="pbw-card">
+        <div class="pbw-card-h">④ 图层</div>
+        <div class="pbw-layers" id="pbwLayers"></div>
+        <button class="pbw-btn pbw-btn-line pbw-full" id="pbwAddLayer">+ 新建图层</button>
+      </section>
+
+      <section class="pbw-card">
+        <div class="pbw-card-h">⑤ 视图</div>
+        <div class="pbw-seg pbw-seg-col" id="pbwViewSeg">
+          <button data-view="spec" class="on">规格总览</button>
+          <button data-view="pattern">图纸编辑</button>
+          <button data-view="assist">辅助拼豆</button>
+        </div>
+      </section>
+
+      <section class="pbw-card">
+        <div class="pbw-card-h">⑥ 缩放</div>
+        <div class="pbw-zoombox">
+          <button class="pbw-btn pbw-btn-line pbw-zoombtn" id="pbwZoomOut">－</button>
+          <span class="pbw-zoom" id="pbwZoomLabel">100%</span>
+          <button class="pbw-btn pbw-btn-line pbw-zoombtn" id="pbwZoomIn">＋</button>
+        </div>
+      </section>
+    </aside>
   </div>
 </div>
 
-<div class="field pb-card">
-  <span class="fl">色卡型号</span>
-  <div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
-    <select id="pbCard" style="font-size:0.9rem;padding:0.35rem 0.6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px">
-      <option value="mard" selected>MARD 221 色</option>
-      <option value="perler">Perler 48 色（美国）</option>
-      <option value="artkal">Artkal S 系 159 色</option>
-    </select>
-    <button class="btn" id="pbConvert" style="padding:0.35rem 0.9rem">图纸色号转换到当前色卡</button>
-  </div>
-  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">换色卡后点「转换」，图纸上每个豆会自动映射到当前色卡里最接近的色号（买不同牌子的豆时用）。</p>
-</div>
-
-<div class="field pb-card">
-  <span class="fl">照片转图纸（自动匹配当前色卡）</span>
-  <div class="btn-row" style="gap:0.8rem;flex-wrap:wrap;align-items:center">
-    <input type="file" id="pbFile" accept="image/*" style="font-size:0.8rem">
-    <label style="font-size:0.8rem;color:var(--ink-2);display:flex;align-items:center;gap:0.3rem">
-      <input type="checkbox" id="pbDither"> 抖动算法（照片更细腻）
-    </label>
-    <label style="font-size:0.8rem;color:var(--ink-2);display:flex;align-items:center;gap:0.3rem">
-      <input type="checkbox" id="pbWhiteOut"> 接近白色不加豆（做镂空）
-    </label>
-  </div>
-  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">照片会缩到当前底板尺寸并逐格匹配最接近的色号，结果写入<b>当前图层</b>。像素画/Logo 建议关抖动，照片开抖动更自然。</p>
-</div>
-
-<div class="field pb-card">
-  <span class="fl">图层（点豆只影响选中图层；底层半透明显示方便对照）</span>
-  <div class="btn-row" id="pbLayers" style="gap:0.4rem;flex-wrap:wrap"></div>
-</div>
-
-<div class="field pb-card">
-  <span class="fl">色板（点击选色 · 当前：<b id="pbCurName">MARD F2</b>）</span>
-  <div id="pbPalette"></div>
-</div>
-
-<div class="field pb-card">
-  <span class="fl">图纸（按住拖动点豆 · 右键擦除）
-    <span style="float:right;display:inline-flex;gap:0.3rem;align-items:center">
-      <button class="btn" id="pbZoomOut" style="padding:0.1rem 0.6rem;font-size:0.85rem">−</button>
-      <span id="pbZoomLabel" style="font-size:0.75rem;color:var(--ink-3);font-family:var(--font-mono)">18px</span>
-      <button class="btn" id="pbZoomIn" style="padding:0.1rem 0.6rem;font-size:0.85rem">＋</button>
-    </span>
-  </span>
-  <div id="pbWrap" style="overflow:auto;max-width:100%;border-radius:14px;scrollbar-width:thin">
-    <canvas id="pbCanvas" style="border:1px solid #ffd9e5;border-radius:14px;touch-action:none;cursor:crosshair;background:#fffdf9"></canvas>
-  </div>
-  <p style="font-size:0.75rem;color:var(--ink-3);margin-top:0.4rem">圆角方块的糖果小豆，带一点点高光——放大方便逐格微调，画布超出时上下左右滚动，比例永远是 1:1 不变形。</p>
-</div>
-
-<div class="field pb-card" id="pbCountWrap" style="display:none">
-  <span class="fl">用豆清单（照着买豆就行，建议多备 5%~10% 损耗）</span>
-  <div id="pbCountsActive" style="margin-top:0.3rem"></div>
-  <span class="fl" id="pbTotalTitle" style="margin-top:0.8rem;display:none">全部图层合计</span>
-  <div id="pbCountsTotal"></div>
-</div>
-
-<div class="btn-row" style="gap:0.6rem;flex-wrap:wrap">
-  <button class="btn" id="pbSave" style="padding:0.35rem 0.9rem">保存到本地</button>
-  <button class="btn" id="pbLoad" style="padding:0.35rem 0.9rem">载入</button>
-  <button class="btn" id="pbExport" style="padding:0.35rem 0.9rem">导出 PNG</button>
-  <button class="btn" id="pbPdf" style="padding:0.35rem 0.9rem">导出 PDF（图纸 + 用量清单）</button>
-</div>
-</div>
-
-<style>
-/* ============ 拼豆小岛 · 柔和少女风（低饱和玫瑰 × 雾紫，独立于全站） ============ */
-.pb-world{
-  --pb-rose:#d97a9e; --pb-rose-deep:#c05c85; --pb-mauve:#9d87c9;
-  --pb-plum:#4f3a48; --pb-plum-2:#8d7385;
-  position:relative;
-  background:linear-gradient(165deg,#fdf8fa 0%,#faf5f9 55%,#f7f4fb 100%);
-  background-image:
-    radial-gradient(#f5e4ec 1.4px, transparent 1.4px),
-    radial-gradient(#ece5f7 1.4px, transparent 1.4px);
-  background-size:36px 36px;
-  background-position:0 0, 18px 18px;
-  border:1px solid #f0dbe5;
-  border-radius:20px;
-  padding:1.5rem 1.4rem 1.3rem;
-  box-shadow:0 8px 28px rgba(190,120,150,0.10);
-}
-
-/* ---- 顶部横幅：安静的粉雾渐变 ---- */
-.pb-hero{
-  position:relative;overflow:hidden;
-  background:linear-gradient(120deg,#f8dce8,#eadef6 55%,#dce8f6);
-  border:1px solid #fff;border-radius:14px;
-  padding:1.15rem 1.35rem 1.05rem;
-  margin-bottom:1.25rem;
-  box-shadow:0 4px 16px rgba(190,120,150,0.12);
-}
-.pb-hero::after{content:'';position:absolute;inset:0;
-  background-image:radial-gradient(rgba(255,255,255,0.5) 1.5px, transparent 1.5px);
-  background-size:26px 26px;pointer-events:none}
-.pb-title{font-size:1.4rem;font-weight:700;letter-spacing:0.05em;color:var(--pb-plum);margin:0;position:relative;z-index:1}
-.pb-sub{font-size:0.88rem;color:var(--pb-plum-2);margin:0.3rem 0 0;letter-spacing:0.03em;position:relative;z-index:1}
-
-/* ---- 白色卡片 ---- */
-.pb-world .pb-card{
-  background:#fff;border:1px solid #f0dbe5;border-radius:14px;
-  padding:0.9rem 1rem 0.95rem;margin-bottom:0.9rem;
-  box-shadow:0 2px 10px rgba(190,120,150,0.07);
-}
-.pb-world .pb-card>.fl{
-  display:inline-block;font-size:0.8rem;font-weight:600;color:var(--pb-rose-deep);
-  letter-spacing:0.06em;
-  background:#fdf3f7;border:1px solid #f3dde7;border-radius:999px;
-  padding:0.18rem 0.75rem;margin-bottom:0.65rem;
-}
-
-/* ---- 按钮：统一的玫瑰胶囊 ---- */
-.pb-world .btn{
-  background:linear-gradient(180deg,#e795b4,#d97a9e);
-  border:1px solid #c96a90;color:#fff;border-radius:999px;
-  font-weight:500;box-shadow:0 2px 0 rgba(192,92,133,0.28);
-  transition:transform 140ms ease,box-shadow 140ms ease,filter 140ms ease;
-}
-.pb-world .btn:hover{filter:brightness(1.05);transform:translateY(-1px);box-shadow:0 3px 6px rgba(192,92,133,0.3)}
-.pb-world .btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(192,92,133,0.28)}
-.pb-world .btn.pb-ghost{background:#fff;color:var(--pb-rose-deep);border:1px solid #eec3d4;box-shadow:none}
-
-/* ---- 表单控件 ---- */
-.pb-world select,.pb-world input[type="number"],.pb-world textarea{
-  border:1px solid #eed3de!important;border-radius:10px!important;background:#fefcfd!important;color:var(--pb-plum)!important}
-.pb-world select:focus,.pb-world textarea:focus{outline:2px solid var(--pb-rose);outline-offset:2px}
-.pb-world input[type="checkbox"]{accent-color:var(--pb-rose);width:15px;height:15px}
-.pb-world .fl b,.pb-world p b{color:var(--pb-rose-deep)}
-.pb-world p{color:var(--pb-plum-2)}
-.pb-world .fl{color:var(--pb-plum-2)}
-.pb-world .pb-card>.fl{color:var(--pb-rose-deep)}
-
-/* ---- 色板 ---- */
-#pbPalette{max-width:560px}
-.pb-group{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;flex-wrap:wrap}
-.pb-group em{font-style:normal;font-family:var(--font-mono);font-size:0.68rem;color:var(--pb-plum-2);background:#f4eff8;
-  width:52px;text-align:center;padding:3px 0;border-radius:999px;flex-shrink:0;margin-top:3px}
-.pb-swatch{width:22px;height:22px;border-radius:30%;cursor:pointer;border:1px solid rgba(0,0,0,0.12);box-sizing:border-box;transition:transform 120ms ease}
-.pb-swatch:hover{transform:scale(1.22)}
-.pb-swatch.on{border:2px solid var(--pb-plum);transform:scale(1.2);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--pb-rose)}
-
-/* ---- 图层 & 用豆 chips ---- */
-.pb-layer{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;padding:0.28rem 0.75rem;border:1px solid #eed3de;border-radius:999px;cursor:pointer;background:#fff;color:var(--pb-plum-2);transition:all 140ms ease}
-.pb-layer:hover{border-color:var(--pb-rose);transform:translateY(-1px)}
-.pb-layer.on{border-color:var(--pb-rose);color:var(--pb-rose-deep);font-weight:600;background:#fdf3f7}
-.pb-layer i{font-style:normal;cursor:pointer;opacity:0.6}
-.pb-layer i:hover{opacity:1}
-#pbCountsActive,#pbCountsTotal{display:flex;flex-wrap:wrap;gap:0.4rem}
-.pb-count{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--pb-plum);border:1px solid #f0dbe5;border-radius:999px;padding:0.2rem 0.7rem 0.2rem 0.3rem;background:#fefcfd}
-.pb-count i{width:16px;height:16px;border-radius:5px;display:inline-block;border:1px solid rgba(0,0,0,0.12)}
-.pb-count b{font-family:var(--font-mono)}
-
-/* ---- 画布区 ---- */
-#pbWrap::-webkit-scrollbar{height:9px;width:9px}
-#pbWrap::-webkit-scrollbar-track{background:#faf0f4;border-radius:99px}
-#pbWrap::-webkit-scrollbar-thumb{background:#e3b3c6;border-radius:99px}
-#pbWrap::-webkit-scrollbar-thumb:hover{background:var(--pb-rose)}
-
-/* ---- 科普区块同风格化 ---- */
-.pb-world .explain{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #f0dbe5}
-.pb-world .explain h3{font-size:0.8rem;font-weight:700;color:var(--pb-rose-deep);letter-spacing:0.1em;margin-bottom:0.6rem}
-.pb-world .ex-formula{background:#fdf6f9;border:1px solid #f0dbe5;border-radius:10px;color:var(--pb-plum)}
-.pb-world .ex-text{color:var(--pb-plum-2)}
-.pb-world .ex-text b{color:var(--pb-plum)}
-</style>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
-  var $ = function(id){ return document.getElementById(id); };
+  "use strict";
+  // ============ 设计系统（VALORANT 暗黑竞技风，工具匣自有变量） ============
+  var CSS_VARS_LOADED = true; // 见下方 <style>
 
-  /* ================= 色卡库 ================= */
-  var CARDS = {
-    mard: { label: 'MARD 221', short: 'MARD', prefix: 'MARD', groups: [['A','黄·橙'],['B','绿'],['C','蓝·青'],['D','紫'],['E','粉'],['F','红'],['G','肤·棕'],['H','黑·白·灰'],['M','莫兰迪']],
-      data:
-        'A1 F9F0CD|A2 FBFBD4|A3 FAFC9F|A4 FFE953|A5 F4D738|A6 FDAD49|A7 FF7C2F|A8 EACA49|A9 FF995A|A10 FF9D55|A11 FFDD99|A12 FCB58F|A13 FFBB59|A14 FF6D40|A15 FDFF44|A16 FEF9AE|A17 FFE36E|A18 FECF98|A19 FD7B72|A20 EFCD67|A21 FFE395|A22 FFF3A4|A23 F3D5BF|A24 FBF8C9|A25 FFD67D|A26 FFBB27|' +
-        'B1 E6EE32|B2 5BE419|B3 7CEE9D|B4 1EF942|B5 00BD35|B6 5AE8BA|B7 03AC88|B8 029D26|B9 26523A|B10 95D3C2|B11 5D722A|B12 156F40|B13 D9F794|B14 ADE945|B15 2E5132|B16 C6ED9C|B17 9BB13A|B18 E6EE49|B19 25B88C|B20 C2F0CC|B21 146A6B|B22 0B3C43|B23 303921|B24 EEFCA5|B25 4E846D|B26 8C7A36|B27 D1DCC1|B28 9EE5B9|B29 C5E254|B30 ECFBD0|B31 C4E6B5|B32 9BAB5A|' +
-        'C1 E8FFE7|C2 BCF9F6|C3 A0E2FB|C4 42CCFF|C5 01ACEB|C6 50A9F0|C7 0188D3|C8 1054C0|C9 314BCA|C10 3EBCE2|C11 03B9B9|C12 1C334D|C13 CDE8FF|C14 D5FDFF|C15 23C4C6|C16 1757A8|C17 50D3EC|C18 1C3344|C19 1787A2|C20 0082BE|C21 BEDDFF|C22 67B4BE|C23 C2DCEB|C24 7DC4FF|C25 A9E5E5|C26 2F99B3|C27 EBF5FC|C28 BBCFED|C29 4B5BA3|' +
-        'D1 AEB4F2|D2 858EDD|D3 3054AF|D4 182A84|D5 B843C5|D6 AC7BDE|D7 6E399A|D8 E2D3FF|D9 D5B9F8|D10 361B50|D11 B9BAE1|D12 DE9AD4|D13 B90295|D14 8B279B|D15 2F1F90|D16 E2E1EE|D17 C4D4F6|D18 A45EC7|D19 D8C3D7|D20 9C32B2|D21 9A009B|D22 333995|D23 EADAFC|D24 7786E5|D25 484FC7|D26 E9C3F6|' +
-        'E1 FDD3CC|E2 FECDDF|E3 FF97C3|E4 E8649E|E5 F551A2|E6 FF346B|E7 C63578|E8 FFDBE9|E9 E970CC|E10 D33893|E11 FCDDD2|E12 FFA1C5|E13 B6006D|E14 FFD1BA|E15 F2CFD0|E16 FFECDE|E17 FFE2EA|E18 FFC9D6|E19 FFD2E7|E20 D8C7D1|E21 BD9DA1|E22 CC78A7|E23 937A8D|E24 F6E4F9|' +
-        'F1 FD957B|F2 FC3D45|F3 F74941|F4 FC283C|F5 D80127|F6 B0443D|F7 971937|F8 BC0127|F9 E2677A|F10 A74D22|F11 6F201F|F12 FD4D6A|F13 DD422F|F14 FFA9AD|F15 C80020|F16 FFD9C8|F17 F79B71|F18 D37C46|F19 C1444A|F20 CD9391|F21 F4B1B4|F22 FFD0CB|F23 F57E66|F24 FCC1C4|F25 E54B4F|' +
-        'G1 FFE2CE|G2 FFCAAA|G3 F4C3A5|G4 E1B383|G5 ED9435|G6 F59734|G7 9D5B3E|G8 592A21|G9 E6B483|G10 C88135|G11 E0C593|G12 EBBB83|G13 B7714A|G14 8D614C|G15 FCF9E0|G16 F2D9BA|G17 56403C|G18 FFE4CC|G19 E1943A|G20 A94023|G21 CB8E77|' +
-        'H1 E2E2E2|H2 FFFFFF|H3 B3B3B3|H4 868686|H5 474747|H6 2C2C2C|H7 000000|H8 E7D6DB|H9 E4E7E3|H10 EEE9EA|H11 CECDD5|H12 FFF5ED|H13 F3E1C9|H14 CFD7D3|H15 98A6A8|H16 3B2F23|H17 F1EDED|H18 FFFDF0|H19 F6EFE2|H20 949FA3|H21 F7F3E4|H22 CACAD5|H23 9A9D94|' +
-        'M1 BCC6B8|M2 8AA385|M3 697D80|M4 DACEBE|M5 D0CCAA|M6 B0A782|M7 B4A497|M8 B38281|M9 A58767|M10 C5B1BC|M11 9F7494|M12 644749|M13 D19066|M14 C77361|M15 757D7B' },
-    perler: { label: 'Perler 48', short: 'P', prefix: '', groups: [['P','经典 48 色']],
-      data:
-        'P01 白 F5F5F2|P02 黑 202124|P03 黄 F4D83D|P04 奶油 F3E7B5|P05 红 C93535|P06 橙 E97832|P07 浅蓝 75B9DE|P08 深蓝 24528A|P09 浅绿 8CCB82|P10 绿 4D9852|P11 棕 78533D|P12 灰 97999A|P13 粉 E990AA|P14 浅棕 B98C66|P15 深绿 336B4A|P16 粉蓝 B5D9E9|P17 粉绿 B9DBB0|P18 紫 73518E|P19 淡紫 C8B5D7|P20 淡黄 F2E59A|P21 芝士黄 EBAE36|P22 铁锈 A84B35|P23 浅粉 F0BBCB|P24 蜜桃 F1B08D|P25 薄荷蓝 83CFCA|P26 青蓝 34A7A5|P27 钴蓝 31569B|P28 海军蓝 253650|P29 李紫 6C3F69|P30 洋红 B23D72|P31 珊瑚 E56059|P32 鲑粉 E99282|P33 黄褐 C6A477|P34 沙色 D8C29F|P35 浅灰 C8C9C7|P36 深灰 5C6062|P37 炭黑 3D4143|P38 象牙 F2EBD9|P39 奶糖 C88B3A|P40 姜饼 9A653F|P41 森林绿 294F3A|P42 奇异果 8DBC43|P43 青柠 B6D648|P44 水蓝 62C5DB|P45 天空蓝 8ED0ED|P46 长春花 7188C7|P47 薰衣草 A78AC4|P48 腮红 E4A6A4' },
-    artkal: { label: 'Artkal S 159', short: 'S', prefix: '', groups: [['S','S 系 159 色']],
-      data:
-        'S01 FFFFFF|S02 FFA38B|S03 FF8200|S04 FA4616|S05 EE2737|S06 EF64A2|S07 97999B|S08 26D07C|S09 007371|S10 56B7E6|S11 0050B5|S12 9063CD|S13 000000|S14 FDDA24|S15 A72B2A|S16 674736|S17 7B4D35|S18 EAA794|S19 F8C1B8|S20 249E6B|S21 93C90E|S22 483698|S23 7D55C7|S24 1164C9|S25 EF60A3|S26 F04E98|S27 FFC72C|S28 EF95CF|S29 FBDB65|S30 A4E6E8|S31 B5E3D8|S32 FECB8B|S33 C5B4E3|S34 D50032|S35 F7CED7|S36 E06287|S37 8BD3E6|S38 BC204B|S39 FF7F41|S40 F99FC9|S41 9A5516|S42 A09F9D|S43 75787B|S44 9BCBEB|S45 00B2A9|S46 8EDD65|S47 A6631B|S48 FFC845|S49 973961|S50 FFB3AB|S51 FFF8DB|S52 F8E08E|S53 62A0E6|S54 0090DA|S55 ADDC91|S56 FF6A39|S57 B33D26|S58 BA0C2F|S59 5949A7|S60 9678D3|S61 E6DE77|S62 007C58|S63 4C5914|S64 2C2D65|S65 F0EC74|S66 EE5340|S67 ECC3B2|S68 E7B78A|S69 212721|S70 BABC16|S71 008522|S72 67D9DF|S73 48A9C5|S74 04A9C7|S75 0085AD|S76 00A7B5|S77 D9D9D6|S78 C8C9C7|S79 B1B3B3|S80 A2A569|S81 D5A286|S82 C58B68|S83 B15533|S84 AB5C57|S85 8A2A2B|S86 F29D04|S87 FF808B|S88 DA1884|S89 53565A|S90 FFC56E|S91 183028|S92 C69214|S93 EDC8A3|S94 EAA794|S95 E8927C|S96 FF8D6D|S97 E35205|S98 80B6E8|S99 5CA9CC|S100 5DB3CB|S101 00A3E1|S102 0077CF|S103 0067B9|S104 007DBA|S105 00859B|S106 0076A8|S107 007096|S108 E6C78A|S109 CEB888|S110 C6AA76|S111 A08629|S112 897630|S113 C3C6A8|S114 C0BB87|S115 B0AA7E|S116 A3AA83|S117 77744D|S118 5E6738|S119 98DBCE|S120 9BE3BF|S121 6BBBAE|S122 00BB7E|S123 31B700|S124 035F1D|S125 007864|S126 00685E|S127 DECDE7|S128 C98BDB|S129 DCB6C9|S130 DD74A1|S131 AD96DC|S132 EF426F|S133 C724B1|S134 8031A7|S135 9FAEE5|S136 B4B2E4|S137 5F8DDA|S138 5780D2|S139 5576D1|S140 3C62C3|S141 466CCA|S142 365ABD|S143 1E22AA|S144 002D72|S145 E9E186|S146 8C243D|S147 86C8BC|S148 724736|S149 FCD299|S150 8B84D7|S151 335525|S152 A7A4E0|S153 C6C4EA|S154 EBC29D|S155 C58B68|S156 63666A|S157 46494C|S158 191D19|S159 88888D' }
+  // ============ 调色板：Perler 风格标准豆色（名称 + hex） ============
+  var PALETTE = [
+    {n:"白",      v:"#FFFFFF"}, {n:"骨白",    v:"#FDFBFF"}, {n:"米白",   v:"#FFE2CE"},
+    {n:"浅黄",    v:"#FBED56"}, {n:"鹅黄",    v:"#FBE68A"}, {n:"姜黄",   v:"#EDB045"},
+    {n:"橙",      v:"#FE8B4C"}, {n:"深橙",    v:"#FE6A2C"}, {n:"红",     v:"#E7002F"},
+    {n:"深红",    v:"#C8323F"}, {n:"玫红",    v:"#E8649E"}, {n:"粉",     v:"#FEC0DF"},
+    {n:"浅粉",    v:"#FBD3E6"}, {n:"紫",      v:"#8854B3"}, {n:"浅紫",   v:"#D5B9F8"},
+    {n:"靛",      v:"#5B6BBA"}, {n:"蓝",      v:"#3E6FD0"}, {n:"天蓝",   v:"#A0E2FB"},
+    {n:"青",      v:"#00C8C8"}, {n:"青绿",    v:"#3FD6A6"}, {n:"绿",     v:"#54B948"},
+    {n:"浅绿",    v:"#9EF780"}, {n:"橄榄",    v:"#9D5B3E"}, {n:"棕",     v:"#8A5A2B"},
+    {n:"深棕",    v:"#5C3A1E"}, {n:"灰",      v:"#9B9B9B"}, {n:"深灰",   v:"#5C5C5C"},
+    {n:"黑",      v:"#1B1A19"}, {n:"银",      v:"#B6B1BA"}, {n:"炭",     v:"#48464E"},
+    {n:"玫瑰金",  v:"#FFB6A8"}, {n:"薄荷",    v:"#BFF0E0"}, {n:"雾蓝",   v:"#8FA3B3"},
+    {n:"丁香",    v:"#C9B6E8"}, {n:"南瓜",    v:"#FEAC4C"}, {n:"番茄",   v:"#FF5A4D"}
+  ];
+  function palByName(name){ for(var i=0;i<PALETTE.length;i++) if(PALETTE[i].n===name) return PALETTE[i].v; return "#FFFFFF"; }
+
+  // ============ 状态 ============
+  var state = {
+    w:52, h:52,
+    zoom:14,            // 每格像素
+    layers:[],          // [{visible:true, locked:false, cells:Array(w*h) of color|null}]
+    active:0,
+    curColor: PALETTE[10].v,  // 当前笔色（默认红）
+    eraser:false, picker:false,
+    view:"pattern", mode:"flat",
+    history:[], future:[],
+    melt:100, meltStyle:"flat",
+    assistIdx:0
   };
+  function blankLayer(){ var a=new Array(state.w*state.h); for(var i=0;i<a.length;i++) a[i]=null; return a; }
+  function initLayers(){ state.layers=[{visible:true,locked:false,cells:blankLayer()}]; state.active=0; }
 
-  function parseCard(card){
-    return card.data.split('|').map(function(s){
-      var p = s.split(' ');
-      var code = p[0];
-      var hex = p[p.length - 1];
-      var rest = p.length > 2 ? p.slice(1, -1).join(' ') : '';
-      var name = (card.prefix ? card.prefix + ' ' : '') + code + (rest ? ' ' + rest : '');
-      return [name, '#' + hex.toUpperCase(), code.slice(0, 1)];
-    });
-  }
-
-  var cardKey = 'mard';
-  var PAL = parseCard(CARDS.mard);
-  var RGBX = PAL.map(function(c){ return hexRgb(c[1]); });
-  var curName = 'MARD F2';
-
-  function hexRgb(h){
-    return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-  }
-  function beadName(hex){
-    for(var i = 0; i < PAL.length; i++){ if(PAL[i][1] === hex) return PAL[i][0]; }
-    return '色 ' + hex.toUpperCase();
-  }
-
-  /* ================= 状态 ================= */
-  var rows = 29, cols = 29, cell = 18;
-  var ZOOMS = [14, 18, 22, 26, 30, 36, 44];
-  var zi = 1;
-  var layers = [];
-  var active = 0;
-  var current = '#FC3D45';
-  var canvas = $('pbCanvas'), ctx = canvas.getContext('2d');
-  var dpr = window.devicePixelRatio || 1;
-  var drawing = false, eraseMode = false;
-
-  function newGrid(r, c){
-    var g = [];
-    for(var y = 0; y < r; y++){ g.push(new Array(c).fill('')); }
-    return g;
-  }
-  function addLayer(name){
-    layers.push({ name: name || ('图层 ' + (layers.length + 1)), visible: true, grid: newGrid(rows, cols) });
-    active = layers.length - 1;
-  }
-
-  /* ================= 画布 ================= */
-  function setupCanvas(){
-    cell = ZOOMS[zi];
-    $('pbZoomLabel').textContent = cell + 'px';
-    canvas.width = cols * cell * dpr;
-    canvas.height = rows * cell * dpr;
-    canvas.style.width = (cols * cell) + 'px';
-    canvas.style.height = (rows * cell) + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  // 圆角矩形路径（豆子基础形态）
-  function rr(c2, x, y, w, h, r){
-    c2.beginPath();
-    c2.moveTo(x + r, y);
-    c2.arcTo(x + w, y, x + w, y + h, r);
-    c2.arcTo(x + w, y + h, x, y + h, r);
-    c2.arcTo(x, y + h, x, y, r);
-    c2.arcTo(x, y, x + w, y, r);
-    c2.closePath();
-  }
-
-  // 亮色缓存：豆子顶部高光用
-  var LIGHT = {};
-  function lightenHex(hex, amt){
-    var key = hex + '|' + amt;
-    if(!LIGHT[key]){
-      var c = hexRgb(hex);
-      LIGHT[key] = 'rgb(' + Math.round(c[0] + (255 - c[0]) * amt) + ',' + Math.round(c[1] + (255 - c[1]) * amt) + ',' + Math.round(c[2] + (255 - c[2]) * amt) + ')';
-    }
-    return LIGHT[key];
-  }
-
-  // 豆子：圆角方块 + 顶部高光，糖果质感
-  // 豆子渐变缓存：上亮下暗的立体糖果质感
-  var BEADGrad = {};
-  function beadGrad(c2, hex, px){
-    var key = hex + '|' + px;
-    if(!BEADGrad[key]){
-      var g = c2.createLinearGradient(0, 0, 0, px);
-      var c = hexRgb(hex);
-      function t(amt){ return 'rgb(' + Math.round(c[0] + (255 - c[0]) * amt) + ',' + Math.round(c[1] + (255 - c[1]) * amt) + ',' + Math.round(c[2] + (255 - c[2]) * amt) + ')'; }
-      g.addColorStop(0, t(0.34));
-      g.addColorStop(0.42, hex);
-      g.addColorStop(1, 'rgb(' + Math.round(c[0] * 0.82) + ',' + Math.round(c[1] * 0.82) + ',' + Math.round(c[2] * 0.82) + ')');
-      BEADGrad[key] = g;
-    }
-    return BEADGrad[key];
-  }
-  function drawBeads(c2, grid, px){
-    var inset = px * 0.055;
-    var side = px - inset * 2;
-    var rad = side * 0.26;
-    for(var y = 0; y < rows; y++){
-      c2.save();
-      for(var x = 0; x < cols; x++){
-        var color = grid[y][x];
-        if(!color) continue;
-        var bx = x * px + inset, by = y * px + inset;
-        c2.translate(bx, by);
-        // 主体：上亮下暗渐变
-        rr(c2, 0, 0, side, side, rad);
-        c2.fillStyle = beadGrad(c2, color, side);
-        c2.fill();
-        // 底部软阴影边缘
-        c2.lineWidth = Math.max(0.7, px * 0.035);
-        c2.strokeStyle = 'rgba(0,0,0,0.10)';
-        c2.stroke();
-        // 顶部高光条（柔和圆角，不是整块亮斑）
-        if(px >= 12){
-          rr(c2, side * 0.14, side * 0.10, side * 0.72, side * 0.22, side * 0.11);
-          c2.fillStyle = 'rgba(255,255,255,0.38)';
-          c2.fill();
-          // 左上小亮点
-          if(px >= 18){
-            c2.beginPath();
-            c2.arc(side * 0.24, side * 0.20, side * 0.055, 0, Math.PI * 2);
-            c2.fillStyle = 'rgba(255,255,255,0.65)';
-            c2.fill();
-          }
-        }
-        c2.translate(-bx, -by);
-      }
-      c2.restore();
-    }
-  }
-
-  function draw(){
-    ctx.fillStyle = '#fffdf9';
-    ctx.fillRect(0, 0, cols * cell, rows * cell);
-    layers.forEach(function(layer, i){
-      ctx.globalAlpha = (i === active || !layers[active]) ? 1 : 0.35;
-      if(layer.visible) drawBeads(ctx, layer.grid, cell);
-    });
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = 'rgba(190,120,150,0.13)';
-    ctx.lineWidth = 1;
-    for(var x = 0; x <= cols; x++){
-      ctx.beginPath(); ctx.moveTo(x * cell + 0.5, 0); ctx.lineTo(x * cell + 0.5, rows * cell); ctx.stroke();
-    }
-    for(var y = 0; y <= rows; y++){
-      ctx.beginPath(); ctx.moveTo(0, y * cell + 0.5); ctx.lineTo(cols * cell, y * cell + 0.5); ctx.stroke();
-    }
-    renderCounts(); renderLayers();
-  }
-
-  /* ================= 图层栏 ================= */
-  function renderLayers(){
-    var html = '';
-    layers.forEach(function(l, i){
-      html += '<span class="pb-layer' + (i === active ? ' on' : '') + '" data-i="' + i + '">' +
-        '<i class="pb-eye" data-i="' + i + '">' + (l.visible ? '👁' : '🚫') + '</i> ' + l.name +
-        (layers.length > 1 ? '<i class="pb-del" data-i="' + i + '" title="删除该图层">✕</i>' : '') +
-        '</span>';
-    });
-    html += '<span class="pb-layer" id="pbAddLayer">＋ 新建图层</span>';
-    $('pbLayers').innerHTML = html;
-  }
-  $('pbLayers').addEventListener('click', function(e){
-    if(e.target.id === 'pbAddLayer'){ addLayer(); draw(); return; }
-    var eye = e.target.closest('.pb-eye');
-    if(eye){ var i = +eye.getAttribute('data-i'); layers[i].visible = !layers[i].visible; draw(); return; }
-    var del = e.target.closest('.pb-del');
-    if(del){ var j = +del.getAttribute('data-i'); layers.splice(j, 1); active = Math.max(0, Math.min(active, layers.length - 1)); draw(); return; }
-    var chip = e.target.closest('.pb-layer');
-    if(chip && chip.hasAttribute('data-i')){ active = +chip.getAttribute('data-i'); draw(); }
-  });
-
-  /* ================= 色板 ================= */
-  function buildPalette(){
-    var html = '';
-    var curGroup = '';
-    PAL.forEach(function(c){
-      if(c[2] !== curGroup){
-        if(curGroup !== '') html += '</div>';
-        var g = CARDS[cardKey].groups.filter(function(x){ return x[0] === c[2]; })[0] || [c[2], ''];
-        html += '<div class="pb-group"><em>' + g[0] + ' ' + g[1] + '</em>';
-        curGroup = c[2];
-      }
-      html += '<span class="pb-swatch" data-hex="' + c[1] + '" data-name="' + c[0] + '" style="background:' + c[1] + '"></span>';
-    });
-    html += '</div>';
-    $('pbPalette').innerHTML = html;
-  }
-  $('pbPalette').addEventListener('click', function(e){
-    var s = e.target.closest('.pb-swatch');
-    if(!s) return;
-    current = s.getAttribute('data-hex');
-    curName = s.getAttribute('data-name');
-    $('pbCurName').textContent = curName;
-    document.querySelectorAll('.pb-swatch').forEach(function(el){ el.classList.toggle('on', el === s); });
-  });
-
-  /* 色卡切换与转换 */
-  $('pbCard').addEventListener('change', function(){
-    cardKey = this.value;
-    PAL = parseCard(CARDS[cardKey]);
-    RGBX = PAL.map(function(c){ return hexRgb(c[1]); });
-    buildPalette();
-    draw();
-  });
-
-  $('pbConvert').addEventListener('click', function(){
-    var cache = {};
-    var changed = 0;
-    layers.forEach(function(l){
-      for(var y = 0; y < rows; y++){
-        for(var x = 0; x < cols; x++){
-          var hex = l.grid[y][x];
-          if(!hex) continue;
-          if(!cache[hex]){
-            var rgb = hexRgb(hex);
-            var ni = nearestRgb(rgb[0], rgb[1], rgb[2]);
-            cache[hex] = PAL[ni][1];
-          }
-          if(cache[hex] !== hex){ l.grid[y][x] = cache[hex]; changed++; }
-        }
-      }
-    });
-    // 当前色在新卡里也同步贴过去
-    var cr = hexRgb(current);
-    current = PAL[nearestRgb(cr[0], cr[1], cr[2])][1];
-    draw();
-    $('pbCurName').textContent = changed ? ('已转换 ' + changed + ' 颗豆') : '无需转换';
-    setTimeout(function(){ $('pbCurName').textContent = curName; }, 2000);
-  });
-
-  /* ================= 点豆 ================= */
-  function cellAt(e){
-    var rect = canvas.getBoundingClientRect();
-    var x = Math.floor((e.clientX - rect.left) / (rect.width / cols));
-    var y = Math.floor((e.clientY - rect.top) / (rect.height / rows));
-    if(x < 0 || y < 0 || x >= cols || y >= rows) return null;
-    return [x, y];
-  }
-  function apply(e){
-    var pos = cellAt(e);
-    if(!pos) return;
-    layers[active].grid[pos[1]][pos[0]] = (e.buttons === 2 || eraseMode) ? '' : current;
-    draw();
-  }
-  canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-  canvas.addEventListener('pointerdown', function(e){
-    drawing = true; eraseMode = (e.button === 2);
-    apply(e); canvas.setPointerCapture(e.pointerId);
-  });
-  canvas.addEventListener('pointermove', function(e){ if(drawing) apply(e); });
-  canvas.addEventListener('pointerup', function(){ drawing = false; eraseMode = false; });
-
-  $('pbZoomIn').addEventListener('click', function(){ if(zi < ZOOMS.length - 1){ zi++; setupCanvas(); draw(); } });
-  $('pbZoomOut').addEventListener('click', function(){ if(zi > 0){ zi--; setupCanvas(); draw(); } });
-
-  /* ================= 用量统计 ================= */
-  function tally(grid){
-    var t = {};
-    for(var y = 0; y < rows; y++){
-      for(var x = 0; x < cols; x++){
-        var c = grid[y][x];
-        if(c) t[c] = (t[c] || 0) + 1;
-      }
-    }
-    return t;
-  }
-  function chipsHtml(t){
-    var keys = Object.keys(t);
-    if(!keys.length) return '<span style="font-size:0.8rem;color:var(--ink-3)">（空）</span>';
-    keys.sort(function(a, b){ return t[b] - t[a]; });
-    var html = '';
-    keys.forEach(function(hex){
-      html += '<span class="pb-count"><i style="background:' + hex + '"></i>' + beadName(hex) + ' <b>× ' + t[hex] + '</b></span>';
-    });
-    return html;
-  }
-  function renderCounts(){
-    var tActive = tally(layers[active].grid);
-    var total = {};
-    layers.forEach(function(l){
-      if(!l.visible) return;
-      var t = tally(l.grid);
-      Object.keys(t).forEach(function(k){ total[k] = (total[k] || 0) + t[k]; });
-    });
-    var hasMulti = layers.length > 1;
-    $('pbCountWrap').style.display = 'block';
-    $('pbCountsActive').innerHTML = chipsHtml(tActive);
-    $('pbTotalTitle').style.display = hasMulti ? 'block' : 'none';
-    $('pbCountsTotal').innerHTML = hasMulti ? chipsHtml(total) : '';
-  }
-
-  /* ================= 尺寸 / 示例 / 清空 ================= */
-  $('pbSize').addEventListener('change', function(){
-    var n = parseInt(this.value);
-    var old = layers.map(function(l){ return l.grid; });
-    var or = rows, oc = cols;
-    rows = cols = n;
-    layers.forEach(function(l, i){
-      var g = newGrid(rows, cols);
-      for(var y = 0; y < Math.min(rows, or); y++){
-        for(var x = 0; x < Math.min(cols, oc); x++){
-          if(old[i] && old[i][y]) g[y][x] = old[i][y][x] || '';
-        }
-      }
-      l.grid = g;
-    });
-    setupCanvas(); draw();
-  });
-
-  $('pbClear').addEventListener('click', function(){
-    layers[active].grid = newGrid(rows, cols); draw();
-  });
-
-  /* ---------- 可爱像素图案预设 ---------- */
-  var PATTERNS = {
-    love: { colors: { R: '#FC3D45', P: '#FFC2D4' }, rows: [
-      '................',
-      '..RRR......RRR..',
-      '.RRRRR....RRRRR.',
-      'RRRRRRR..RRRRRRR',
-      'RRRRRRRRRRRRRRRR',
-      'RPPRRRRRRRRRRRRR',
-      'RPPRRRRRRRRRRRRR',
-      'RRRRRRRRRRRRRRRR',
-      '.RRRRRRRRRRRRRR.',
-      '..RRRRRRRRRRRR..',
-      '...RRRRRRRRRR...',
-      '....RRRRRRRR....',
-      '.....RRRRRR.....',
-      '......RRRR......',
-      '.......RR.......',
-      '................',
-    ]},
-    star: { colors: { Y: '#FFD21F' }, rows: [
-      '.......YY.......',
-      '.......YY.......',
-      '......YYYY......',
-      '......YYYY......',
-      'YYYYYYYYYYYYYYYY',
-      '.YYYYYYYYYYYYYY.',
-      '..YYYYYYYYYYYY..',
-      '...YYYYYYYYYY...',
-      '....YYYYYYYY....',
-      '...YYYYYYYYYY...',
-      '...YYYY..YYYY...',
-      '..YYY......YYY..',
-      '.YYY........YYY.',
-      '.YY..........YY.',
-      'YY............YY',
-      '................',
-    ]},
-    mushroom: { colors: { R: '#FC3D45', W: '#FFF6E9', K: '#2C2C2C' }, rows: [
-      '....RRRRRRRR....',
-      '..RRRRRRRRRRRR..',
-      '.RRWWRRRRRRWWRR.',
-      '.RWWWWRRRRWWWWR.',
-      'RRWWWWRRRRWWWWRR',
-      'RRRWWRRRRRRWWRRR',
-      'RRRRRRRRRRRRRRRR',
-      '.RRRRRRRRRRRRRR.',
-      '..WWWWWWWWWWWW..',
-      '..WWKWWWWWWKWW..',
-      '..WWKWWWWWWKWW..',
-      '..WWWWWWWWWWWW..',
-      '...WWWWWWWWWW...',
-      '...WWWWWWWWWW...',
-      '....WWWWWWWW....',
-      '................',
-    ]},
-    bunny: { colors: { W: '#FFFFFF', P: '#FFB3C7', K: '#2C2C2C' }, rows: [
-      '...WW......WW...',
-      '...WW......WW...',
-      '...WPW....WPW...',
-      '...WWW....WWW...',
-      '...WWWWWWWWWW...',
-      '..WWWWWWWWWWWW..',
-      '.WWKWWWWWWWWKWW.',
-      '.WWPWWWWWWWWPWW.',
-      '.WWWWWWPPWWWWWW.',
-      '.WWWWWWWWWWWWWW.',
-      '..WWWWWWWWWWWW..',
-      '..WWWWWWWWWWWW..',
-      '...WWWWWWWWWW...',
-      '...WWWWWWWWWW...',
-      '..WWWWWWWWWWWW..',
-      '................',
-    ]},
-  };
-
-  document.querySelectorAll('.pb-pat').forEach(function(b){
-    b.addEventListener('click', function(){
-      var pat = PATTERNS[this.getAttribute('data-pat')];
-      if(!pat) return;
-      var g = newGrid(rows, cols);
-      var ox = Math.floor((cols - 16) / 2), oy = Math.floor((rows - 16) / 2);
-      pat.rows.forEach(function(row, y){
-        for(var x = 0; x < 16; x++){
-          var ch = row[x];
-          if(ch === '.' || !pat.colors[ch]) continue;
-          var gy = y + oy, gx = x + ox;
-          if(gy >= 0 && gy < rows && gx >= 0 && gx < cols) g[gy][gx] = pat.colors[ch];
-        }
-      });
-      layers[active].grid = g; draw();
-    });
-  });
-
-  /* ================= 照片转图纸 ================= */
-  function nearestRgb(r, g, b){
-    var best = 0, bestD = Infinity;
-    for(var i = 0; i < RGBX.length; i++){
-      var dr = r - RGBX[i][0], dg = g - RGBX[i][1], db = b - RGBX[i][2];
-      var d = dr * dr * 2 + dg * dg * 4 + db * db * 3;
-      if(d < bestD){ bestD = d; best = i; }
+  // ============ 颜色工具 ============
+  function hexToRgb(h){ h=h.replace('#',''); if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]; }
+  function rgbToHex(r,g,b){ function t(x){var s=Math.max(0,Math.min(255,Math.round(x))).toString(16); return s.length<2?'0'+s:s;} return '#'+t(r)+t(g)+t(b); }
+  function lighten(h,f){ var c=hexToRgb(h); return rgbToHex(c[0]+(255-c[0])*f, c[1]+(255-c[1])*f, c[2]+(255-c[2])*f); }
+  function darken(h,f){ var c=hexToRgb(h); return rgbToHex(c[0]*(1-f), c[1]*(1-f), c[2]*(1-f)); }
+  function nearestColor(r,g,b){
+    var best=null, bd=1e9;
+    for(var i=0;i<PALETTE.length;i++){
+      var c=hexToRgb(PALETTE[i].v);
+      var d=(c[0]-r)*(c[0]-r)+(c[1]-g)*(c[1]-g)+(c[2]-b)*(c[2]-b);
+      if(d<bd){bd=d; best=PALETTE[i].v;}
     }
     return best;
   }
 
-  $('pbFile').addEventListener('change', function(){
-    var file = this.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      var img = new Image();
-      img.onload = function(){ convert(img); };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-    this.value = '';
-  });
+  // ============ 画布：方形像素块（对齐参考「拼豆专家」2D 默认视图） ============
+  var canvas=document.getElementById('pbwCanvas');
+  var ctx=canvas.getContext('2d');
+  var assistCanvas=document.getElementById('pbwAssistCanvas');
+  var actx=assistCanvas.getContext('2d');
 
-  function convert(img){
-    var off = document.createElement('canvas');
-    off.width = cols; off.height = rows;
-    var c2 = off.getContext('2d');
-    c2.drawImage(img, 0, 0, cols, rows);
-    var data = c2.getImageData(0, 0, cols, rows).data;
-    var dither = $('pbDither').checked;
-    var whiteOut = $('pbWhiteOut').checked;
-
-    var g = newGrid(rows, cols);
-    var buf = new Float32Array(cols * rows * 3);
-    for(var i = 0; i < cols * rows; i++){
-      buf[i * 3] = data[i * 4];
-      buf[i * 3 + 1] = data[i * 4 + 1];
-      buf[i * 3 + 2] = data[i * 4 + 2];
-    }
-
-    for(var y = 0; y < rows; y++){
-      for(var x = 0; x < cols; x++){
-        var idx = y * cols + x;
-        var a = data[idx * 4 + 3];
-        var r = buf[idx * 3], gg = buf[idx * 3 + 1], b = buf[idx * 3 + 2];
-        if(a < 128 || (whiteOut && r > 245 && gg > 245 && b > 245)) continue;
-
-        var ni = nearestRgb(Math.round(r), Math.round(gg), Math.round(b));
-        g[y][x] = PAL[ni][1];
-
-        if(dither){
-          var er = r - RGBX[ni][0], eg = gg - RGBX[ni][1], eb = b - RGBX[ni][2];
-          var spread = function(nx, ny, f){
-            if(nx < 0 || nx >= cols || ny < 0 || ny >= rows) return;
-            var j = ny * cols + nx;
-            buf[j * 3] += er * f; buf[j * 3 + 1] += eg * f; buf[j * 3 + 2] += eb * f;
-          };
-          spread(x + 1, y, 7 / 16);
-          spread(x - 1, y + 1, 3 / 16);
-          spread(x, y + 1, 5 / 16);
-          spread(x + 1, y + 1, 1 / 16);
-        }
-      }
-    }
-    layers[active].grid = g;
-    draw();
+  // 单颗豆的画法：对齐参考「拼豆专家」2D 默认视图
+  //  - 方形像素块（非圆豆，无高光、无中心孔）
+  //  - 默认「未烫」：方块之间留缝，像一颗颗摆在板上（meltRatio=1）
+  //  - 「烫豆」：缝隙闭合、豆子融合成片（meltRatio→0，由 模拟烫豆 驱动）
+  //  - 中心孔只在辅助拼豆 / 烫豆成品视角才出现（此处不做）
+  function drawBead(c, px, py, s, color, meltRatio){
+    meltRatio = (meltRatio==null)?1:meltRatio; // 1=未烫(分离), 0=烫平(融合)
+    // 方形像素块：未烫时与邻格留缝，烫平后缝隙闭合
+    var gap = meltRatio * Math.max(0, s*0.12);
+    c.fillStyle=color;
+    c.fillRect(px+gap, py+gap, s-gap*2, s-gap*2);
   }
 
-  /* ================= 保存 / 载入 ================= */
-  $('pbSave').addEventListener('click', function(){
-    try{
-      localStorage.setItem('toolbox_perler', JSON.stringify({ r: rows, c: cols, layers: layers, active: active, card: cardKey }));
-      $('pbCurName').textContent = '已保存 ✓';
-      setTimeout(function(){ $('pbCurName').textContent = curName; }, 1500);
-    }catch(err){}
-  });
-  $('pbLoad').addEventListener('click', function(){
-    try{
-      var d = JSON.parse(localStorage.getItem('toolbox_perler'));
-      if(!d) return;
-      rows = cols = d.r;
-      layers = d.layers || [{ name: '图层 1', visible: true, grid: d.g || newGrid(d.r, d.c) }];
-      active = Math.min(d.active || 0, layers.length - 1);
-      if(d.card && CARDS[d.card]){
-        cardKey = d.card;
-        PAL = parseCard(CARDS[cardKey]);
-        RGBX = PAL.map(function(c){ return hexRgb(c[1]); });
-        $('pbCard').value = cardKey;
+  function mergedCell(x,y){
+    for(var i=state.layers.length-1;i>=0;i--){
+      var L=state.layers[i];
+      if(!L.visible) continue;
+      var v=L.cells[y*state.w+x];
+      if(v) return v;
+    }
+    return null;
+  }
+
+  function render(){
+    var s=state.zoom;
+    var W=state.w*s, H=state.h*s;
+    canvas.width=W; canvas.height=H;
+    ctx.clearRect(0,0,W,H);
+    // 纸张底
+    ctx.fillStyle='#F5F2EA'; ctx.fillRect(0,0,W,H);
+    // 豆（方形像素块）/ 底板钉柱
+    var any=false;
+    for(var y=0;y<state.h;y++) for(var x=0;x<state.w;x++){
+      var v=mergedCell(x,y);
+      if(v){ drawBead(ctx, x*s, y*s, s, v, state.melt/100); any=true; }
+      else if(s>=9 && state.melt>=100){ // 未烫：空位显示底板钉柱小方块（参考 2D 视图）
+        var ps=Math.max(2,s*0.16);
+        ctx.fillStyle='rgba(15,25,35,0.10)';
+        ctx.fillRect(x*s+s/2-ps/2, y*s+s/2-ps/2, ps, ps);
+      }
+    }
+    // 格线（叠在豆上，呈现像素缝隙）
+    if(s>=5){
+      ctx.strokeStyle='rgba(15,25,35,0.16)'; ctx.lineWidth=1;
+      for(var x2=0;x2<=state.w;x2++){ ctx.beginPath(); ctx.moveTo(x2*s+0.5,0); ctx.lineTo(x2*s+0.5,H); ctx.stroke(); }
+      for(var y2=0;y2<=state.h;y2++){ ctx.beginPath(); ctx.moveTo(0,y2*s+0.5); ctx.lineTo(W,y2*s+0.5); ctx.stroke(); }
+    }
+    document.getElementById('pbwEmpty').style.display = any? 'none':'flex';
+    syncSpec(); syncProgress(); buildSpecPalette(); syncLayerCounts();
+  }
+
+  function syncLayerCounts(){
+    var rows=document.querySelectorAll('#pbwLayers .pbw-layer');
+    if(rows.length!==state.layers.length) return;
+    state.layers.forEach(function(L,i){
+      var cnt=rows[i]&&rows[i].querySelector('.pbw-layer-cnt');
+      if(!cnt) return;
+      var c=0; for(var k=0;k<L.cells.length;k++) if(L.cells[k]) c++;
+      cnt.textContent=c;
+    });
+  }
+
+  function fitZoom(){
+    var wrap=document.getElementById('pbwCanvasWrap');
+    var avail=(wrap.clientWidth||0)-2;
+    if(avail<=0) return;
+    state.zoom=Math.max(4,Math.min(14,Math.floor(avail/state.w)));
+    document.getElementById('pbwZoomLabel').textContent=Math.round(state.zoom/14*100)+'%';
+  }
+
+  // ============ 辅助拼豆渲染 ============
+  function distinctColors(){
+    var set={};
+    for(var y=0;y<state.h;y++) for(var x=0;x<state.w;x++){ var v=mergedCell(x,y); if(v) set[v]=1; }
+    return Object.keys(set);
+  }
+  function renderAssist(){
+    var s=state.zoom;
+    var W=state.w*s, H=state.h*s;
+    assistCanvas.width=W; assistCanvas.height=H;
+    actx.clearRect(0,0,W,H);
+    actx.fillStyle='#F5F2EA'; actx.fillRect(0,0,W,H);
+    var cols=distinctColors();
+    var activeColor = cols.length? cols[Math.min(state.assistIdx, cols.length-1)] : null;
+    document.getElementById('pbwAssistIdx').textContent = cols.length? (Math.min(state.assistIdx,cols.length-1)+1)+' / '+cols.length : '0 / 0';
+    for(var y=0;y<state.h;y++) for(var x=0;x<state.w;x++){
+      var v=mergedCell(x,y);
+      if(!v) continue;
+      if(v===activeColor){ drawBead(actx, x*s, y*s, s, v, 1); }
+      else { // 其他颜色画灰底小方块，弱化
+        var ps=s*0.36;
+        actx.fillStyle='rgba(120,120,120,0.12)';
+        actx.fillRect(x*s+s/2-ps/2, y*s+s/2-ps/2, ps, ps);
+      }
+    }
+  }
+
+  // ============ 规格 / 进度 ============
+  function countStats(){
+    var filled=0, colors={}, total=state.w*state.h;
+    for(var y=0;y<state.h;y++) for(var x=0;x<state.w;x++){ var v=mergedCell(x,y); if(v){ filled++; colors[v]=(colors[v]||0)+1; } }
+    return {filled:filled, total:total, colors:colors, nColors:Object.keys(colors).length};
+  }
+  function syncSpec(){
+    var st=countStats();
+    document.getElementById('pbwSpecSize').textContent=state.w+' × '+state.h;
+    document.getElementById('pbwSpecCells').textContent=st.total;
+    document.getElementById('pbwSpecFilled').textContent=st.filled;
+    document.getElementById('pbwSpecColors').textContent=st.nColors;
+    document.getElementById('pbwSpecBeads').textContent=st.filled;
+    document.getElementById('pbwSpecLayers').textContent=state.layers.length;
+  }
+  function buildSpecPalette(){
+    var st=countStats(); var keys=Object.keys(st.colors);
+    var box=document.getElementById('pbwSpecPal'); box.innerHTML='';
+    keys.sort(function(a,b){return st.colors[b]-st.colors[a];});
+    keys.forEach(function(k){
+      var d=document.createElement('div'); d.className='pbw-swatch'; d.style.background=k;
+      d.title=st.colors[k]+' 颗'; box.appendChild(d);
+    });
+  }
+  function syncProgress(){
+    var st=countStats(); var keys=Object.keys(st.colors);
+    keys.sort(function(a,b){return st.colors[b]-st.colors[a];});
+    var box=document.getElementById('pbwProgList'); box.innerHTML='';
+    var done=0;
+    keys.forEach(function(k,idx){
+      var row=document.createElement('label'); row.className='pbw-prog-row';
+      var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=false;
+      cb.addEventListener('change', function(){ row.classList.toggle('done', cb.checked); refreshProgDone(); });
+      var sw=document.createElement('span'); sw.className='pbw-prog-sw'; sw.style.background=k;
+      var nm=document.createElement('span'); nm.className='pbw-prog-name'; nm.textContent=colorName(k);
+      var ct=document.createElement('span'); ct.className='pbw-prog-ct'; ct.textContent=st.colors[k]+' 颗';
+      row.appendChild(cb); row.appendChild(sw); row.appendChild(nm); row.appendChild(ct);
+      box.appendChild(row);
+    });
+    document.getElementById('pbwProgDone').textContent='0 / '+keys.length+' 色完成';
+  }
+  function refreshProgDone(){
+    var rows=document.querySelectorAll('#pbwProgList .pbw-prog-row');
+    var done=0; rows.forEach(function(r){ if(r.querySelector('input').checked) done++; });
+    document.getElementById('pbwProgDone').textContent=done+' / '+rows.length+' 色完成';
+  }
+  function colorName(hex){
+    for(var i=0;i<PALETTE.length;i++) if(PALETTE[i].v.toLowerCase()===hex.toLowerCase()) return PALETTE[i].n;
+    return hex;
+  }
+
+  // ============ 调色板 UI ============
+  function buildPalette(){
+    var box=document.getElementById('pbwPal'); box.innerHTML='';
+    PALETTE.forEach(function(p){
+      var d=document.createElement('button'); d.className='pbw-swatch'; d.style.background=p.v;
+      d.title=p.n+' '+p.v;
+      d.addEventListener('click', function(){
+        state.eraser=false; state.picker=false; state.curColor=p.v;
+        document.querySelectorAll('#pbwPal .pbw-swatch').forEach(function(e){e.classList.remove('on');});
+        d.classList.add('on');
+        document.getElementById('pbwPalName').textContent=p.n;
+        document.getElementById('pbwEraser').classList.remove('on');
+      });
+      box.appendChild(d);
+    });
+    // 默认选中红
+    var def=box.children[10]; if(def) def.classList.add('on');
+  }
+
+  // ============ 图层 UI ============
+  function buildLayers(){
+    var box=document.getElementById('pbwLayers'); box.innerHTML='';
+    state.layers.forEach(function(L,i){
+      var row=document.createElement('div'); row.className='pbw-layer'+(i===state.active?' on':'');
+      var vis=document.createElement('button'); vis.className='pbw-layer-vis'+(L.visible?' on':''); vis.textContent=L.visible?'👁':'—';
+      vis.addEventListener('click', function(e){ e.stopPropagation(); L.visible=!L.visible; vis.textContent=L.visible?'👁':'—'; vis.classList.toggle('on',L.visible); render(); if(state.view==='assist') renderAssist(); });
+      var nm=document.createElement('span'); nm.className='pbw-layer-name'; nm.textContent='图层 '+(i+1);
+      var cnt=document.createElement('span'); cnt.className='pbw-layer-cnt';
+      var c=0; for(var k=0;k<L.cells.length;k++) if(L.cells[k]) c++;
+      cnt.textContent=c;
+      row.appendChild(vis); row.appendChild(nm); row.appendChild(cnt);
+      row.addEventListener('click', function(){ state.active=i; buildLayers(); });
+      box.appendChild(row);
+    });
+  }
+
+  // ============ 编辑 ============
+  function snapshot(){ state.history.push(JSON.stringify(state.layers.map(function(L){return L.cells;}))); if(state.history.length>60) state.history.shift(); state.future=[]; }
+  function applyAt(px,py,val){
+    var L=state.layers[state.active];
+    if(!L||L.locked) return;
+    L.cells[py*state.w+px]=val;
+  }
+  function canvasToCell(ev){
+    var rect=canvas.getBoundingClientRect();
+    var x=Math.floor((ev.clientX-rect.left)/(rect.width/state.w));
+    var y=Math.floor((ev.clientY-rect.top)/(rect.height/state.h));
+    if(x<0||y<0||x>=state.w||y>=state.h) return null;
+    return {x:x,y:y};
+  }
+  var drawing=false;
+  canvas.addEventListener('mousedown', function(ev){
+    var c=canvasToCell(ev); if(!c) return;
+    if(state.picker){
+      var v=mergedCell(c.x,c.y);
+      if(v){
+        state.curColor=v; state.picker=false;
+        document.getElementById('pbwPicker').classList.remove('on');
         buildPalette();
+        var sw=[].slice.call(document.querySelectorAll('#pbwPal .pbw-swatch')).filter(function(e){
+          return e.style.background && rgbEq(e.style.background, v);
+        })[0];
+        if(sw){
+          document.querySelectorAll('#pbwPal .pbw-swatch').forEach(function(e){ e.classList.remove('on'); });
+          sw.classList.add('on');
+          document.getElementById('pbwPalName').textContent=colorName(v);
+        }
+        render();
+        return;
       }
-      $('pbSize').value = String(rows);
-      setupCanvas(); draw();
-    }catch(err){}
+    }
+    snapshot();
+    drawing=true;
+    applyAt(c.x,c.y, state.eraser?null:state.curColor);
+    render(); if(state.view==='assist') renderAssist();
+  });
+  window.addEventListener('mouseup', function(){ drawing=false; });
+  canvas.addEventListener('mousemove', function(ev){
+    if(!drawing) return;
+    var c=canvasToCell(ev); if(!c) return;
+    applyAt(c.x,c.y, state.eraser?null:state.curColor);
+    render(); if(state.view==='assist') renderAssist();
+  });
+  function rgbEq(a,b){ return a.replace(/\s/g,'').toLowerCase()===b.toLowerCase(); }
+
+  // ============ 上传转图纸 ============
+  document.getElementById('pbwFile').addEventListener('change', function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var img=new Image();
+    img.onload=function(){
+      snapshot();
+      var w=state.w, h=state.h;
+      var off=document.createElement('canvas'); off.width=w; off.height=h;
+      var o=off.getContext('2d');
+      var scale=Math.max(w/img.width, h/img.height);
+      var dw=img.width*scale, dh=img.height*scale;
+      o.fillStyle='#FFFFFF'; o.fillRect(0,0,w,h);
+      o.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+      var data=o.getImageData(0,0,w,h).data;
+      var L=state.layers[state.active];
+      for(var y=0;y<h;y++) for(var x=0;x<w;x++){
+        var i=(y*w+x)*4;
+        var a=data[i+3];
+        L.cells[y*w+x] = a<20? null : nearestColor(data[i],data[i+1],data[i+2]);
+      }
+      render(); if(state.view==='assist') renderAssist();
+      e.target.value='';
+    };
+    img.src=URL.createObjectURL(f);
   });
 
-  /* ================= 导出 PNG / PDF ================= */
-  function patternCanvas(px){
-    var out = document.createElement('canvas');
-    out.width = cols * px; out.height = rows * px;
-    var c2 = out.getContext('2d');
-    c2.fillStyle = '#ffffff'; c2.fillRect(0, 0, out.width, out.height);
-    layers.forEach(function(l){ if(l.visible) drawBeads(c2, l.grid, px); });
-    return out;
-  }
-
-  $('pbExport').addEventListener('click', function(){
-    var a = document.createElement('a');
-    a.download = 'perler-' + cols + 'x' + rows + '.png';
-    a.href = patternCanvas(24).toDataURL('image/png');
-    a.click();
+  document.getElementById('pbwClearBtn').addEventListener('click', function(){
+    snapshot();
+    state.layers[state.active].cells=blankLayer();
+    render(); if(state.view==='assist') renderAssist();
   });
 
-  function loadJsPdf(cb){
-    if(window.jspdf && window.jspdf.jsPDF) return cb();
-    var s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    s.onload = cb;
-    s.onerror = function(){ alert('PDF 组件加载失败（需要联网一次），可以先导出 PNG。'); };
-    document.head.appendChild(s);
-  }
-
-  function reportCanvas(){
-    var W = 1240, H = 1754;
-    var rep = document.createElement('canvas');
-    rep.width = W; rep.height = H;
-    var c2 = rep.getContext('2d');
-    c2.fillStyle = '#ffffff'; c2.fillRect(0, 0, W, H);
-
-    c2.fillStyle = '#1c1e22';
-    c2.font = '700 40px "Noto Sans SC", sans-serif';
-    c2.fillText('拼豆图纸 · ' + CARDS[cardKey].label, 80, 100);
-    c2.font = '400 22px "Noto Sans SC", sans-serif';
-    c2.fillStyle = '#6b7280';
-    var totalBeads = 0;
-    layers.forEach(function(l){ if(l.visible){ var t = tally(l.grid); Object.keys(t).forEach(function(k){ totalBeads += t[k]; }); } });
-    c2.fillText('底板 ' + cols + ' × ' + rows + '　·　' + layers.length + ' 个图层　·　共 ' + totalBeads + ' 颗豆　·　' + new Date().toLocaleDateString('zh-CN'), 80, 140);
-
-    var pat = patternCanvas(24);
-    var patSize = Math.min(880, W - 160);
-    c2.strokeStyle = '#e5e7eb';
-    c2.strokeRect(78.5, 178.5, patSize + 3, patSize + 3);
-    c2.drawImage(pat, 80, 180, patSize, patSize);
-
-    var total = {};
-    layers.forEach(function(l){
-      if(!l.visible) return;
-      var t = tally(l.grid);
-      Object.keys(t).forEach(function(k){ total[k] = (total[k] || 0) + t[k]; });
-    });
-    var keys = Object.keys(total).sort(function(a, b){ return total[b] - total[a]; });
-    c2.fillStyle = '#1c1e22';
-    c2.font = '700 26px "Noto Sans SC", sans-serif';
-    c2.fillText('用豆清单（全部可见图层合计，建议多备 5%~10% 损耗）', 80, patSize + 260);
-    var colW = (W - 160) / 4;
-    keys.forEach(function(hex, i){
-      var col = i % 4, rowI = Math.floor(i / 4);
-      var bx = 80 + col * colW, by = patSize + 300 + rowI * 34;
-      if(by > H - 40) return;
-      c2.beginPath();
-      c2.arc(bx + 10, by - 6, 9, 0, Math.PI * 2);
-      c2.fillStyle = hex; c2.fill();
-      c2.strokeStyle = 'rgba(0,0,0,0.2)'; c2.lineWidth = 1; c2.stroke();
-      c2.fillStyle = '#374151';
-      c2.font = '400 19px "Noto Sans SC", sans-serif';
-      c2.fillText(beadName(hex) + '  × ' + total[hex], bx + 26, by);
-    });
-    return rep;
-  }
-
-  $('pbPdf').addEventListener('click', function(){
-    loadJsPdf(function(){
-      var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
-      doc.addImage(reportCanvas().toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 595.28, 841.89);
-      doc.save('perler-' + cols + 'x' + rows + '.pdf');
-    });
+  // ============ 尺寸 ============
+  document.getElementById('pbwSizeSeg').addEventListener('click', function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#pbwSizeSeg button').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    state.w=+b.dataset.w; state.h=+b.dataset.h;
+    document.getElementById('pbwW').value=state.w; document.getElementById('pbwH').value=state.h;
+    snapshot(); initLayers(); buildLayers(); fitZoom(); render(); if(state.view==='assist') renderAssist();
+  });
+  document.getElementById('pbwApplySize').addEventListener('click', function(){
+    var w=Math.max(8,Math.min(200,+document.getElementById('pbwW').value||52));
+    var h=Math.max(8,Math.min(200,+document.getElementById('pbwH').value||52));
+    state.w=w; state.h=h;
+    document.querySelectorAll('#pbwSizeSeg button').forEach(function(x){x.classList.remove('on');});
+    snapshot(); initLayers(); buildLayers(); fitZoom(); render(); if(state.view==='assist') renderAssist();
   });
 
-  /* ================= 启动 ================= */
-  addLayer();
-  buildPalette();
-  setupCanvas();
-  draw();
+  // ============ 缩放 ============
+  document.getElementById('pbwZoomIn').addEventListener('click', function(){ state.zoom=Math.min(40,state.zoom+2); document.getElementById('pbwZoomLabel').textContent=Math.round(state.zoom/14*100)+'%'; render(); if(state.view==='assist') renderAssist(); });
+  document.getElementById('pbwZoomOut').addEventListener('click', function(){ state.zoom=Math.max(4,state.zoom-2); document.getElementById('pbwZoomLabel').textContent=Math.round(state.zoom/14*100)+'%'; render(); if(state.view==='assist') renderAssist(); });
+
+  // ============ 橡皮 / 取色 ============
+  document.getElementById('pbwEraser').addEventListener('click', function(){
+    state.eraser=!state.eraser; state.picker=false;
+    this.classList.toggle('on',state.eraser);
+    document.getElementById('pbwPicker').classList.remove('on');
+  });
+  document.getElementById('pbwPicker').addEventListener('click', function(){
+    state.picker=!state.picker; state.eraser=false;
+    this.classList.toggle('on',state.picker);
+    document.getElementById('pbwEraser').classList.remove('on');
+  });
+
+  // ============ 图层操作 ============
+  document.getElementById('pbwAddLayer').addEventListener('click', function(){
+    state.layers.push({visible:true,locked:false,cells:blankLayer()});
+    state.active=state.layers.length-1; buildLayers(); render(); if(state.view==='assist') renderAssist();
+  });
+
+  // ============ 视图切换 ============
+  function setView(v){
+    state.view=v;
+    document.querySelectorAll('#pbwViewSeg button, #pbwViewTabs button').forEach(function(b){ b.classList.toggle('on', b.dataset.view===v); });
+    document.getElementById('pbwSpecView').style.display = v==='spec'?'block':'none';
+    document.getElementById('pbwAssistView').style.display = v==='assist'?'block':'none';
+    document.getElementById('pbwCanvasWrap').style.display = (v==='pattern')?'block':'none';
+    document.getElementById('pbwV3Wrap').style.display = (v==='pattern'&&state.mode==='3d')?'block':'none';
+    document.getElementById('pbwMeltbar').style.display = (v==='pattern')?'flex':'none';
+    if(v==='assist') renderAssist();
+    if(v==='pattern'){ render(); }
+  }
+  document.getElementById('pbwViewSeg').addEventListener('click', function(e){ if(e.target.dataset.view) setView(e.target.dataset.view); });
+  document.getElementById('pbwViewTabs').addEventListener('click', function(e){ if(e.target.dataset.view) setView(e.target.dataset.view); });
+
+  // ============ 视角：平面 / 3D ============
+  document.getElementById('pbwModeSeg').addEventListener('click', function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    state.mode=b.dataset.mode;
+    document.querySelectorAll('#pbwModeSeg button').forEach(function(x){x.classList.toggle('on',x===b);});
+    var knob=document.getElementById('pbwKnob');
+    knob.style.transform = state.mode==='3d'? 'translateX(100%)': 'translateX(0)';
+    document.getElementById('pbwV3Wrap').style.display = (state.view==='pattern'&&state.mode==='3d')?'block':'none';
+    document.getElementById('pbwCanvas').style.display = state.mode==='3d'?'none':'block';
+    if(state.mode==='3d') initV3(); else stopV3();
+  });
+
+  // ============ 烫豆 ============
+  var meltPlaying=false;
+  document.getElementById('pbwMeltPlay').addEventListener('click', function(){
+    if(state.mode!=='3d'){ // 2D 下用滑条控制凸起比例
+      var r=document.getElementById('pbwMeltRange'); r.disabled=false;
+      meltPlaying=!meltPlaying; this.textContent= meltPlaying? '⏸ 暂停':'▶ 模拟烫豆';
+      if(meltPlaying) meltTick();
+    }
+  });
+  function meltTick(){
+    if(!meltPlaying) return;
+    var r=document.getElementById('pbwMeltRange');
+    var v=+r.value - 2; if(v<0){v=0; meltPlaying=false; document.getElementById('pbwMeltPlay').textContent='▶ 模拟烫豆';}
+    r.value=v; state.melt=v; render();
+    if(meltPlaying) requestAnimationFrame(meltTick);
+  }
+  document.getElementById('pbwMeltRange').addEventListener('input', function(){ state.melt=+this.value; render(); });
+  document.getElementById('pbwMeltStyle').addEventListener('click', function(){
+    state.meltStyle = state.meltStyle==='flat'?'iron':'flat';
+    this.textContent = '烫法：'+(state.meltStyle==='flat'?'平烫':'熨烫');
+  });
+
+  // ============ 辅助拼豆导航 ============
+  document.getElementById('pbwAssistPrev').addEventListener('click', function(){ var c=distinctColors().length; state.assistIdx=(state.assistIdx-1+c)%c; renderAssist(); });
+  document.getElementById('pbwAssistNext').addEventListener('click', function(){ var c=distinctColors().length; state.assistIdx=(state.assistIdx+1)%c; renderAssist(); });
+
+  // ============ 导出 ============
+  document.getElementById('pbwExportBtn').addEventListener('click', function(){
+    document.getElementById('pbwExportMenu').classList.toggle('show');
+  });
+  document.getElementById('pbwExportMenu').addEventListener('click', function(e){
+    var x=e.target.dataset.x; if(!x) return;
+    document.getElementById('pbwExportMenu').classList.remove('show');
+    if(x==='png') exportPNG();
+    else if(x==='svg') exportSVG();
+    else if(x==='pdf') exportPDF();
+  });
+  function download(href, name){ var a=document.createElement('a'); a.href=href; a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+  function exportPNG(){
+    var prev=state.zoom; state.zoom=Math.max(state.zoom,14); render();
+    var title=document.getElementById('pbwTaskTitle').value||'perler';
+    download(canvas.toDataURL('image/png'), title+'.png');
+    state.zoom=prev; render();
+  }
+  function exportSVG(){
+    var s=Math.max(state.zoom,14), W=state.w*s, H=state.h*s;
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">';
+    svg+='<rect width="'+W+'" height="'+H+'" fill="#F5F2EA"/>';
+    for(var y=0;y<state.h;y++) for(var x=0;x<state.w;x++){
+      var v=mergedCell(x,y); if(!v) continue;
+      svg+='<rect x="'+(x*s)+'" y="'+(y*s)+'" width="'+s+'" height="'+s+'" fill="'+v+'"/>';
+    }
+    svg+='</svg>';
+    download('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg), (document.getElementById('pbwTaskTitle').value||'perler')+'.svg');
+  }
+  function exportPDF(){
+    if(!window.jspdf || !window.jspdf.jsPDF){ alert('PDF 组件未加载，请稍后重试或改用 PNG/SVG'); return; }
+    var prev=state.zoom; state.zoom=Math.max(state.zoom,14); render();
+    var title=document.getElementById('pbwTaskTitle').value||'perler';
+    var jsPDF=window.jspdf.jsPDF;
+    var pdf=new jsPDF({unit:'px', format:[canvas.width, canvas.height]});
+    pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,canvas.width,canvas.height);
+    pdf.save(title+'.pdf');
+    state.zoom=prev; render();
+  }
+
+  // ============ 保存（localStorage） ============
+  document.getElementById('pbwSaveBtn').addEventListener('click', function(){
+    try{
+      var data={w:state.w,h:state.h,zoom:state.zoom,layers:state.layers,title:document.getElementById('pbwTaskTitle').value};
+      localStorage.setItem('pbw_'+titleKey(), JSON.stringify(data));
+      flashSave(this,'已保存');
+    }catch(e){ alert('保存失败：'+e.message); }
+  });
+  function titleKey(){ return (document.getElementById('pbwTaskTitle').value||'default').replace(/\s+/g,'_'); }
+  function flashSave(btn,txt){ var o=btn.textContent; btn.textContent=txt; setTimeout(function(){btn.textContent=o;},1200); }
+  function loadSave(){
+    try{
+      var raw=localStorage.getItem('pbw_'+titleKey());
+      if(!raw) return;
+      var d=JSON.parse(raw);
+      state.w=d.w; state.h=d.h; state.zoom=d.zoom||14; state.layers=d.layers; state.active=0;
+      document.getElementById('pbwW').value=state.w; document.getElementById('pbwH').value=state.h;
+      buildLayers(); render();
+    }catch(e){}
+  }
+
+  // ============ 3D（three.js，自写轨道旋转） ============
+  var v3={raf:null, scene:null, cam:null, renderer:null, mesh:null, theta:0.7, phi:0.9, dist:400, dragging:false, lx:0, ly:0};
+  function initV3(){
+    if(typeof THREE==='undefined'){ document.getElementById('pbwV3Wrap').innerHTML='<div style="color:#8FA3B3;padding:2rem">3D 组件未加载（需联网加载 three.js）</div>'; return; }
+    var wrap=document.getElementById('pbwV3Wrap');
+    var W=wrap.clientWidth||800, H=wrap.clientHeight||600;
+    var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('pbwV3'), antialias:true});
+    renderer.setSize(W,H,false); renderer.setClearColor(0x0b1118,1);
+    var scene=new THREE.Scene();
+    var cam=new THREE.PerspectiveCamera(45, W/H, 1, 5000);
+    var group=new THREE.Group(); scene.add(group);
+    var step=10; // 豆间距
+    var beads=[];
+    for(var y=0;y<state.h;y++) for(var x=0;x<state.w;x++){
+      var v=mergedCell(x,y); if(!v) continue;
+      var geo=new THREE.CylinderGeometry(step*0.46, step*0.46, step*0.5, 20);
+      var mat=new THREE.MeshStandardMaterial({color:new THREE.Color(v), roughness:0.55, metalness:0.05});
+      var m=new THREE.Mesh(geo,mat);
+      m.position.set((x-state.w/2)*step, 0, (y-state.h/2)*step);
+      group.add(m); beads.push(m);
+    }
+    // 板底
+    var baseGeo=new THREE.BoxGeometry(state.w*step, 2, state.h*step);
+    var baseMat=new THREE.MeshStandardMaterial({color:0x16202B, roughness:0.9});
+    var base=new THREE.Mesh(baseGeo,baseMat); base.position.y=-step*0.4; group.add(base);
+    var light=new THREE.DirectionalLight(0xffffff,0.95); light.position.set(200,400,300); scene.add(light);
+    scene.add(new THREE.AmbientLight(0x99aabb,0.6));
+    v3.scene=scene; v3.cam=cam; v3.renderer=renderer; v3.group=group; v3.beads=beads; v3.step=step;
+    v3.canvas=document.getElementById('pbwV3');
+    v3.canvas.addEventListener('mousedown', function(e){ v3.dragging=true; v3.lx=e.clientX; v3.ly=e.clientY; });
+    window.addEventListener('mouseup', function(){ v3.dragging=false; });
+    window.addEventListener('mousemove', function(e){
+      if(!v3.dragging) return;
+      v3.theta += (e.clientX-v3.lx)*0.01; v3.phi += (e.clientY-v3.ly)*0.01;
+      v3.phi=Math.max(0.2,Math.min(1.5,v3.phi)); v3.lx=e.clientX; v3.ly=e.clientY;
+    });
+    document.getElementById('pbwV3').addEventListener('wheel', function(e){ e.preventDefault(); v3.dist=Math.max(120,Math.min(1200,v3.dist+e.deltaY*0.3)); }, {passive:false});
+    stopV3(); v3.raf=requestAnimationFrame(v3Loop);
+  }
+  function v3Loop(){
+    if(!v3.scene) return;
+    var r=v3.dist;
+    v3.cam.position.set(r*Math.sin(v3.phi)*Math.cos(v3.theta), r*Math.cos(v3.phi), r*Math.sin(v3.phi)*Math.sin(v3.theta));
+    v3.cam.lookAt(0,0,0);
+    v3.renderer.render(v3.scene, v3.cam);
+    v3.raf=requestAnimationFrame(v3Loop);
+  }
+  function stopV3(){ if(v3.raf){ cancelAnimationFrame(v3.raf); v3.raf=null; } }
+
+  // ============ 初始化 ============
+  function initApp(){
+    buildPalette(); initLayers(); buildLayers(); fitZoom(); render();
+    setView('pattern');
+    loadSave();
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', initApp); }
+  else { initApp(); }
+  document.getElementById('pbwTaskTitle').addEventListener('change', function(){ /* 切换标题即视为新作品，不自动载入，避免覆盖 */ });
 })();
 </script>
 
-<div class="explain">
-  <h3>玩法 & 怎么用</h3>
-  <p class="ex-formula">用豆数 = 图纸上该色号占据的格子数（多图层自动合计）<br>总豆数 = 各色号用量之和，建议多备 5%~10% 损耗</p>
-  <p class="ex-text">豆子渲染为<b>带圆角的方块</b>加一点顶部高光，糖果质感——接近真实拼豆熨烫后的圆润轮廓，点起来也解压。四个<b>可爱像素预设</b>（🩷爱心 / ⭐星星 / 🍄小蘑菇 / 🐰小兔子）一键起手，再慢慢改造。三张色卡随时切换：<b>MARD 221</b>（国产主流）、<b>Perler 48</b>（美国经典）、<b>Artkal S 系 159</b>（色号最全），换卡后点「转换」图纸上的豆会自动映射到新卡里最接近的色号——用 MARD 画的图纸可以直接转成 Artkal 采购单。照片转图纸、多图层立体拼豆、PNG/PDF 导出：照片开抖动更细腻，像素画关抖动保持干净。</p>
-</div>
+<style>
+:root{
+  --bg:#0F1923; --panel:#141F2A; --panel2:#1B2937; --line:#2A3B4D; --line2:#46586A;
+  --red:#FF4655; --red-dk:#C8323F; --teal:#00C8C8; --txt:#ECE8E1; --txt2:#8FA3B3; --txt3:#5B6B7A;
+  --paper:#F5F2EA; --font-d:"Rajdhani","DIN Alternate","Bahnschrift","Noto Sans SC","PingFang SC",system-ui,sans-serif;
+  --font-b:"Noto Sans SC","PingFang SC","Rajdhani",system-ui,sans-serif;
+  --cut:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  --cut-sm:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+}
+.pbw-app{ --dockw:252px; --fs:14px;
+  font-family:var(--font-b); color:var(--txt); background:var(--bg);
+  min-width:0; min-height:72vh; border:1px solid var(--line); box-shadow:0 0 0 1px rgba(0,0,0,.4);
+}
+.pbw-app *{ box-sizing:border-box; }
+.pbw-top{ display:flex; align-items:center; gap:14px; padding:10px 16px; background:linear-gradient(90deg,#16202B,#0F1923);
+  border-bottom:1px solid var(--line); }
+.pbw-brand{ display:flex; align-items:center; gap:8px; }
+.pbw-logo{ color:var(--red); font-size:18px; }
+.pbw-brandname{ font-family:var(--font-d); font-weight:700; font-size:18px; letter-spacing:.04em; }
+.pbw-brandname i{ color:var(--txt3); font-style:normal; margin:0 2px; }
+.pbw-tag{ font-family:var(--font-d); font-size:10px; letter-spacing:.28em; color:var(--txt3); border:1px solid var(--line2); padding:2px 6px; }
+.pbw-title-wrap{ flex:1; display:flex; justify-content:center; }
+.pbw-tasktitle{ background:transparent; border:none; border-bottom:1px dashed var(--line2); color:var(--txt);
+  font-family:var(--font-d); font-weight:700; font-size:18px; text-align:center; letter-spacing:.04em; padding:4px 10px; width:min(360px,50%); }
+.pbw-tasktitle:focus{ outline:none; border-bottom-color:var(--red); }
+.pbw-actions{ display:flex; gap:8px; }
+.pbw-btn{ font-family:var(--font-d); font-weight:700; font-size:13px; letter-spacing:.06em; cursor:pointer; border:none;
+  padding:8px 16px; color:var(--txt); background:var(--panel2); clip-path:var(--cut-sm); transition:.15s; white-space:nowrap; }
+.pbw-btn:hover{ filter:brightness(1.15); }
+.pbw-btn-red{ background:var(--red); color:#fff; }
+.pbw-btn-ghost{ background:transparent; border:1px solid var(--line2); }
+.pbw-btn-line{ background:transparent; border:1px solid var(--line2); color:var(--txt2); }
+.pbw-btn-line:hover{ color:var(--txt); border-color:var(--red); }
+.pbw-full{ width:100%; }
+.pbw-export{ position:relative; }
+.pbw-export-menu{ position:absolute; right:0; top:110%; background:var(--panel); border:1px solid var(--line2); display:none; flex-direction:column; min-width:150px; z-index:30; }
+.pbw-export-menu.show{ display:flex; }
+.pbw-export-menu button{ background:transparent; border:none; color:var(--txt2); text-align:left; padding:10px 14px; cursor:pointer; font-family:var(--font-d); font-weight:600; font-size:13px; }
+.pbw-export-menu button:hover{ background:var(--panel2); color:var(--txt); }
+
+.pbw-body{ display:grid; grid-template-columns:var(--dockw) minmax(0,1fr) var(--dockw); min-height:64vh; min-width:0; }
+.pbw-dock{ background:var(--panel); border-right:1px solid var(--line); padding:12px; display:flex; flex-direction:column; gap:12px; overflow:auto; min-width:0; }
+.pbw-dock-right{ border-right:none; border-left:1px solid var(--line); }
+.pbw-card{ background:var(--panel2); border:1px solid var(--line); padding:10px; clip-path:var(--cut); }
+.pbw-card-h{ font-family:var(--font-d); font-weight:700; font-size:12px; letter-spacing:.14em; color:var(--txt2); text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; }
+.pbw-hint{ color:var(--teal); font-size:11px; letter-spacing:.04em; }
+
+.pbw-upload{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:14px; border:1px dashed var(--line2); cursor:pointer; text-align:center; transition:.15s; }
+.pbw-upload:hover{ border-color:var(--red); background:rgba(255,70,85,.06); }
+.pbw-upload-ico{ font-size:22px; color:var(--red); }
+.pbw-upload-txt{ font-family:var(--font-d); font-weight:700; font-size:14px; }
+.pbw-upload-sub{ font-size:11px; color:var(--txt3); }
+
+.pbw-seg{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.pbw-seg-col{ grid-template-columns:1fr; }
+.pbw-seg button{ font-family:var(--font-d); font-weight:700; font-size:12px; letter-spacing:.04em; padding:7px; background:var(--bg); border:1px solid var(--line); color:var(--txt2); cursor:pointer; clip-path:var(--cut-sm); }
+.pbw-seg button.on{ background:var(--red); color:#fff; border-color:var(--red); }
+.pbw-row{ display:flex; gap:6px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+.pbw-row-mid{ justify-content:center; }
+.pbw-mini{ font-size:11px; color:var(--txt3); display:flex; align-items:center; gap:4px; flex:1 1 0; min-width:0; }
+.pbw-row .pbw-mini input{ width:100%; min-width:0; height:30px; padding:4px 6px; line-height:1.2; font-size:12px; background:var(--bg); border:1px solid var(--line); color:var(--txt); box-sizing:border-box; font-family:var(--font-d); }
+
+.pbw-pal{ display:grid; grid-template-columns:repeat(8,1fr); gap:4px; }
+.pbw-swatch{ width:100%; aspect-ratio:1/1; border:none; cursor:pointer; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.25); padding:0; }
+.pbw-swatch.on{ outline:2px solid var(--teal); outline-offset:1px; }
+.pbw-swatch.pbw-sel-none, .pbw-swatch#pbwEraser, .pbw-swatch#pbwPicker{ aspect-ratio:auto; width:auto; flex:1; background:var(--bg); color:var(--txt2); font-family:var(--font-d); font-weight:700; font-size:12px; padding:6px; border:1px solid var(--line); }
+.pbw-swatch.on{ color:var(--txt); }
+
+.pbw-layers{ display:flex; flex-direction:column; gap:5px; margin-bottom:8px; }
+.pbw-layer{ display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--bg); border:1px solid var(--line); cursor:pointer; }
+.pbw-layer.on{ border-color:var(--red); }
+.pbw-layer-vis{ background:transparent; border:none; cursor:pointer; color:var(--teal); font-size:14px; width:24px; height:24px; display:grid; place-items:center; padding:0; line-height:1; border-radius:4px; }
+.pbw-layer-vis:hover{ background:var(--panel2); }
+.pbw-layer-name{ flex:1; font-family:var(--font-d); font-weight:600; font-size:13px; }
+.pbw-layer-cnt{ font-size:11px; color:var(--txt3); }
+
+.pbw-zoom{ font-family:var(--font-d); font-weight:700; min-width:54px; text-align:center; font-size:15px; }
+.pbw-zoombox{ display:flex; gap:8px; align-items:center; justify-content:center; }
+.pbw-zoombtn{ flex:1; font-size:18px; padding:12px 0; line-height:1; }
+
+.pbw-stage{ display:flex; flex-direction:column; padding:14px; gap:12px; background:var(--bg); min-width:0; }
+.pbw-stage-bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.pbw-viewtabs{ display:flex; gap:4px; background:rgba(0,0,0,.35); padding:3px; clip-path:var(--cut-sm); }
+.pbw-viewtabs button{ font-family:var(--font-d); font-weight:700; font-size:13px; letter-spacing:.06em; padding:7px 18px; background:transparent; border:none; color:var(--txt2); cursor:pointer; }
+.pbw-viewtabs button.on{ background:var(--red); color:#fff; clip-path:var(--cut-sm); }
+.pbw-modebar{ display:flex; align-items:center; gap:8px; }
+.pbw-mode-label{ font-family:var(--font-d); font-size:11px; color:var(--txt3); letter-spacing:.1em; }
+.pbw-modeseg{ display:inline-grid; grid-auto-flow:column; grid-auto-columns:1fr; position:relative; background:rgba(0,0,0,.35); }
+.pbw-modeseg-btns{ display:grid; grid-auto-flow:column; grid-auto-columns:1fr; }
+.pbw-modeseg button{ font-family:var(--font-d); font-weight:700; font-size:12px; padding:6px 18px; background:transparent; border:none; color:var(--txt2); cursor:pointer; z-index:2; }
+.pbw-modeseg button.on{ color:#fff; }
+.pbw-knob{ position:absolute; top:0; bottom:0; left:0; width:50%; background:var(--red); z-index:1; transition:transform .26s cubic-bezier(.3,1.35,.5,1); box-shadow:0 0 10px rgba(255,70,85,.4); }
+
+.pbw-canvas-area{ position:relative; }
+.pbw-canvas-wrap{ position:relative; background:#0b1118; border:1px solid var(--line); min-width:0; min-height:420px; max-height:78vh; overflow:auto; }
+.pbw-canvas-inner{ width:max-content; min-height:100%; margin:0 auto; }
+.pbw-canvas-wrap > .pbw-canvas-inner{ padding-bottom:52px; }
+.pbw-canvas{ background:var(--paper); image-rendering:pixelated; display:block; }
+.pbw-v3{ position:absolute; inset:0; display:none; }
+.pbw-v3 canvas{ display:block; width:100%; height:100%; }
+.pbw-empty{ position:absolute; color:var(--txt3); font-family:var(--font-d); font-size:15px; letter-spacing:.06em; pointer-events:none; padding:20px; text-align:center; }
+.pbw-meltbar{ position:absolute; left:14px; right:14px; bottom:12px; display:none; align-items:center; justify-content:center; gap:10px; padding:6px 14px; background:rgba(15,25,35,.7); backdrop-filter:blur(6px); border-top:1px solid rgba(255,255,255,.08); z-index:6; }
+.pbw-meltbar button{ background:transparent; border:1px solid var(--line2); color:var(--txt2); font-family:var(--font-d); font-weight:700; font-size:12px; padding:4px 12px; cursor:pointer; white-space:nowrap; }
+.pbw-meltbar button:hover{ color:var(--txt); border-color:var(--red); }
+.pbw-meltbar input[type=range]{ flex:0 1 280px; accent-color:var(--red); }
+
+.pbw-spec{ display:none; background:var(--panel); border:1px solid var(--line); padding:16px; clip-path:var(--cut); }
+.pbw-spec-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.pbw-spec-item{ background:var(--panel2); padding:12px; border:1px solid var(--line); clip-path:var(--cut-sm); }
+.pbw-spec-item .k{ display:block; font-size:11px; color:var(--txt3); letter-spacing:.1em; margin-bottom:6px; }
+.pbw-spec-item b{ font-family:var(--font-d); font-weight:700; font-size:20px; color:var(--teal); }
+.pbw-spec-pal .pbw-pal{ margin-top:8px; }
+
+.pbw-assist{ display:none; }
+.pbw-assist-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+.pbw-assist-tip{ font-size:12px; color:var(--txt3); }
+.pbw-assist-nav{ display:flex; align-items:center; gap:8px; font-family:var(--font-d); font-weight:700; }
+.pbw-assist-canvas-wrap{ background:#0b1118; border:1px solid var(--line); min-width:0; min-height:420px; max-height:78vh; overflow:auto; }
+
+.pbw-progress{ background:var(--panel); border:1px solid var(--line); padding:14px; clip-path:var(--cut); }
+.pbw-prog-list{ display:flex; flex-direction:column; gap:5px; max-height:240px; overflow:auto; }
+.pbw-prog-row{ display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--panel2); border:1px solid var(--line); cursor:pointer; }
+.pbw-prog-row.done{ opacity:.55; }
+.pbw-prog-row.done .pbw-prog-name{ text-decoration:line-through; }
+.pbw-prog-sw{ width:18px; height:18px; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.3); }
+.pbw-prog-name{ flex:1; font-family:var(--font-d); font-weight:600; font-size:14px; }
+.pbw-prog-ct{ font-size:12px; color:var(--txt3); }
+
+@media (max-width:980px){
+  .pbw-body{ grid-template-columns:1fr; }
+  .pbw-dock{ border-right:none; border-left:none; border-bottom:1px solid var(--line); }
+  .pbw-dock-right{ border-left:none; }
+  .pbw-spec-grid{ grid-template-columns:repeat(2,1fr); }
+  .pbw-title-wrap{ display:none; }
+}
+@media (max-width:600px){
+  .pbw-top{ flex-wrap:wrap; gap:8px; padding:8px 10px; }
+  .pbw-tag{ display:none; }
+  .pbw-brandname{ font-size:15px; }
+  .pbw-actions{ margin-left:auto; }
+  .pbw-btn{ padding:7px 12px; font-size:12px; }
+  .pbw-stage{ padding:10px; gap:10px; }
+  .pbw-viewtabs button{ padding:7px 12px; font-size:12px; }
+  .pbw-mode-label{ display:none; }
+  .pbw-canvas-wrap,
+  .pbw-assist-canvas-wrap{ min-height:300px; max-height:58vh; }
+  .pbw-meltbar{ left:10px; right:10px; gap:6px; padding:6px 8px; }
+  .pbw-meltbar button{ padding:4px 8px; font-size:11px; }
+  .pbw-meltbar input[type=range]{ flex:1 1 60px; min-width:60px; }
+}
+</style>
