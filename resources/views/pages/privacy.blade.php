@@ -34,7 +34,7 @@
     <p>本站可能会不定期更新本政策，更新后的版本会直接在此页面发布，继续使用即视为接受。</p>
 
     <h2>六、联系我们</h2>
-    <p>对本政策有疑问，可通过邮件联系：<a href="mailto:3023207113@qq.com">3023207113@qq.com</a></p>
+    <p>对本政策有疑问，可通过邮件联系：<a href="mailto:{{ config('site.email') }}">{{ config('site.email') }}</a></p>
   </article>
 
   <style>

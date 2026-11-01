@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         // 后台管理员（幂等，可重复执行）
         User::updateOrCreate(
-            ['email' => '3023207113@qq.com'],
+            ['email' => 'xqlwy@xqlwy.online'],
             ['name' => 'admin', 'password' => Hash::make('Toolbox@2026admin')],
         );
 

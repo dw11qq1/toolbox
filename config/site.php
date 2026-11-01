@@ -11,5 +11,5 @@ return [
 
     // 社交与外链（页脚 / 联系页 / llms.txt 复用）
     'github' => 'https://github.com/dw11qq1',
-    'email' => 'wangyang@xqlwy.online',
+    'email' => 'xqlwy@xqlwy.online',
 ];
