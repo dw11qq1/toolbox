@@ -243,6 +243,19 @@ window.TB_INDEX = @json($searchIndex ?? []);
   });
 })();
 </script>
+<script>
+(function(){
+  var nav = navigator;
+  if (nav.doNotTrack === '1' || window.doNotTrack === '1' || nav.globalPrivacyControl) return;
+  var body = JSON.stringify({ p: location.pathname });
+  var endpoint = '{{ url('/api/visit') }}';
+  if (nav.sendBeacon) {
+    nav.sendBeacon(endpoint, new Blob([body], { type: 'application/json' }));
+  } else if (window.fetch) {
+    fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function(){});
+  }
+})();
+</script>
 @stack('jsonld')
 @stack('scripts')
 </body>

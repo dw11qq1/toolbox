@@ -157,7 +157,7 @@ class SmokeTest extends TestCase
     public function test_静态资源文件存在(): void
     {
         $this->assertFileExists(public_path('css/app.css'));
-        $this->assertFileExists(public_path('js/filament/filament/app.js'));
+        $this->assertFileExists(public_path('css/admin.css'));
         $this->assertFileExists(public_path('favicon.svg'));
     }
 }

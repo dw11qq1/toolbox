@@ -16,6 +16,12 @@ class CachePublicResponse
     {
         $response = $next($request);
 
+        if ($request->is('admin', 'admin/*')) {
+            $response->headers->set('Cache-Control', 'no-store, private');
+
+            return $response;
+        }
+
         if ($request->method() === 'GET' && $response->getStatusCode() === 200) {
             $response->headers->set(
                 'Cache-Control',

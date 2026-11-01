@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ], append: [
             CachePublicResponse::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn (Request $request) => route('admin.login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
